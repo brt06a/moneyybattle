@@ -90,3 +90,14 @@ body {
     padding: 12px;
   }
 }
+.floating-icon {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; /* This makes it round */
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  animation: float 3s ease-in-out infinite;
+  cursor: pointer;
+}
