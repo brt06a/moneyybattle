@@ -90,15 +90,13 @@
       popup.className = "popup";
       popup.innerHTML = `
         Welcome to Money Master!<br><br>
-        Earn free coins, play games, refer friends and withdraw real cash.<br>
-        Let's get started!
       `;
       document.body.appendChild(popup);
 
       setTimeout(() => {
         popup.remove();
         window.location.href = "register.html";
-      }, 5000);
+      }, 1000);
     });
 
     function goToLogin() {
