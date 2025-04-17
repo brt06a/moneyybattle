@@ -1,0 +1,128 @@
+/* Body Background and Typography */
+body {
+  margin: 0;
+  padding: 0;
+  background: url('assets/brt_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  text-align: center;
+}
+
+/* Remove focus outlines */
+*:focus {
+  outline: none;
+}
+
+/* Back Button */
+.nav-icon {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Page Heading */
+.withdraw-title {
+  margin-top: 60px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+/* Container */
+.withdraw-container {
+  padding: 20px;
+  max-width: 400px;
+  margin: auto;
+}
+
+/* Wallet Info Section */
+.wallet-info {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.wallet-info h3 {
+  margin: 10px 0 5px;
+  font-size: 16px;
+  color: #00f5a0;
+}
+
+.wallet-info p {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* Method Selector */
+.method-select {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.method-select label {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Input Forms */
+.form-box {
+  margin-bottom: 20px;
+}
+
+.form-box input {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  text-align: left;
+}
+
+/* Confirm Button */
+#confirmBtn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #00f5a0;
+  color: #000;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transition: 0.3s;
+}
+
+#confirmBtn.enabled {
+  cursor: pointer;
+  opacity: 1;
+}
+
+/* Disclaimer */
+.disclaimer {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #ccc;
+}
+
+/* Coin Notes */
+.wallet-note {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #dddddd;
+}
+
+.wallet-note p {
+  margin: 4px 0;
+}

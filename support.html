@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
+  <title>SUPPORT - Money Master</title>
+  <link rel="stylesheet" href="support.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+
+  <!-- Disable outline -->
+  <style>
+    *:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body style="background: url('assets/brt_bg.png') no-repeat center center fixed; background-size: cover;" onload="initSupportPage()">
+
+  <!-- Navigation -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <!-- Page Title -->
+  <h1 class="page-title">SUPPORT</h1>
+
+  <!-- Main Container -->
+  <div class="support-container">
+    <img src="assets/icon_support.png" class="support-icon" alt="Support" />
+
+    <!-- Complaint Box -->
+    <h3 class="section-title">Facing an issue?</h3>
+    <textarea id="complaintInput" placeholder="Type your complaint here..." oninput="toggleSubmitBtn()"></textarea>
+    <button id="submitComplaint" class="submit-btn" style="display: none;" onclick="submitComplaint()">Submit</button>
+
+    <!-- FAQ Section -->
+    <h3 class="section-title">Frequently Asked Questions</h3>
+    <div class="faq-list" id="faqList">
+      <!-- Dynamically inserted FAQ -->
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
+      authDomain: "money-master-89c02.firebaseapp.com",
+      projectId: "money-master-89c02",
+      storageBucket: "money-master-89c02.appspot.com",
+      messagingSenderId: "226410161274",
+      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
+      measurementId: "G-62K0SFSZK4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+  <!-- Tap Page Ad Script -->
+  <script async src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33"></script>
+
+  <!-- Go Back Sound -->
+  <script>
+    function goBack() {
+      const s = new Audio("assets/sound.mp3");
+      s.play();
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 200);
+    }
+  </script>
+
+  <!-- Main JS -->
+  <script src="support.js"></script>
+</body>
+</html>

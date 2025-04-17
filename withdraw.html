@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
+  <title>Withdraw - Money Master</title>
+  <link rel="stylesheet" href="withdraw.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+
+  <!-- Firebase Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
+      authDomain: "money-master-89c02.firebaseapp.com",
+      projectId: "money-master-89c02",
+      storageBucket: "money-master-89c02.appspot.com",
+      messagingSenderId: "226410161274",
+      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
+      measurementId: "G-62K0SFSZK4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "login.html";
+    });
+  </script>
+</head>
+
+<body onload="loadWithdrawPage()">
+
+  <!-- Back Icon -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <!-- Heading -->
+  <h1 class="withdraw-title">WITHDRAW</h1>
+
+  <div class="withdraw-container">
+    <!-- Balance Info -->
+    <div class="wallet-info">
+      <h3>TOTAL COINS</h3>
+      <p id="coinDisplay">0</p>
+      <h3>INR VALUE</h3>
+      <p id="inrValue">₹0.00</p>
+    </div>
+
+    <!-- Option Selector -->
+    <div class="method-select">
+      <label><input type="radio" name="method" value="upi" onchange="showForm('upi')"> UPI</label>
+      <label><input type="radio" name="method" value="bank" onchange="showForm('bank')"> Bank</label>
+      <label><input type="radio" name="method" value="paypal" onchange="showForm('paypal')"> PayPal</label>
+    </div>
+
+    <!-- UPI Form -->
+    <div id="upiForm" class="form-box" style="display:none;">
+      <input type="text" id="upiID" placeholder="Enter UPI ID" />
+      <input type="number" id="upiAmount" placeholder="Enter Amount" />
+    </div>
+
+    <!-- Bank Form -->
+    <div id="bankForm" class="form-box" style="display:none;">
+      <input type="text" id="bankName" placeholder="Account Holder Name" />
+      <input type="text" id="bankIFSC" placeholder="IFSC Code" />
+      <input type="text" id="bankAcc" placeholder="Account Number" />
+      <input type="number" id="bankAmount" placeholder="Enter Amount" />
+    </div>
+
+    <!-- PayPal Form -->
+    <div id="paypalForm" class="form-box" style="display:none;">
+      <input type="text" id="paypalEmail" placeholder="PayPal Email or Phone" />
+      <input type="number" id="paypalAmount" placeholder="Enter Amount" />
+    </div>
+
+    <!-- Confirm Button -->
+    <button id="confirmBtn" onclick="submitWithdraw()" disabled>Confirm Withdraw</button>
+
+    <!-- Disclaimer -->
+    <p class="disclaimer">Please ensure all details are valid and accurate to receive your money securely.</p>
+
+    <!-- Info Notes -->
+    <div class="wallet-note">
+      <p>1000 Coins = ₹1</p>
+      <p>Each Referral = 10,000 Coins</p>
+      <p>Each Ad Watch = 500 Coins</p>
+    </div>
+  </div>
+
+  <!-- Working Monetized Ad Script -->
+  <script src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33" async></script>
+
+  <!-- Sound + Back -->
+  <script>
+    function goBack() {
+      const snd = new Audio("assets/sound.mp3");
+      snd.play();
+      window.location.href = "dashboard.html";
+    }
+  </script>
+
+  <!-- Withdraw JS -->
+  <script src="withdraw.js"></script>
+</body>
+</html>

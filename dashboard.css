@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: url('assets/brt_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+  color: #ffffff;
+  text-align: center;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+*:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.nav-icon {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  background: rgba(255,255,255,0.06);
+  padding: 5px;
+  box-shadow: 0 0 10px #00f5a0;
+}
+
+.dashboard-container {
+  padding-top: 100px;
+}
+
+.dashboard-heading {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 40px;
+  color: #00f5a0;
+  text-shadow: 1px 1px 3px #000;
+  letter-spacing: 1px;
+}
+
+.icon-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.dashboard-item img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  padding: 10px;
+  box-shadow: 0 0 10px #00f5a0;
+}
+
+.dashboard-item p {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.dashboard-item:hover {
+  transform: scale(1.1);
+}

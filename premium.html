@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
+  <title>PREMIUM - Money Master</title>
+  <link rel="stylesheet" href="premium.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+</head>
+<body>
+
+  <!-- Back Navigation Icon -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <!-- Premium Page Content -->
+  <div class="premium-container">
+    <h1 class="heading">PREMIUM</h1>
+    <h2 class="coming-soon">COMING SOON</h2>
+
+    <ul class="benefits">
+      <li>No Ads Experience</li>
+      <li>Faster Withdrawals</li>
+      <li>Double Coins on Tap</li>
+      <li>Premium Badge & Status</li>
+      <li>Access to Special Tasks</li>
+      <li>Priority Support & Helpdesk</li>
+    </ul>
+
+    <div class="wallet-note">
+      <p><strong>1000 Coins = ₹1</strong></p>
+      <p>Earn 500 Coins per Ad Watched</p>
+      <p>Earn 10,000 Coins per Successful Referral</p>
+    </div>
+  </div>
+
+  <!-- Live Ad Script (as used in tap.html) -->
+  <script async src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33"></script>
+
+  <!-- Back Button Script -->
+  <script>
+    function goBack() {
+      const click = new Audio("assets/sound.mp3");
+      click.play();
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 200);
+    }
+  </script>
+
+  <!-- Premium JS -->
+  <script src="premium.js" type="module"></script>
+
+</body>
+</html>

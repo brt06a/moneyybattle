@@ -1,0 +1,98 @@
+/* Global styles */
+body {
+  margin: 0;
+  padding: 0;
+  background: url('assets/brt_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+  color: #ffffff;
+  text-align: center;
+  user-select: none;
+}
+
+/* Remove square focus */
+*:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Navigation icon */
+.nav-icon {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+/* Page Title */
+.page-title {
+  margin-top: 80px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #00f5f9;
+  text-shadow: 0 0 6px #00f5f9;
+  letter-spacing: 1px;
+}
+
+/* Leaderboard container */
+.leaderboard-container {
+  padding: 20px;
+}
+
+/* Leader list container */
+.leader-list {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Each leader entry */
+.leader-entry {
+  width: 90%;
+  max-width: 400px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 2px solid #00f5f9;
+  border-radius: 20px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  transition: transform 0.2s ease;
+}
+
+.leader-entry:hover {
+  transform: scale(1.03);
+}
+
+/* Avatar styling */
+.leader-entry img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #00f5f9;
+  object-fit: cover;
+}
+
+/* Name and earnings */
+.leader-info {
+  text-align: left;
+}
+
+.leader-info h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.leader-info p {
+  margin: 2px 0 0 0;
+  font-size: 14px;
+  color: #c0c0c0;
+}

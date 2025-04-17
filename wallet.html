@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
+  <title>WALLET - Money Master</title>
+  <link rel="stylesheet" href="wallet.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+
+  <!-- Firebase Setup -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
+      authDomain: "money-master-89c02.firebaseapp.com",
+      projectId: "money-master-89c02",
+      storageBucket: "money-master-89c02.appspot.com",
+      messagingSenderId: "226410161274",
+      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
+      measurementId: "G-62K0SFSZK4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "index.html";
+    });
+  </script>
+
+  <style>
+    *:focus { outline: none; box-shadow: none; }
+  </style>
+</head>
+<body onload="loadWallet()">
+
+  <!-- Navigation -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <div class="wallet-container">
+    <h1 class="wallet-heading">WALLET</h1>
+
+    <button class="withdraw-btn" onclick="goWithdraw()">WITHDRAW</button>
+
+    <!-- Notes Below Button -->
+    <div class="wallet-note">
+      <p><strong>1000 Coins = ₹1</strong></p>
+      <p>Earn more by:</p>
+      <p>- Referral = 10,000 Coins</p>
+      <p>- Watching Ads = 500 Coins</p>
+    </div>
+
+    <!-- Coin and INR Display -->
+    <div class="wallet-balance">
+      <h3>TOTAL BALANCE</h3>
+      <p><span id="coinDisplay">0</span> Coins</p>
+      <h3>EQUIVALENT INR</h3>
+      <p>₹<span id="inrValue">0</span></p>
+    </div>
+  </div>
+
+  <!-- Sound -->
+  <audio id="clickSound" src="assets/sound.mp3" preload="auto"></audio>
+
+  <!-- Custom Ad Script -->
+  <script>
+    const adScript = document.createElement("script");
+    adScript.src = "https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b0da1";
+    adScript.async = true;
+    document.body.appendChild(adScript);
+  </script>
+
+  <!-- Navigation -->
+  <script>
+    function goBack() {
+      const s = document.getElementById("clickSound");
+      s.play();
+      setTimeout(() => window.location.href = "dashboard.html", 150);
+    }
+
+    function goWithdraw() {
+      const s = document.getElementById("clickSound");
+      s.play();
+      setTimeout(() => window.location.href = "withdraw.html", 150);
+    }
+  </script>
+
+  <!-- Logic -->
+  <script src="wallet.js"></script>
+</body>
+</html>

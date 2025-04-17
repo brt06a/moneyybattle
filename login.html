@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="3aebd9ebbba1b779613f4488fb3b0da1" />
+  <title>Login - Money Master</title>
+  <link rel="stylesheet" href="login.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1"></script>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
+      authDomain: "money-master-89c02.firebaseapp.com",
+      projectId: "money-master-89c02",
+      storageBucket: "money-master-89c02.appspot.com",
+      messagingSenderId: "226410161274",
+      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
+      measurementId: "G-62K0SFSZK4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+
+  <!-- Navigation Back Icon -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <div class="login-container">
+    <img src="assets/money_master_logo.png" class="app-logo" alt="Logo" />
+    <h2 class="login-title">LOGIN</h2>
+
+    <!-- Email/Mobile with Password Login -->
+    <form class="login-form" onsubmit="handleLogin(event)">
+      <input type="text" id="email" placeholder="Mobile or Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">LOGIN</button>
+    </form>
+
+    <p class="or-line">OR</p>
+
+    <!-- OTP Login -->
+    <div class="otp-login">
+      <input type="text" id="phoneNumber" placeholder="Enter Mobile Number (+91...)" />
+      <div id="recaptcha-container"></div>
+      <button onclick="sendOTP()">Send OTP</button>
+    </div>
+
+    <div id="otpBox" class="otp-box" style="display:none;">
+      <input type="text" id="otpCode" placeholder="Enter OTP" />
+      <button onclick="verifyOTP()">Verify & Login</button>
+    </div>
+
+    <p class="small-link">By logging in, you agree to our <a href="terms.html">Terms & Privacy</a></p>
+  </div>
+
+  <script>
+    function goBack() {
+      const clickSound = new Audio("assets/sound.mp3");
+      clickSound.play();
+      window.location.href = "index.html";
+    }
+  </script>
+
+  <!-- Firebase Login Logic -->
+  <script type="module" src="login.js"></script>
+</body>
+</html>

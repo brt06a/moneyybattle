@@ -1,0 +1,77 @@
+/* Background and Body Setup */
+body {
+  margin: 0;
+  padding: 0;
+  background: url('assets/brt_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+  color: #ffffff;
+  text-align: center;
+}
+
+/* Remove square selection outline */
+*:focus {
+  outline: none;
+}
+
+/* Back Navigation Icon */
+.nav-icon {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* Main Container */
+.premium-container {
+  padding: 100px 20px 40px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Page Title */
+.heading {
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #00ccff;
+  margin-bottom: 10px;
+}
+
+/* Coming Soon Text */
+.coming-soon {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 30px;
+}
+
+/* Benefits List */
+.benefits {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.benefits li {
+  font-size: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Wallet Notes */
+.wallet-note {
+  font-size: 14px;
+  color: #e0e0e0;
+  margin-top: 30px;
+  line-height: 1.6;
+}
+
+.wallet-note strong {
+  color: #00ccff;
+}

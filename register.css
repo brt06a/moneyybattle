@@ -1,0 +1,101 @@
+/* register.css */
+body {
+  margin: 0;
+  padding: 0;
+  background: url('assets/brt_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  text-align: center;
+}
+
+*:focus {
+  outline: none;
+}
+
+.nav-icon {
+  width: 40px;
+  margin: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.register-container {
+  margin: 20px auto;
+  max-width: 360px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 16px;
+}
+
+.app-icon {
+  width: 80px;
+  margin: 10px auto;
+  display: block;
+}
+
+.register-title {
+  font-size: 24px;
+  margin: 10px 0 20px;
+  font-weight: bold;
+  color: #00f5a0;
+  text-shadow: 0 0 8px #00f5a0;
+}
+
+.register-form input {
+  width: 90%;
+  padding: 12px 14px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  box-shadow: inset 0 0 8px rgba(0, 255, 255, 0.2);
+}
+
+.register-form button {
+  width: 90%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 30px;
+  background: #00f5a0;
+  color: #000;
+  font-weight: bold;
+  box-shadow: 0 0 10px #00f5a0;
+  cursor: pointer;
+}
+
+#otpBox {
+  margin-top: 10px;
+}
+
+#otpBox input {
+  width: 70%;
+  margin-right: 5px;
+  padding: 10px;
+  border-radius: 25px;
+  border: none;
+}
+
+#otpBox button {
+  padding: 10px 16px;
+  border-radius: 25px;
+  background: #00f5a0;
+  color: #000;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.disclaimer,
+.small-link {
+  font-size: 13px;
+  color: #ccc;
+  margin-top: 15px;
+}
+
+.small-link a {
+  color: #00f5a0;
+  text-decoration: underline;
+}

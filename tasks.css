@@ -1,0 +1,83 @@
+/* tasks.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: url('assets/brt_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #e0f7ff;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+*:focus {
+  outline: none;
+}
+
+.nav-icon {
+  width: 40px;
+  margin: 15px;
+  cursor: pointer;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.tasks-container {
+  margin-top: 60px;
+  padding: 20px;
+}
+
+.task-icon {
+  width: 70px;
+  margin: 0 auto 10px;
+  display: block;
+}
+
+h2 {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #00f5a0;
+  text-shadow: 0 0 5px #00f5a0;
+}
+
+p {
+  font-size: 15px;
+  margin: 10px 0;
+}
+
+#adButtons {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+#adButtons button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background: #00f5a0;
+  color: #000;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 80%;
+  max-width: 300px;
+  font-weight: bold;
+  box-shadow: 0 0 10px #00f5a0;
+  transition: 0.3s;
+}
+
+#adButtons button:hover {
+  transform: scale(1.05);
+}
+
+.reward-note {
+  margin-top: 30px;
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.6;
+}

@@ -1,0 +1,53 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: url('assets/tap_bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+  color: #ffffff;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+*:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.tap-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+#tapIcon {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  transition: transform 0.1s ease-in-out;
+  margin-bottom: 20px;
+}
+
+#coinCount {
+  font-size: 22px;
+  font-weight: bold;
+  color: #00f5a0;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+}
+
+.dashboard-icon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 5px;
+  box-shadow: 0 0 10px #00f5a0;
+}

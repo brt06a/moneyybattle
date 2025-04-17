@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Money Master</title>
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+</head>
+<body onload="initAdminPanel()">
+
+  <!-- Back Navigation Icon -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <div class="admin-container">
+    <h1 class="title">ADMIN PANEL</h1>
+
+    <!-- Withdrawals Section -->
+    <section class="section">
+      <h2>Pending Withdrawals</h2>
+      <div id="withdrawList" class="data-list">Loading withdrawals...</div>
+    </section>
+
+    <!-- Users Section -->
+    <section class="section">
+      <h2>User Overview</h2>
+      <div id="userList" class="data-list">Loading users...</div>
+    </section>
+  </div>
+
+  <!-- Firebase Auth Check + Admin Verification -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
+      authDomain: "money-master-89c02.firebaseapp.com",
+      projectId: "money-master-89c02",
+      storageBucket: "money-master-89c02.appspot.com",
+      messagingSenderId: "226410161274",
+      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
+      measurementId: "G-62K0SFSZK4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      const adminRef = doc(db, "admins", user.uid);
+      const adminSnap = await getDoc(adminRef);
+
+      if (!adminSnap.exists()) {
+        alert("Access denied: You are not an admin.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      // If verified as admin, initialize the panel
+      window.initAdminPanel();
+    });
+  </script>
+
+  <!-- Admin Panel Logic -->
+  <script type="module" src="admin.js"></script>
+
+  <script>
+    function goBack() {
+      const sound = new Audio("assets/sound.mp3");
+      sound.play();
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>

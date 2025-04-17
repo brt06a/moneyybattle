@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
+  <title>TASKS - Money Master</title>
+  <link rel="stylesheet" href="tasks.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
+      authDomain: "money-master-89c02.firebaseapp.com",
+      projectId: "money-master-89c02",
+      storageBucket: "money-master-89c02.appspot.com",
+      messagingSenderId: "226410161274",
+      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
+      measurementId: "G-62K0SFSZK4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "login.html";
+    });
+  </script>
+</head>
+
+<body onload="loadTasksPage()">
+
+  <!-- Back Icon -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <div class="tasks-container">
+    <img src="assets/icon_tasks.png" class="task-icon" alt="Tasks" />
+    <h2>TASKS</h2>
+
+    <p>Total Ads Watched: <span id="totalAdsWatched">0</span></p>
+    <p>Total Coins From Ads: <span id="totalAdCoins">0</span></p>
+    <p>Each Ad Watch = <strong>500 Coins</strong></p>
+
+    <!-- Ad Watch Buttons -->
+    <div id="adButtons"></div>
+
+    <!-- Rewards Note -->
+    <div class="reward-note">
+      <p>You will earn 500 coins only after watching the complete ad.</p>
+      <p>Don't refresh during ad viewing.</p>
+      <p>Suspicious activity may cancel rewards.</p>
+    </div>
+  </div>
+
+  <!-- Monetag Real Ad Script -->
+  <script async src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33"></script>
+
+  <!-- Dashboard Nav -->
+  <script>
+    function goBack() {
+      const s = new Audio("assets/sound.mp3");
+      s.play();
+      setTimeout(() => window.location.href = "dashboard.html", 150);
+    }
+  </script>
+
+  <!-- Main Task JS -->
+  <script src="tasks.js" type="module"></script>
+</body>
+</html>

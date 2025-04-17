@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
+  <title>Referral - Money Master</title>
+  <link rel="stylesheet" href="referral.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url("assets/brt_bg.png") no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+    .nav-icon {
+      width: 40px;
+      margin: 15px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .referral-container {
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .ref-label {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    .copy-box {
+      margin: 10px auto;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .copy-box span {
+      background: #111;
+      padding: 10px 15px;
+      border-radius: 6px;
+    }
+    .copy-box button {
+      padding: 10px 20px;
+      background: #00f5a0;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .ref-stats {
+      margin-top: 20px;
+    }
+    .ref-stats p {
+      font-size: 16px;
+      margin: 6px 0;
+    }
+    .ref-history {
+      margin-top: 30px;
+      padding: 10px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 10px;
+    }
+    .ref-history ul {
+      padding-left: 0;
+      list-style: none;
+    }
+    .ref-history li {
+      padding: 5px;
+      border-bottom: 1px solid #444;
+    }
+    .ad-banner {
+      text-align: center;
+      padding: 10px;
+      color: #ccc;
+    }
+    .top-banner { position: fixed; top: 0; width: 100%; z-index: 1000; }
+    .bottom-banner { position: fixed; bottom: 0; width: 100%; z-index: 1000; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Ad -->
+  <div class="ad-banner top-banner">[ Top Banner Ad ]</div>
+
+  <!-- Navigation -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <!-- Referral Section -->
+  <div class="referral-container">
+    <h1>REFERRAL</h1>
+
+    <div class="ref-stats">
+      <p><strong>Total Referral Earnings:</strong> ₹<span id="refEarnings">0</span></p>
+    </div>
+
+    <p class="ref-label">Your Referral Code:</p>
+    <div class="copy-box">
+      <span id="refCode">ABC123</span>
+      <button onclick="copyCode()">COPY</button>
+    </div>
+
+    <p><strong>Total Referrals:</strong> <span id="refCount">0</span></p>
+
+    <!-- History Section -->
+    <div class="ref-history">
+      <h3>People Who Used Your Code:</h3>
+      <ul id="refList">
+        <li>user01xyz</li>
+        <li>user02abc</li>
+        <li>user03def</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Bottom Ad -->
+  <div class="ad-banner bottom-banner">[ Bottom Banner Ad ]</div>
+
+  <!-- Custom Tap Ad Script -->
+  <script>
+    const script = document.createElement("script");
+    script.src = "https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33";
+    script.async = true;
+    document.body.appendChild(script);
+  </script>
+
+  <!-- Navigation & Copy -->
+  <script>
+    function goBack() {
+      const snd = new Audio("assets/sound.mp3");
+      snd.play();
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 150);
+    }
+
+    function copyCode() {
+      const code = document.getElementById("refCode").textContent;
+      const input = document.createElement("input");
+      input.value = code;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+      alert("Referral code copied!");
+    }
+  </script>
+
+</body>
+</html>

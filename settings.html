@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
+  <title>Settings - Money Master</title>
+  <link rel="stylesheet" href="settings.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+</head>
+<body onload="loadSettings()">
+
+  <!-- Monetag Ad Script (Tap Page Script) -->
+  <script async src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33"></script>
+
+  <!-- Back Button -->
+  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <!-- Page Title -->
+  <h1 class="section-title">SETTINGS</h1>
+
+  <div class="settings-container">
+
+    <!-- Main Info -->
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="userName" readonly />
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="text" id="userEmail" readonly />
+    </div>
+
+    <div class="form-group">
+      <label>UPI / Paytm ID</label>
+      <input type="text" id="userUpi" placeholder="Enter your UPI / Paytm ID" />
+    </div>
+
+    <div class="form-group">
+      <label>Notifications</label>
+      <select id="notifications">
+        <option value="on">On</option>
+        <option value="off">Off</option>
+      </select>
+    </div>
+
+    <button onclick="saveSettings()">SAVE SETTINGS</button>
+
+    <!-- Account Updates Section -->
+    <div class="settings-section">
+      <h3>ACCOUNT UPDATES</h3>
+
+      <div class="setting-option">
+        <img src="assets/icon_guest.png" class="option-icon" alt="User" />
+        <input type="text" id="changeName" placeholder="Change Name" />
+        <button onclick="changeName()">UPDATE</button>
+      </div>
+
+      <div class="setting-option">
+        <span class="emoji-icon">🔑</span>
+        <input type="password" id="changePassword" placeholder="New Password" />
+        <button onclick="changePassword()">UPDATE</button>
+      </div>
+
+      <div class="setting-option">
+        <img src="assets/icon_mail.png" class="option-icon" alt="Email" />
+        <input type="email" id="changeEmail" placeholder="New Email" />
+        <button onclick="changeEmail()">UPDATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Auth Guard -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
+      authDomain: "money-master-89c02.firebaseapp.com",
+      projectId: "money-master-89c02",
+      storageBucket: "money-master-89c02.appspot.com",
+      messagingSenderId: "226410161274",
+      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
+      measurementId: "G-62K0SFSZK4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+  <!-- Navigation Logic -->
+  <script>
+    function goBack() {
+      const sound = new Audio("assets/sound.mp3");
+      sound.play();
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 200);
+    }
+  </script>
+
+  <script src="settings.js"></script>
+</body>
+</html>

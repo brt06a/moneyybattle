@@ -1,0 +1,130 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #ffffff;
+  text-align: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* Top title */
+.page-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 20px 0 10px;
+  text-transform: uppercase;
+  color: #00f5a0;
+}
+
+/* Back icon */
+.nav-icon {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 999;
+  transition: 0.2s;
+}
+.nav-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Support logo */
+.support-icon {
+  width: 90px;
+  margin-top: 20px;
+}
+
+/* Main container */
+.support-container {
+  max-width: 95%;
+  margin: 20px auto;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
+}
+
+/* Section heading */
+.section-title {
+  font-size: 20px;
+  margin: 20px 0 10px;
+  font-weight: bold;
+  color: #00f5a0;
+}
+
+/* Complaint input */
+#complaintInput {
+  width: 90%;
+  max-width: 400px;
+  height: 100px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  resize: none;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  margin-top: 10px;
+  transition: 0.2s;
+}
+#complaintInput::placeholder {
+  color: #ccc;
+}
+
+/* Submit button */
+.submit-btn {
+  margin-top: 12px;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 25px;
+  background: #00f5a0;
+  color: #000;
+  border: none;
+  box-shadow: 0 0 10px #00f5a0;
+  cursor: pointer;
+}
+.submit-btn:hover {
+  transform: scale(1.05);
+}
+
+/* FAQ section */
+.faq-list {
+  max-width: 95%;
+  margin: 20px auto;
+  text-align: left;
+}
+.faq-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin: 8px 0;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.faq-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  color: #00f5a0;
+  font-size: 15px;
+}
+.faq-answer {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #eee;
+  display: none;
+}
+
+/* Smooth transition */
+.faq-answer.show {
+  display: block;
+}

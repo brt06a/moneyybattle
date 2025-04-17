@@ -1,0 +1,76 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+  background: url('assets/brt_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  text-align: center;
+}
+
+.nav-icon {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.wallet-container {
+  margin-top: 80px;
+  padding: 20px;
+}
+
+.wallet-heading {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #00ffff;
+  text-shadow: 0 0 5px #000;
+}
+
+.wallet-balance h3 {
+  margin: 10px 0 5px;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.wallet-balance p {
+  font-size: 22px;
+  font-weight: bold;
+  color: #00ffcc;
+  margin: 5px 0 20px;
+}
+
+.withdraw-btn {
+  padding: 12px 30px;
+  background: #00ffcc;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 10px 0 25px;
+  box-shadow: 0 0 8px #00f5a0;
+  transition: 0.3s;
+}
+
+.withdraw-btn:hover {
+  transform: scale(1.05);
+}
+
+.wallet-note {
+  font-size: 14px;
+  color: #cccccc;
+  margin-top: 15px;
+  padding: 0 20px;
+  line-height: 1.6;
+}
+
+.wallet-note strong {
+  color: #ffffff;
+}

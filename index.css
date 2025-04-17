@@ -1,0 +1,92 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: url('assets/loading_bg.gif') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  text-align: center;
+}
+
+/* Remove focus flicker/square highlight on all elements */
+*:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Logo */
+.app-logo {
+  margin-top: 80px;
+  width: 180px;
+  height: auto;
+}
+
+/* Layout */
+.main-container {
+  padding: 20px;
+}
+
+/* Login Options: flex buttons */
+.login-options {
+  margin: 30px 0;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+/* Bold Text Buttons (LOGIN, GUEST) */
+.login-btn,
+.guest-btn {
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  background: #00f5a0;
+  color: #000;
+  cursor: pointer;
+  box-shadow: 0 0 12px #00f5a0;
+  transition: transform 0.3s ease;
+}
+
+.login-btn:hover,
+.guest-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Create Button */
+.create-btn {
+  padding: 12px 30px;
+  font-size: 16px;
+  margin-top: 15px;
+  background: #00f5a0;
+  color: #000;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 10px #00f5a0;
+}
+
+.create-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Links: forgot password and terms */
+.small-link {
+  font-size: 13px;
+  margin-top: 15px;
+  color: #ccc;
+}
+
+.small-link a {
+  color: #00f5a0;
+  text-decoration: underline;
+}
+
+/* Remove ad banner styles completely */
+.ad-banner,
+.top-banner,
+.bottom-banner {
+  display: none !important;
+}

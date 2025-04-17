@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="monetag" content="3aebd9ebbba1b779613f4488fb3b0da1" />
+  <title>Tap to Earn - Money Master</title>
+  <link rel="stylesheet" href="tap.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+</head>
+<body onload="initTapPage()">
+
+  <!-- Dashboard Icon (Top Right) -->
+  <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" onclick="goToDashboard()" alt="Dashboard" />
+
+  <!-- Main Tap Container -->
+  <div class="tap-container" id="tapZone">
+    <img src="assets/bitcoin_idle.png" id="tapIcon" alt="Bitcoin Tap Icon" />
+    <p>COINS: <span id="coinCount">0</span></p>
+  </div>
+
+  <!-- Tap Sound + Reminder Sound -->
+  <audio id="tapSound" src="assets/tap_sound.mp3" preload="auto"></audio>
+  <audio id="reminderSound" src="assets/reminder_user.mp3" preload="auto"></audio>
+
+  <!-- Inject Real Ad Script on First Tap -->
+  <script>
+    let firstTap = true;
+    let reminderPlayed = false;
+
+    function initTapPage() {
+      // After 6 min reminder
+      setTimeout(() => {
+        if (!reminderPlayed) {
+          document.getElementById("reminderSound").play().catch(() => {});
+          reminderPlayed = true;
+        }
+      }, 360000); // 6 minutes
+    }
+
+    function goToDashboard() {
+      window.location.href = "dashboard.html";
+    }
+
+    document.body.addEventListener("click", function (e) {
+      const clickedAd = e.target.tagName === "IFRAME" || e.target.classList.contains("ad") || e.target.closest(".ad");
+      const clickedDashboard = e.target.id === "dashboardIcon";
+
+      if (!clickedAd && !clickedDashboard) {
+        handleTap(e);
+
+        if (firstTap) {
+          const adScript = document.createElement("script");
+          adScript.src = "https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33";
+          adScript.async = true;
+          document.body.appendChild(adScript);
+          firstTap = false;
+        }
+      }
+    });
+
+    function handleTap(e) {
+      const tapIcon = document.getElementById("tapIcon");
+      const tapSound = document.getElementById("tapSound");
+      const coinCount = document.getElementById("coinCount");
+
+      tapSound.currentTime = 0;
+      tapSound.play().catch(() => {});
+
+      tapIcon.style.transform = "rotate(-20deg)";
+      setTimeout(() => {
+        tapIcon.style.transform = "rotate(0deg)";
+      }, 100);
+
+      // Add coin
+      let coins = parseInt(coinCount.textContent);
+      coinCount.textContent = coins + 1;
+
+      // Ripple Effect
+      const ripple = document.createElement("span");
+      ripple.className = "tap-ripple";
+      ripple.style.left = `${e.clientX}px`;
+      ripple.style.top = `${e.clientY}px`;
+      document.body.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    }
+  </script>
+
+  <!-- Ripple Effect Styles -->
+  <style>
+    .tap-ripple {
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.4);
+      transform: translate(-50%, -50%) scale(0);
+      animation: ripple 0.5s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+  </style>
+
+  <!-- Optionally Load tap.js -->
+  <script src="tap.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+/* Reset & Defaults */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*:focus {
+  outline: none;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: url('assets/brt_bg.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #e0f7ff;
+  padding-top: 60px;
+  padding-bottom: 70px;
+  overflow-x: hidden;
+}
+
+/* Navigation */
+.nav-icon {
+  width: 40px;
+  margin: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+
+/* Ad Banner Placeholder Style */
+.ad-banner {
+  text-align: center;
+  padding: 10px;
+  color: #ccc;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+}
+
+.top-banner {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 998;
+}
+
+.bottom-banner {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 998;
+}
+
+/* Main Container */
+.terms-container {
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  margin: 70px 15px 100px 15px;
+  border-radius: 12px;
+  max-height: calc(100vh - 130px);
+  overflow-y: auto;
+}
+
+/* Icon & Heading */
+.terms-icon {
+  width: 60px;
+  display: block;
+  margin: 0 auto 15px;
+}
+
+h2 {
+  text-align: center;
+  text-transform: uppercase;
+  color: #00f5a0;
+  text-shadow: 0 0 10px #00f5a0;
+  margin-bottom: 20px;
+}
+
+/* Text Content */
+.terms-content {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.terms-content p {
+  margin-bottom: 15px;
+}
