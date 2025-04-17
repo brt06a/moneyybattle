@@ -101,3 +101,12 @@ body {
   animation: float 3s ease-in-out infinite;
   cursor: pointer;
 }
+.app-logo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%; /* Makes it perfectly round */
+  object-fit: cover;
+  display: block;
+  margin: 40px auto 20px auto;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* optional glow */
+}
