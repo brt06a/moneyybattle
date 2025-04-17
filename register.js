@@ -56,7 +56,7 @@ window.registerUser = function (e) {
             localStorage.setItem("userEmail", emailOrPhone);
             localStorage.setItem("userUID", auth.currentUser.uid);
             alert("Account created!");
-            window.location.href = "tap.html";
+            window.location.href = "tap.html"; // Redirect added
           })
           .catch((err) => {
             console.error("Email signup error:", err);
@@ -117,7 +117,7 @@ window.verifyOTP = function () {
         localStorage.setItem("userEmail", user.phoneNumber);
         localStorage.setItem("userUID", user.uid);
         alert("Phone account created!");
-        window.location.href = "tap.html";
+        window.location.href = "tap.html"; // Redirect added
       });
     })
     .catch((error) => {
