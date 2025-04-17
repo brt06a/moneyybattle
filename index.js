@@ -1,42 +1,44 @@
-// index.js
-
+// Navigation functions
 function goToLogin() {
-  playClickSound(() => {
-    window.location.href = "login.html";
-  });
-}
-
-function continueAsGuest() {
-  playClickSound(() => {
-    localStorage.setItem("mode", "guest");
-    window.location.href = "tap.html";
-  });
+  window.location.href = 'login.html';
 }
 
 function goToRegister() {
-  playClickSound(() => {
-    window.location.href = "register.html";
-  });
+  window.location.href = 'register.html';
 }
 
 function goToForgot() {
-  playClickSound(() => {
-    window.location.href = "forgot.html";
-  });
+  window.location.href = 'forget.html';
 }
 
-function playClickSound(callback) {
-  const sound = new Audio("assets/sound.mp3");
+function continueAsGuest() {
+  sessionStorage.setItem('guest', 'true');
+  window.location.href = 'dashboard.html'; // or guest_dashboard.html if separate
+}
 
-  sound.play()
-    .then(() => {
-      // Delay to let click sound play before redirect
-      setTimeout(() => {
-        if (typeof callback === "function") callback();
-      }, 100);
-    })
-    .catch((e) => {
-      console.warn("Sound error:", e);
-      if (typeof callback === "function") callback();
+// Optional: Auto-redirect if already authenticated
+window.addEventListener('load', () => {
+  import('https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js')
+    .then(({ getAuth, onAuthStateChanged }) => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          window.location.href = 'dashboard.html';
+        }
+      });
     });
+});
+
+// Floating icon (optional if you add one)
+const floatingIcon = document.querySelector('.floating-icon');
+if (floatingIcon) {
+  setInterval(() => {
+    floatingIcon.classList.toggle('pulse');
+  }, 1500);
 }
+
+// --- Ad Script Placeholder ---
+/*
+Paste your Monetag ad script below this line:
+----------------------------------------------
+*/
