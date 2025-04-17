@@ -1,92 +1,92 @@
-/* Basic reset and font */
 body {
   margin: 0;
   padding: 0;
+  background-color: #0f0f0f;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: url('assets/brt_bg.png') no-repeat center center fixed;
-  background-size: cover;
   color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .main-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 20px;
-  backdrop-filter: blur(5px);
+  text-align: center;
+  padding: 30px 20px;
+  background: rgba(20, 20, 20, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+  width: 90%;
+  max-width: 400px;
 }
 
 .app-logo {
-  width: 180px;
-  margin-bottom: 40px;
-  filter: drop-shadow(0 0 10px red);
+  width: 160px;
+  margin-bottom: 30px;
 }
 
-/* Button shared style */
-.login-btn, .guest-btn, .create-btn {
-  width: 220px;
+.login-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.login-btn,
+.create-btn,
+.guest-btn {
   padding: 14px;
-  margin: 10px 0;
   font-size: 16px;
   font-weight: bold;
-  border-radius: 10px;
   border: none;
+  border-radius: 30px;
+  background-color: #e60000;
+  color: white;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
-}
-
-.login-btn {
-  background: linear-gradient(145deg, #ff0000, #cc0000);
-  color: #fff;
-}
-
-.create-btn {
-  background: linear-gradient(145deg, #111, #222);
-  color: #ff3c3c;
-  border: 2px solid red;
-}
-
-.guest-btn {
-  background: #000;
-  color: #ff3c3c;
-  border: 1px solid red;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
 
 .login-btn:hover,
 .create-btn:hover,
 .guest-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px red;
+  background-color: #ff1a1a;
+  transform: scale(1.03);
 }
 
-/* Small text link styles */
+.create-btn {
+  background-color: #e60000;
+}
+
+.guest-btn {
+  background-color: #444;
+  color: #ccc;
+  box-shadow: 0 0 8px rgba(150, 150, 150, 0.3);
+}
+
 .small-link {
-  font-size: 14px;
-  margin-top: 10px;
-  color: #ddd;
+  font-size: 13px;
+  color: #aaa;
+  margin: 10px 0;
   cursor: pointer;
-  text-align: center;
-}
-
-.small-link a {
-  color: #ff4d4d;
   text-decoration: underline;
 }
 
-/* Floating icon animation */
-.floating-icon {
-  filter: drop-shadow(0 0 6px red);
-  animation: floatPulse 2s ease-in-out infinite;
+.small-link a {
+  color: #ff3333;
+  text-decoration: underline;
 }
 
-@keyframes floatPulse {
-  0%, 100% {
-    transform: scale(1);
+@media screen and (max-width: 480px) {
+  .app-logo {
+    width: 130px;
   }
-  50% {
-    transform: scale(1.12);
+
+  .login-btn,
+  .create-btn,
+  .guest-btn {
+    font-size: 14px;
+    padding: 12px;
   }
 }
