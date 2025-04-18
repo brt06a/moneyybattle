@@ -1,101 +1,123 @@
-/* register.css */
+/* style.css */
+
 body {
   margin: 0;
   padding: 0;
   background: url('assets/brt_bg.png') no-repeat center center fixed;
   background-size: cover;
   font-family: 'Segoe UI', sans-serif;
-  color: #fff;
-  text-align: center;
+  color: white;
+  overflow: hidden;
 }
 
-*:focus {
-  outline: none;
-}
-
-.nav-icon {
-  width: 40px;
-  margin: 15px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.register-container {
-  margin: 20px auto;
-  max-width: 360px;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.7);
+.register-box {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 2rem;
   border-radius: 16px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+  width: 320px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  top: 10vh;
 }
 
-.app-icon {
-  width: 80px;
-  margin: 10px auto;
-  display: block;
+.avatar {
+  width: 60px;
+  height: 60px;
+  background: #e84118;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.register-title {
+.avatar::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+}
+
+h2 {
+  margin-top: 2.5rem;
   font-size: 24px;
-  margin: 10px 0 20px;
-  font-weight: bold;
-  color: #00f5a0;
-  text-shadow: 0 0 8px #00f5a0;
 }
 
-.register-form input {
-  width: 90%;
-  padding: 12px 14px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 30px;
-  font-size: 16px;
-  box-shadow: inset 0 0 8px rgba(0, 255, 255, 0.2);
-}
-
-.register-form button {
-  width: 90%;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 16px;
-  border: none;
-  border-radius: 30px;
-  background: #00f5a0;
-  color: #000;
-  font-weight: bold;
-  box-shadow: 0 0 10px #00f5a0;
-  cursor: pointer;
-}
-
-#otpBox {
-  margin-top: 10px;
-}
-
-#otpBox input {
-  width: 70%;
-  margin-right: 5px;
+input[type="text"], input[type="email"], input[type="password"] {
+  width: 100%;
   padding: 10px;
-  border-radius: 25px;
+  margin: 0.5rem 0;
   border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 0 5px #e84118;
 }
 
-#otpBox button {
-  padding: 10px 16px;
-  border-radius: 25px;
-  background: #00f5a0;
-  color: #000;
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+}
+
+.toggle-row button {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
   border: none;
-  font-weight: bold;
+  cursor: pointer;
+  background: #222;
+  color: white;
+  border-radius: 8px;
+  margin: 0 4px;
+  transition: background 0.2s;
+}
+
+.toggle-row button.active {
+  background: #e84118;
+}
+
+button#createBtn {
+  background: #e84118;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 10px;
+  color: white;
+  margin-top: 1rem;
   cursor: pointer;
 }
 
-.disclaimer,
-.small-link {
-  font-size: 13px;
+p.terms {
+  font-size: 12px;
   color: #ccc;
-  margin-top: 15px;
+  margin-top: 1rem;
 }
 
-.small-link a {
-  color: #00f5a0;
+p.terms a {
+  color: white;
   text-decoration: underline;
+}
+
+#movingBitcoin {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  z-index: 0;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

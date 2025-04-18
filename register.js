@@ -1,127 +1,117 @@
-// register.js
+<!-- Firebase App & Auth -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
 
-const auth = getAuth();
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+</script>
 
-let verificationId = null;
-let isOTPVisible = false;
+<script>
+  let isEmail = true;
 
-window.registerUser = function (e) {
-  e.preventDefault();
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailBtn = document.getElementById('emailBtn');
+    const mobileBtn = document.getElementById('mobileBtn');
+    const emailInput = document.getElementById('emailInput');
+    const createBtn = document.getElementById('createBtn');
+    const fullName = document.getElementById('fullName');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const referral = document.getElementById('referral');
 
-  const clickSound = new Audio("assets/sound.mp3");
-  clickSound.play();
+    emailBtn.onclick = () => {
+      isEmail = true;
+      emailBtn.classList.add('active');
+      mobileBtn.classList.remove('active');
+      emailInput.placeholder = 'Email';
+    };
 
-  const name = document.getElementById("name").value.trim();
-  const emailOrPhone = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const confirm = document.getElementById("confirm").value;
+    mobileBtn.onclick = () => {
+      isEmail = false;
+      mobileBtn.classList.add('active');
+      emailBtn.classList.remove('active');
+      emailInput.placeholder = 'Mobile Number (+91...)';
+    };
 
-  if (!name || !emailOrPhone || !password || !confirm) {
-    alert("Please fill all fields.");
-    return;
-  }
+    createBtn.onclick = () => {
+      const name = fullName.value.trim();
+      const emailOrPhone = emailInput.value.trim();
+      const pass = password.value;
+      const cpass = confirmPassword.value;
+      const refer = referral.value.trim();
 
-  if (password !== confirm) {
-    alert("Passwords do not match.");
-    return;
-  }
-
-  const isPhone = /^[6-9]\d{9}$/.test(emailOrPhone);
-  const isEmail = /\S+@\S+\.\S+/.test(emailOrPhone);
-
-  if (!isPhone && !isEmail) {
-    alert("Enter a valid mobile number or email.");
-    return;
-  }
-
-  grecaptcha.enterprise.ready(() => {
-    grecaptcha.enterprise.execute("6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1", { action: "register" }).then(() => {
-      if (isEmail) {
-        // Email registration
-        createUserWithEmailAndPassword(auth, emailOrPhone, password)
-          .then((userCred) => {
-            return updateProfile(userCred.user, { displayName: name });
-          })
-          .then(() => {
-            localStorage.setItem("mode", "login");
-            localStorage.setItem("userName", name);
-            localStorage.setItem("userEmail", emailOrPhone);
-            localStorage.setItem("userUID", auth.currentUser.uid);
-            alert("Account created!");
-            window.location.href = "tap.html"; // Redirect added
-          })
-          .catch((err) => {
-            console.error("Email signup error:", err);
-            alert("Signup failed. Try again.");
-          });
-      } else {
-        // Mobile registration
-        if (!window.recaptchaVerifier) {
-          window.recaptchaVerifier = new RecaptchaVerifier(auth, 'otpBox', {
-            size: 'invisible',
-            callback: () => {
-              console.log("Recaptcha passed");
-            }
-          });
-        }
-
-        const fullPhone = "+91" + emailOrPhone;
-        signInWithPhoneNumber(auth, fullPhone, window.recaptchaVerifier)
-          .then((confirmationResult) => {
-            verificationId = confirmationResult;
-            showOTPBox();
-          })
-          .catch((err) => {
-            console.error("OTP error:", err);
-            alert("OTP could not be sent.");
-          });
+      if (!name || !emailOrPhone || !pass || !cpass) {
+        alert("Please fill all required fields.");
+        return;
       }
-    });
+
+      if (pass !== cpass) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      if (isEmail) {
+        auth.createUserWithEmailAndPassword(emailOrPhone, pass)
+          .then(cred => {
+            const uid = cred.user.uid;
+            return db.ref("users/" + uid).set({
+              name,
+              email: emailOrPhone,
+              coins: 0,
+              referredBy: refer || null
+            });
+          })
+          .then(() => window.location.href = "tap.html")
+          .catch(err => alert(err.message));
+      } else {
+        // Phone auth using invisible reCAPTCHA
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('createBtn', {
+          size: 'invisible',
+          callback: response => console.log("reCAPTCHA solved")
+        });
+
+        auth.signInWithPhoneNumber(emailOrPhone, window.recaptchaVerifier)
+          .then(confirmResult => {
+            const code = prompt("Enter OTP sent to your mobile:");
+            if (!code) throw new Error("OTP not entered.");
+
+            return confirmResult.confirm(code);
+          })
+          .then(cred => {
+            const uid = cred.user.uid;
+            return db.ref("users/" + uid).set({
+              name,
+              phone: emailOrPhone,
+              coins: 0,
+              referredBy: refer || null
+            });
+          })
+          .then(() => window.location.href = "tap.html")
+          .catch(err => alert(err.message));
+      }
+    };
+
+    // Move bitcoin icon
+    const icon = document.getElementById('movingBitcoin');
+    function moveIcon() {
+      const x = Math.random() * (window.innerWidth - 40);
+      const y = Math.random() * (window.innerHeight - 40);
+      icon.style.left = `${x}px`;
+      icon.style.top = `${y}px`;
+    }
+    setInterval(moveIcon, 2500);
   });
-};
-
-function showOTPBox() {
-  const otpBox = document.getElementById("otpBox");
-  if (!isOTPVisible) {
-    otpBox.innerHTML = `
-      <input type="text" id="otpCode" placeholder="Enter OTP" />
-      <button onclick="verifyOTP()">Verify</button>
-    `;
-    isOTPVisible = true;
-  }
-}
-
-window.verifyOTP = function () {
-  const name = document.getElementById("name").value.trim();
-  const code = document.getElementById("otpCode").value.trim();
-
-  if (!code) {
-    alert("Enter OTP code.");
-    return;
-  }
-
-  verificationId.confirm(code)
-    .then((result) => {
-      const user = result.user;
-      return updateProfile(user, { displayName: name }).then(() => {
-        localStorage.setItem("mode", "login");
-        localStorage.setItem("userName", name);
-        localStorage.setItem("userEmail", user.phoneNumber);
-        localStorage.setItem("userUID", user.uid);
-        alert("Phone account created!");
-        window.location.href = "tap.html"; // Redirect added
-      });
-    })
-    .catch((error) => {
-      console.error("OTP verification failed:", error);
-      alert("Invalid OTP.");
-    });
-};
+</script>
