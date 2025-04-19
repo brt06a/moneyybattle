@@ -1,74 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
-  <title>TASKS - Money Master</title>
-  <link rel="stylesheet" href="tasks.css" />
-  <link rel="icon" href="assets/money_master_favicon.png" />
+// firebase-config.js (or at the top of index.html)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
+  authDomain: "money-master-89c02.firebaseapp.com",
+  databaseURL: "https://money-master-89c02-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "money-master-89c02",
+  storageBucket: "money-master-89c02.appspot.com",
+  messagingSenderId: "226410161274",
+  appId: "1:226410161274:web:62793ff8d39e0d642707c3",
+  measurementId: "G-62K0SFSZK4"
+};
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
-      authDomain: "money-master-89c02.firebaseapp.com",
-      projectId: "money-master-89c02",
-      storageBucket: "money-master-89c02.appspot.com",
-      messagingSenderId: "226410161274",
-      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
-      measurementId: "G-62K0SFSZK4"
-    };
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);// tasks.js
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
+import {
+  getDatabase,
+  ref,
+  get,
+  set,
+  update,
+  increment,
+  child
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = "login.html";
-    });
-  </script>
-</head>
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
-<body onload="loadTasksPage()">
+const auth = getAuth();
+const db = getDatabase();
 
-  <!-- Back Icon -->
-  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+let currentUser = null;
 
-  <div class="tasks-container">
-    <img src="assets/icon_tasks.png" class="task-icon" alt="Tasks" />
-    <h2>TASKS</h2>
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    currentUser = user;
+    loadTasksPage();
+  }
+});
 
-    <p>Total Ads Watched: <span id="totalAdsWatched">0</span></p>
-    <p>Total Coins From Ads: <span id="totalAdCoins">0</span></p>
-    <p>Each Ad Watch = <strong>500 Coins</strong></p>
+function loadTasksPage() {
+  const coinDisplay = document.getElementById("coinDisplay");
 
-    <!-- Ad Watch Buttons -->
-    <div id="adButtons"></div>
-
-    <!-- Rewards Note -->
-    <div class="reward-note">
-      <p>You will earn 500 coins only after watching the complete ad.</p>
-      <p>Don't refresh during ad viewing.</p>
-      <p>Suspicious activity may cancel rewards.</p>
-    </div>
-  </div>
-
-  <!-- Monetag Real Ad Script -->
-  <script async src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33"></script>
-
-  <!-- Dashboard Nav -->
-  <script>
-    function goBack() {
-      const s = new Audio("assets/sound.mp3");
-      s.play();
-      setTimeout(() => window.location.href = "dashboard.html", 150);
+  get(ref(db, "users/" + currentUser.uid)).then((snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      coinDisplay.textContent = data.coins || 0;
     }
-  </script>
+  });
+}
 
-  <!-- Main Task JS -->
-  <script src="tasks.js" type="module"></script>
-</body>
-</html>
+window.watchAdAndReward = async function () {
+  const userRef = ref(db, "users/" + currentUser.uid);
+
+  try {
+    const snapshot = await get(userRef);
+
+    if (!snapshot.exists()) {
+      alert("User data not found.");
+      return;
+    }
+
+    const userData = snapshot.val();
+    const currentCoins = userData.coins || 0;
+    const adViews = userData.adViews || 0;
+    const referredBy = userData.referredBy || null;
+    const refBonusGiven = userData.refBonusGiven || false;
+
+    // Credit 500 coins for watching ad
+    const newCoins = currentCoins + 500;
+    const newAdViews = adViews + 1;
+
+    await update(userRef, {
+      coins: newCoins,
+      adViews: newAdViews
+    });
+
+    document.getElementById("coinDisplay").textContent = newCoins;
+    alert("You earned 500 coins!");
+
+    // Handle referral bonus after 5 ads viewed
+    if (referredBy && newAdViews >= 5 && !refBonusGiven) {
+      const referrerRef = ref(db, "users/" + referredBy);
+
+      const refSnapshot = await get(referrerRef);
+      if (refSnapshot.exists()) {
+        const referrerData = refSnapshot.val();
+        const refCoins = referrerData.coins || 0;
+
+        await update(referrerRef, {
+          coins: refCoins + 10000
+        });
+
+        await update(userRef, {
+          refBonusGiven: true
+        });
+
+        console.log("Referral bonus of 10,000 coins sent to referrer!");
+      }
+    }
+
+  } catch (error) {
+    console.error("Ad reward error:", error);
+    alert("Something went wrong. Try again.");
+  }
+};
