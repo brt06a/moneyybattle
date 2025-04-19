@@ -14,7 +14,7 @@ window.handleLogin = function (event) {
   const emailOrMobile = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  // Email/Password Login
+  // Email/Password Login (No reCAPTCHA here in this version)
   if (emailOrMobile.includes("@")) {
     if (!password) return alert("Enter your password");
 
@@ -33,22 +33,22 @@ window.handleLogin = function (event) {
         alert("Login failed. Check credentials.");
       });
   } else {
-    // Mobile Login
+    // Mobile Login with reCAPTCHA v2
     const mobile = emailOrMobile;
     if (!mobile.match(/^[0-9]{10}$/)) {
       return alert("Enter valid 10-digit mobile number");
     }
 
-    grecaptcha.enterprise.ready(() => {
-      grecaptcha.enterprise.execute("6LeFqjUpAAAAAIzY-55jSl_z4_mI_l4q91_VvS", { action: "login" })
+    grecaptcha.ready(() => {
+      grecaptcha.execute("6LcM4R0rAAAAADjn0uaW1zPBpv6USULkgjHpRssy", { action: "login" }) // Updated v2 site key
         .then((token) => {
-          sendOTP("+91" + mobile);
+          sendOTP("+91" + mobile, token); // Pass the token to sendOTP
         });
     });
   }
 };
 
-function sendOTP(mobileNumber) {
+function sendOTP(mobileNumber, recaptchaToken) {
   playClickSound();
 
   window.recaptchaVerifier = new RecaptchaVerifier(
@@ -56,23 +56,31 @@ function sendOTP(mobileNumber) {
     {
       size: "invisible",
       callback: (response) => {
-        console.log("reCAPTCHA passed:", response);
-      }
+        console.log("reCAPTCHA passed (from verifier):", response);
+        // We don't need to use this callback directly as we are using grecaptcha.execute
+      },
+      "expired-callback": () => {
+        alert("reCAPTCHA verification expired. Please try again.");
+      },
     },
     auth
   );
 
-  signInWithPhoneNumber(auth, mobileNumber, window.recaptchaVerifier) // Use window.recaptchaVerifier
+  signInWithPhoneNumber(auth, mobileNumber, window.recaptchaVerifier)
     .then((confirmationResult) => {
       window.confirmationResult = confirmationResult;
       document.querySelector(".login-form").style.display = "none";
-
-      // Show OTP input box
       document.getElementById("otpBox").style.display = "block";
     })
     .catch((error) => {
       console.error("OTP error:", error);
       alert("Failed to send OTP");
+      // It's good practice to reset the reCAPTCHA on error
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.render().then(function (widgetId) {
+          grecaptcha.reset(widgetId);
+        });
+      }
     });
 }
 
@@ -81,7 +89,7 @@ window.verifyOTP = function () {
   const otp = document.getElementById("otpCode").value;
   if (!otp) return alert("Enter OTP");
 
-  if (window.confirmationResult) { // Check if confirmationResult exists
+  if (window.confirmationResult) {
     window.confirmationResult.confirm(otp)
       .then((result) => {
         const user = result.user;
