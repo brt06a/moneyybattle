@@ -13,6 +13,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getDatabase } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
@@ -27,7 +28,11 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
+    
+    // Make available globally
     window.db = db;
+    window.auth = auth;
   </script>
 </head>
 <body>
@@ -71,7 +76,7 @@
       const type = document.querySelector('input[name="type"]:checked').value;
       const input = document.getElementById("email");
       input.placeholder = type === "email" ? "Email" : "Mobile Number (10 digits)";
-
+      
       // Clear OTP box when switching to email
       if (type === "email") {
         document.getElementById("otpBox").innerHTML = "";
