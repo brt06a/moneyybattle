@@ -12,6 +12,8 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
       authDomain: "money-master-89c02.firebaseapp.com",
@@ -22,7 +24,10 @@
       appId: "1:226410161274:web:62793ff8d39e0d642707c3",
       measurementId: "G-62K0SFSZK4"
     };
-    initializeApp(firebaseConfig);
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    window.db = db;
   </script>
 </head>
 <body>
@@ -53,6 +58,9 @@
 
     <p class="disclaimer">Use a valid mobile or email. Required for withdrawals & recovery.</p>
     <p class="small-link">By signing up, you agree to our <a href="terms.html">Terms & Privacy Policy</a></p>
+
+    <!-- Ad Script Slot -->
+    <!-- <script src="your-ad-script.js"></script> -->
   </div>
 
   <script>
@@ -66,10 +74,14 @@
       const type = document.querySelector('input[name="type"]:checked').value;
       const input = document.getElementById("email");
       input.placeholder = type === "email" ? "Email" : "Mobile Number (10 digits)";
+
+      // Clear OTP box when switching to email
+      if (type === "email") {
+        document.getElementById("otpBox").innerHTML = "";
+      }
     }
   </script>
 
   <script type="module" src="register.js"></script>
-
 </body>
 </html>

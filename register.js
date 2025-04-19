@@ -6,118 +6,127 @@ import {
   signInWithPhoneNumber,
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
-const auth = getAuth();
-let confirmationResult = null;
-let isPhone = false;
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  child,
+  update,
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
-// Toggle between email/phone input
-window.toggleInputType = function (type) {
-  isPhone = (type === "phone");
-  const emailInput = document.getElementById("email");
-  emailInput.placeholder = isPhone ? "Enter Mobile (10 digits)" : "Enter Email";
-  emailInput.type = isPhone ? "tel" : "email";
-  emailInput.value = "";
-  document.getElementById("otpBox").innerHTML = "";
-};
+const auth = getAuth();
+const db = window.db;
+let confirmationResult;
+let isMobile = false;
 
 window.registerUser = function (e) {
   e.preventDefault();
 
   const name = document.getElementById("name").value.trim();
-  const contact = document.getElementById("email").value.trim();
+  const input = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
   const confirm = document.getElementById("confirm").value;
-  const refCode = document.getElementById("referralCode").value.trim();
+  const referral = document.getElementById("referralCode").value.trim();
 
-  if (!name || !contact || !password || !confirm) {
-    alert("Please fill all fields.");
+  const type = document.querySelector('input[name="type"]:checked').value;
+  isMobile = type === "mobile";
+
+  if (!name || !input || !password || !confirm) {
+    alert("Please fill all fields");
     return;
   }
 
   if (password !== confirm) {
-    alert("Passwords do not match.");
+    alert("Passwords do not match");
     return;
   }
 
-  if (isPhone) {
-    const phonePattern = /^[6-9]\d{9}$/;
-    if (!phonePattern.test(contact)) {
-      alert("Enter valid 10-digit mobile number.");
+  if (isMobile) {
+    if (!/^[6-9]\d{9}$/.test(input)) {
+      alert("Enter valid 10-digit mobile number");
       return;
     }
 
-    const fullPhone = "+91" + contact;
-
+    // Send OTP
     if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "registerBtn", {
-        size: "invisible",
-        callback: (response) => console.log("reCAPTCHA solved"),
-      });
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "otpBox",
+        {
+          size: "invisible",
+          callback: () => {
+            console.log("Recaptcha solved");
+          },
+        },
+        auth
+      );
     }
 
+    const fullPhone = "+91" + input;
     signInWithPhoneNumber(auth, fullPhone, window.recaptchaVerifier)
       .then((result) => {
         confirmationResult = result;
         showOTPBox();
       })
       .catch((err) => {
-        console.error(err);
+        console.error("OTP error:", err);
         alert("Failed to send OTP. Try again.");
       });
+
   } else {
-    const emailPattern = /\S+@\S+\.\S+/;
-    if (!emailPattern.test(contact)) {
-      alert("Enter valid email address.");
+    // Email registration
+    if (!input.includes("@") || !input.includes(".")) {
+      alert("Enter valid email address");
       return;
     }
 
-    createUserWithEmailAndPassword(auth, contact, password)
+    createUserWithEmailAndPassword(auth, input, password)
       .then((userCred) => {
-        return updateProfile(userCred.user, { displayName: name });
+        return updateProfile(userCred.user, { displayName: name }).then(() => {
+          const uid = userCred.user.uid;
+
+          // Store in DB
+          set(ref(db, "users/" + uid), {
+            name: name,
+            email: input,
+            phone: null,
+            coins: 0,
+            referral: referral || null,
+            referredBy: referral || null,
+          });
+
+          handleReferralBonus(uid, referral);
+
+          localStorage.setItem("userUID", uid);
+          localStorage.setItem("userName", name);
+          localStorage.setItem("mode", "login");
+
+          alert("Account created successfully!");
+          window.location.href = "tap.html";
+        });
       })
-      .then(() => {
-        storeUserData(name, contact, refCode);
-        alert("Account created successfully!");
-        window.location.href = "tap.html";
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("Registration failed.");
+      .catch((error) => {
+        console.error("Register error:", error);
+        alert("Failed to register. Try again.");
       });
   }
 };
 
-// Required imports at the top if not already present
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
-
-// Inside registerUser function (after user creation is successful)
-const db = getDatabase();
-const uid = user.uid;
-const referralCode = document.getElementById("referralCode")?.value.trim() || null;
-
-await set(ref(db, 'users/' + uid), {
-  name: name,
-  email: user.email || user.phoneNumber,
-  coin: 0,
-  adViews: 0,
-  refBonusGiven: false,
-  referredBy: referralCode || null
-});
-
 function showOTPBox() {
   document.getElementById("otpBox").innerHTML = `
-    <input type="text" id="otp" placeholder="Enter OTP" />
+    <input type="text" id="otpCode" placeholder="Enter OTP">
     <button onclick="verifyOTP()">Verify OTP</button>
   `;
 }
 
 window.verifyOTP = function () {
-  const code = document.getElementById("otp").value.trim();
   const name = document.getElementById("name").value.trim();
-  const refCode = document.getElementById("referralCode").value.trim();
+  const mobile = document.getElementById("email").value.trim();
+  const referral = document.getElementById("referralCode").value.trim();
 
+  const code = document.getElementById("otpCode").value.trim();
   if (!code) {
-    alert("Please enter OTP");
+    alert("Enter OTP");
     return;
   }
 
@@ -125,24 +134,60 @@ window.verifyOTP = function () {
     .confirm(code)
     .then((result) => {
       const user = result.user;
-      updateProfile(user, { displayName: name }).then(() => {
-        storeUserData(name, user.phoneNumber, refCode);
-        alert("Account created via mobile!");
+      return updateProfile(user, { displayName: name }).then(() => {
+        const uid = user.uid;
+
+        // Store user in DB
+        set(ref(db, "users/" + uid), {
+          name: name,
+          email: null,
+          phone: "+91" + mobile,
+          coins: 0,
+          referral: referral || null,
+          referredBy: referral || null,
+        });
+
+        handleReferralBonus(uid, referral);
+
+        localStorage.setItem("userUID", uid);
+        localStorage.setItem("userName", name);
+        localStorage.setItem("mode", "login");
+
+        alert("Mobile account created successfully!");
         window.location.href = "tap.html";
       });
     })
     .catch((err) => {
-      console.error(err);
-      alert("Incorrect OTP.");
+      console.error("OTP verify error:", err);
+      alert("Invalid OTP. Please try again.");
     });
 };
 
-function storeUserData(name, emailOrPhone, refCode) {
-  localStorage.setItem("mode", "login");
-  localStorage.setItem("userName", name);
-  localStorage.setItem("userEmail", emailOrPhone);
-  localStorage.setItem("userUID", auth.currentUser.uid);
-  if (refCode) {
-    localStorage.setItem("refBy", refCode);
-  }
+function handleReferralBonus(userId, refCode) {
+  if (!refCode) return;
+
+  const dbRef = ref(db);
+  get(child(dbRef, "users"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        let matchedUser = null;
+
+        snapshot.forEach((childSnap) => {
+          if (childSnap.key.startsWith(refCode)) {
+            matchedUser = childSnap;
+          }
+        });
+
+        if (matchedUser) {
+          const refUID = matchedUser.key;
+          const currentCoins = matchedUser.val().coins || 0;
+          const newCoins = currentCoins + 10000;
+
+          update(ref(db, "users/" + refUID), {
+            coins: newCoins,
+          });
+        }
+      }
+    })
+    .catch((err) => console.error("Referral lookup error:", err));
 }
