@@ -9,16 +9,14 @@
   <link rel="icon" href="assets/money_master_favicon.png" />
   <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1"></script>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getDatabase } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier, confirm } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
       authDomain: "money-master-89c02.firebaseapp.com",
-      databaseURL: "https://money-master-89c02-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "money-master-89c02",
       storageBucket: "money-master-89c02.appspot.com",
       messagingSenderId: "226410161274",
@@ -27,75 +25,159 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
     const auth = getAuth(app);
-    
-    // Make available globally
-    window.db = db;
-    window.auth = auth;
-  </script>
-</head>
-<body>
+    const db = getFirestore(app);
 
-  <!-- Back Navigation -->
-  <img src="assets/icon_navigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+    // Global reCAPTCHA verifier
+    let recaptchaVerifier = null;
 
-  <div class="register-container">
-    <img src="assets/icon_create.png" class="app-icon" alt="Create Icon" />
-    <h2 class="register-title">CREATE ACCOUNT</h2>
+    window.onload = function() {
+      recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+        'size': 'invisible',
+        'callback': (token) => {
+          // Token is available, proceed with registration
+          const registrationType = document.querySelector('input[name="type"]:checked').value;
+          handleRegistration(registrationType, token);
+        },
+        'expired-callback': () => {
+          console.log("reCAPTCHA expired");
+          alert("reCAPTCHA verification expired. Please try again.");
+        }
+      }, auth);
+    };
 
-    <!-- Toggle -->
-    <div class="toggle-type">
-      <label><input type="radio" name="type" value="email" checked onchange="toggleType()"> Email</label>
-      <label><input type="radio" name="type" value="mobile" onchange="toggleType()"> Mobile</label>
-    </div>
+    async function registerUser(e, recaptchaToken) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const emailOrMobile = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm').value;
+      const referralCode = document.getElementById('referralCode').value;
+      const registrationType = document.querySelector('input[name="type"]:checked').value;
+      const otp = document.getElementById('otp') ? document.getElementById('otp').value : null;
 
-    <!-- Registration Form -->
-    <form class="register-form" id="registerForm" onsubmit="handleCaptcha(event)">
-      <input type="text" id="name" placeholder="Your Name" required />
-      <input type="text" id="email" placeholder="Email or Mobile" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <input type="password" id="confirm" placeholder="Confirm Password" required />
-      <input type="text" id="referralCode" placeholder="Referral Code (optional)" />
-      <div id="otpBox"></div>
-      <button type="submit">CREATE ACCOUNT</button>
-    </form>
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
 
-    <p class="disclaimer">Use a valid mobile or email. Required for withdrawals & recovery.</p>
-    <p class="small-link">By signing up, you agree to our <a href="terms.html">Terms & Privacy Policy</a></p>
-  </div>
+      try {
+        let userCredential;
+        if (registrationType === 'email') {
+          userCredential = await createUserWithEmailAndPassword(auth, emailOrMobile, password);
+          await saveUserData(userCredential.user.uid, name, emailOrMobile, null, referralCode);
+          alert('Account created successfully!');
+          window.location.href = 'index.html'; // Redirect as needed
+        } else if (registrationType === 'mobile') {
+          if (!window.confirmationResult) {
+            alert('Please request OTP first.');
+            return;
+          }
+          const result = await confirm(window.confirmationResult, otp);
+          await saveUserData(result.user.uid, name, null, emailOrMobile, referralCode);
+          alert('Phone number verified and account created!');
+          window.location.href = 'index.html'; // Redirect as needed
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        alert(`Registration failed: ${error.message}`);
+        if (recaptchaVerifier) {
+          recaptchaVerifier.render().then(function(widgetId) {
+            grecaptcha.reset(widgetId);
+          });
+        }
+      }
+    }
 
-  <script>
-    function goBack() {
-      const clickSound = new Audio("assets/sound.mp3");
-      clickSound.play();
-      window.location.href = "index.html";
+    async function requestOTP() {
+      const mobileNumber = document.getElementById('email').value; // 'email' field is used for mobile in mobile mode
+      if (!/^\d{10}$/.test(mobileNumber)) {
+        alert('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+
+      try {
+        window.confirmationResult = await signInWithPhoneNumber(auth, '+91' + mobileNumber, recaptchaVerifier);
+        document.getElementById('otpBox').innerHTML = '<input type="text" id="otp" placeholder="Enter OTP" required>';
+        document.querySelector('button[type="submit"]').textContent = 'VERIFY OTP';
+      } catch (error) {
+        console.error("Error sending OTP:", error);
+        alert(`Error sending OTP: ${error.message}`);
+        if (recaptchaVerifier) {
+          recaptchaVerifier.render().then(function(widgetId) {
+            grecaptcha.reset(widgetId);
+          });
+        }
+      }
+    }
+
+    async function saveUserData(uid, name, email, mobile, referralCode) {
+      try {
+        const userData = {
+          uid: uid,
+          name: name,
+          email: email || null,
+          mobile: mobile || null,
+          coinBalance: 0,
+          referralCode: generateUniqueReferralCode(),
+          referredBy: null,
+          registrationTimestamp: serverTimestamp()
+        };
+
+        if (referralCode) {
+          // Implement logic to handle referral code (e.g., look up referrer)
+          console.log("Referral Code:", referralCode);
+          // You would likely use Cloud Functions for secure referral processing
+        }
+
+        await setDoc(doc(db, 'users', uid), userData);
+        console.log('User data saved to Firestore');
+      } catch (error) {
+        console.error('Error saving user data to Firestore:', error);
+        alert('Error saving user data.');
+      }
+    }
+
+    function generateUniqueReferralCode() {
+      const length = 8;
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let code = '';
+      for (let i = 0; i < length; i++) {
+        code += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return code;
+      // Implement uniqueness check in a real application
+    }
+
+    function handleCaptcha(e) {
+      e.preventDefault();
+      const registrationType = document.querySelector('input[name="type"]:checked').value;
+      if (registrationType === 'mobile' && !window.confirmationResult) {
+        requestOTP();
+      } else {
+        grecaptcha.enterprise.execute('6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1', { action: 'submit' })
+          .then(token => {
+            registerUser(e, token);
+          });
+      }
     }
 
     function toggleType() {
       const type = document.querySelector('input[name="type"]:checked').value;
       const input = document.getElementById("email");
       input.placeholder = type === "email" ? "Email" : "Mobile Number (10 digits)";
-      
-      // Clear OTP box when switching to email
-      if (type === "email") {
-        document.getElementById("otpBox").innerHTML = "";
-      }
+
+      const submitButton = document.querySelector('button[type="submit"]');
+      document.getElementById("otpBox").innerHTML = ""; // Clear OTP box on toggle
+      submitButton.textContent = "CREATE ACCOUNT";
+      window.confirmationResult = null; // Reset confirmation result on toggle
     }
 
-    function handleCaptcha(e) {
-      e.preventDefault();
-
-      grecaptcha.ready(function () {
-        grecaptcha.execute('6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1', { action: 'submit' })
-          .then(function (token) {
-            registerUser(e, token); // Pass token to registerUser
-          });
-      });
+    function goBack() {
+      const clickSound = new Audio("assets/sound.mp3");
+      clickSound.play();
+      window.location.href = "index.html";
     }
   </script>
-
-  <!-- Load register.js last so it gets token properly -->
-  <script type="module" src="register.js"></script>
 </body>
 </html>

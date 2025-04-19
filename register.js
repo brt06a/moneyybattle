@@ -1,86 +1,159 @@
-// register.js
+// register.js (linked in the HTML)
 
-import { getAuth, createUserWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-import { ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier, confirm } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-const auth = getAuth();
+// Get Firebase auth and firestore instances from the global scope (initialized in HTML)
+const auth = window.auth;
 const db = window.db;
 
-let confirmationResult = null;
+// Global reCAPTCHA verifier
+let recaptchaVerifier = null;
 
-document.getElementById("registerForm").addEventListener("submit", handleCaptcha);
+window.onload = function() {
+  recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+    'size': 'invisible',
+    'callback': (token) => {
+      // Token is available, proceed with registration
+      const registrationType = document.querySelector('input[name="type"]:checked').value;
+      handleRegistration(registrationType, token);
+    },
+    'expired-callback': () => {
+      console.log("reCAPTCHA expired");
+      alert("reCAPTCHA verification expired. Please try again.");
+    }
+  }, auth);
+};
 
-function registerUser(event, token) {
-  const name = document.getElementById("name").value.trim();
-  const contact = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const confirm = document.getElementById("confirm").value;
-  const referral = document.getElementById("referralCode").value.trim();
-  const type = document.querySelector('input[name="type"]:checked').value;
+async function registerUser(e, recaptchaToken) {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const emailOrMobile = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirm').value;
+  const referralCode = document.getElementById('referralCode').value;
+  const registrationType = document.querySelector('input[name="type"]:checked').value;
+  const otp = document.getElementById('otp') ? document.getElementById('otp').value : null;
 
-  if (password !== confirm) {
+  if (password !== confirmPassword) {
     alert("Passwords do not match.");
     return;
   }
 
-  if (type === "email") {
-    createUserWithEmailAndPassword(auth, contact, password)
-      .then((userCredential) => {
-        const uid = userCredential.user.uid;
-        saveUserData(uid, name, contact, referral);
-        alert("Account created successfully!");
-        location.href = "index.html";
-      })
-      .catch((error) => {
-        alert(error.message);
+  try {
+    let userCredential;
+    if (registrationType === 'email') {
+      userCredential = await createUserWithEmailAndPassword(auth, emailOrMobile, password);
+      await saveUserData(userCredential.user.uid, name, emailOrMobile, null, referralCode);
+      alert('Account created successfully!');
+      window.location.href = 'index.html'; // Redirect as needed
+    } else if (registrationType === 'mobile') {
+      if (!window.confirmationResult) {
+        alert('Please request OTP first.');
+        return;
+      }
+      const result = await confirm(window.confirmationResult, otp);
+      await saveUserData(result.user.uid, name, null, emailOrMobile, referralCode);
+      alert('Phone number verified and account created!');
+      window.location.href = 'index.html'; // Redirect as needed
+    }
+  } catch (error) {
+    console.error("Registration error:", error);
+    alert(`Registration failed: ${error.message}`);
+    if (recaptchaVerifier) {
+      recaptchaVerifier.render().then(function(widgetId) {
+        grecaptcha.reset(widgetId);
       });
-  } else {
-    sendOTP(contact);
+    }
   }
 }
 
-function sendOTP(mobile) {
-  const phoneNumber = "+91" + mobile;
-  const appVerifier = new RecaptchaVerifier("otpBox", { size: "invisible" }, auth);
+async function requestOTP() {
+  const mobileNumber = document.getElementById('email').value; // 'email' field is used for mobile in mobile mode
+  if (!/^\d{10}$/.test(mobileNumber)) {
+    alert('Please enter a valid 10-digit mobile number.');
+    return;
+  }
 
-  signInWithPhoneNumber(auth, phoneNumber, appVerifier)
-    .then((result) => {
-      confirmationResult = result;
-      showOTPInput();
-    })
-    .catch((error) => {
-      alert("OTP Failed: " + error.message);
-    });
+  try {
+    window.confirmationResult = await signInWithPhoneNumber(auth, '+91' + mobileNumber, recaptchaVerifier);
+    document.getElementById('otpBox').innerHTML = '<input type="text" id="otp" placeholder="Enter OTP" required>';
+    document.querySelector('button[type="submit"]').textContent = 'VERIFY OTP';
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    alert(`Error sending OTP: ${error.message}`);
+    if (recaptchaVerifier) {
+      recaptchaVerifier.render().then(function(widgetId) {
+        grecaptcha.reset(widgetId);
+      });
+    }
+  }
 }
 
-function showOTPInput() {
-  document.getElementById("otpBox").innerHTML = `
-    <input type="text" id="otp" placeholder="Enter OTP" required />
-    <button onclick="verifyOTP()">Verify OTP</button>
-  `;
+async function saveUserData(uid, name, email, mobile, referralCode) {
+  try {
+    const userData = {
+      uid: uid,
+      name: name,
+      email: email || null,
+      mobile: mobile || null,
+      coinBalance: 0,
+      referralCode: generateUniqueReferralCode(),
+      referredBy: null,
+      registrationTimestamp: serverTimestamp()
+    };
+
+    if (referralCode) {
+      // Implement logic to handle referral code (e.g., look up referrer)
+      console.log("Referral Code:", referralCode);
+      // You would likely use Cloud Functions for secure referral processing
+    }
+
+    await setDoc(doc(db, 'users', uid), userData);
+    console.log('User data saved to Firestore');
+  } catch (error) {
+    console.error('Error saving user data to Firestore:', error);
+    alert('Error saving user data.');
+  }
 }
 
-window.verifyOTP = function () {
-  const otp = document.getElementById("otp").value.trim();
-  if (!otp || !confirmationResult) return alert("Invalid OTP or no OTP sent.");
+function generateUniqueReferralCode() {
+  const length = 8;
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let code = '';
+  for (let i = 0; i < length; i++) {
+    code += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return code;
+  // Implement uniqueness check in a real application
+}
 
-  confirmationResult.confirm(otp)
-    .then((result) => {
-      const user = result.user;
-      const name = document.getElementById("name").value.trim();
-      const contact = document.getElementById("email").value.trim();
-      const referral = document.getElementById("referralCode").value.trim();
-      saveUserData(user.uid, name, contact, referral);
-      alert("Account created successfully!");
-      location.href = "index.html";
-    })
-    .catch(() => alert("Invalid OTP."));
-};
+function handleCaptcha(e) {
+  e.preventDefault();
+  const registrationType = document.querySelector('input[name="type"]:checked').value;
+  if (registrationType === 'mobile' && !window.confirmationResult) {
+    requestOTP();
+  } else {
+    grecaptcha.enterprise.execute('6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1', { action: 'submit' })
+      .then(token => {
+        registerUser(e, token);
+      });
+  }
+}
 
-function saveUserData(uid, name, contact, referral) {
-  set(ref(db, "users/" + uid), {
-    name,
-    contact,
-    referral
-  });
+function toggleType() {
+  const type = document.querySelector('input[name="type"]:checked').value;
+  const input = document.getElementById("email");
+  input.placeholder = type === "email" ? "Email" : "Mobile Number (10 digits)";
+
+  const submitButton = document.querySelector('button[type="submit"]');
+  document.getElementById("otpBox").innerHTML = ""; // Clear OTP box on toggle
+  submitButton.textContent = "CREATE ACCOUNT";
+  window.confirmationResult = null; // Reset confirmation result on toggle
+}
+
+function goBack() {
+  const clickSound = new Audio("assets/sound.mp3");
+  clickSound.play();
+  window.location.href = "index.html";
 }
