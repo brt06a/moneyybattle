@@ -1,380 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account - Money Master</title>
-    <link rel="icon" href="assets/money_master_favicon.png">
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #181818;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
 
-        .container {
-            background-color: #222;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
+    .container {
+      background: #121212;
+      border-radius: 20px;
+      padding: 30px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+      position: relative;
+    }
 
-        .avatar-container {
-            background-color: #333;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 20px;
-        }
+    .avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 5px solid #121212;
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
 
-        .avatar-icon {
-            color: #eee;
-            font-size: 2em;
-        }
+    .avatar::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #fff 15%, #f44336 15% 60%, transparent 60%);
+      border-radius: 50%;
+    }
 
-        h2 {
-            color: #eee;
-            margin-bottom: 20px;
-        }
+    h2 {
+      margin-top: 50px;
+      margin-bottom: 20px;
+    }
 
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: none;
+      background: #1f1f1f;
+      color: white;
+      font-size: 14px;
+    }
 
-        label {
-            color: #ccc;
-            display: block;
-            margin-bottom: 5px;
-        }
+    .toggle {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+    }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #555;
-            border-radius: 5px;
-            background-color: #333;
-            color: #eee;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
+    .toggle button {
+      width: 48%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #1f1f1f;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-        .toggle-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+    .toggle-email {
+      background: linear-gradient(145deg, #e53935, #f44336);
+    }
 
-        .toggle-button {
-            background-color: #444;
-            color: #eee;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 0 5px;
-        }
+    #createAccountBtn {
+      margin-top: 15px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #e53935, #f44336);
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-        .toggle-button.active {
-            background-color: #e50914;
-        }
+    .terms {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #aaa;
+    }
 
-        button#createAccountButton {
-            background-color: #e50914;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-
-        button#createAccountButton:hover {
-            background-color: #c40812;
-        }
-
-        .disclaimer {
-            color: #777;
-            font-size: 0.8em;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        a {
-            color: #bbb;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .error-message {
-            color: #ff4d4d;
-            margin-top: 10px;
-            text-align: center;
-            display: none;
-        }
-    </style>
-<link rel="stylesheet" href="register.css">
-
-    <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier, confirm } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
-            authDomain: "money-master-official-site-new.firebaseapp.com",
-            projectId: "money-master-official-site-new",
-            storageBucket: "money-master-official-site-new.firebasestorage.app",
-            messagingSenderId: "580013071708",
-            appId: "1:580013071708:web:76363a43638401cda07599",
-            measurementId: "G-26CBLGCKC1"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let recaptchaVerifier = null;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            recaptchaVerifier = new RecaptchaVerifier('createAccountButton', {
-                'size': 'invisible',
-                'callback': (token) => {
-                    const registrationType = document.getElementById('mobileRadio').checked ? 'mobile' : 'email';
-                    handleRegistration(registrationType, token);
-                },
-                'expired-callback': () => {
-                    showError('reCAPTCHA verification expired. Please try again.');
-                }
-            }, auth);
-
-            document.getElementById('createAccountForm').addEventListener('submit', handleCreateAccount);
-            setupToggleButtons();
-        });
-
-        function setupToggleButtons() {
-            const emailButton = document.getElementById('emailButton');
-            const mobileButton = document.getElementById('mobileButton');
-            const emailMobileInput = document.getElementById('emailMobile');
-
-            emailButton.addEventListener('click', () => {
-                setActiveToggle('email');
-                emailMobileInput.placeholder = 'Email';
-            });
-
-            mobileButton.addEventListener('click', () => {
-                setActiveToggle('mobile');
-                emailMobileInput.placeholder = 'Mobile Number (10 digits)';
-            });
-        }
-
-        function setActiveToggle(type) {
-            document.getElementById('emailButton').classList.remove('active');
-            document.getElementById('mobileButton').classList.remove('active');
-            document.getElementById(`${type}Button`).classList.add('active');
-            document.getElementById('emailRadio').checked = (type === 'email');
-            document.getElementById('mobileRadio').checked = (type === 'mobile');
-            window.confirmationResult = null; // Reset OTP verification state
-            clearError();
-        }
-
-        async function handleCreateAccount(e) {
-            e.preventDefault();
-            clearError();
-
-            const fullName = document.getElementById('fullName').value.trim();
-            const emailOrMobile = document.getElementById('emailMobile').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const registrationType = document.getElementById('mobileRadio').checked ? 'mobile' : 'email';
-
-            if (!fullName) {
-                showError('Please enter your full name.');
-                return;
-            }
-
-            if (!emailOrMobile) {
-                showError(`Please enter your ${registrationType === 'email' ? 'email' : 'mobile number'}.`);
-                return;
-            }
-
-            if (registrationType === 'mobile' && !/^\d{10}$/.test(emailOrMobile)) {
-                showError('Please enter a valid 10-digit mobile number.');
-                return;
-            }
-
-            if (password.length < 6) {
-                showError('Password must be at least 6 characters long.');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showError('Passwords do not match.');
-                return;
-            }
-
-            try {
-                const token = await grecaptcha.enterprise.execute('6LeFqjUpAAAAAIzY-55jSl_z4_mI_l4q91_VvS', { action: 'create_account' });
-                await handleRegistration(registrationType, token, fullName, emailOrMobile, password);
-            } catch (error) {
-                console.error("reCAPTCHA error:", error);
-                showError('Failed to verify reCAPTCHA. Please try again.');
-            }
-        }
-
-        async function handleRegistration(registrationType, recaptchaToken, fullName, emailOrMobile, password) {
-            try {
-                let userCredential;
-                if (registrationType === 'email') {
-                    userCredential = await createUserWithEmailAndPassword(auth, emailOrMobile, password);
-                    await saveUserData(userCredential.user.uid, fullName, emailOrMobile, null);
-                    alert('Account created successfully!');
-                    window.location.href = 'index.html'; // Redirect as needed
-                } else if (registrationType === 'mobile') {
-                    if (!window.confirmationResult) {
-                        await requestOTP(emailOrMobile);
-                        return; // Wait for OTP verification
-                    }
-                    const otp = prompt('Enter the OTP sent to your mobile number:');
-                    if (otp) {
-                        const result = await confirm(window.confirmationResult, otp);
-                        await saveUserData(result.user.uid, fullName, null, emailOrMobile);
-                        alert('Phone number verified and account created!');
-                        window.location.href = 'index.html'; // Redirect as needed
-                    } else {
-                        alert('OTP cannot be empty.');
-                    }
-                }
-            } catch (error) {
-                console.error("Registration error:", error);
-                showError(`Registration failed: ${error.message}`);
-                if (recaptchaVerifier) {
-                    recaptchaVerifier.render().then(function(widgetId) {
-                        grecaptcha.reset(widgetId);
-                    });
-                }
-            }
-        }
-
-        async function requestOTP(mobileNumber) {
-            try {
-                window.confirmationResult = await signInWithPhoneNumber(auth, '+91' + mobileNumber, recaptchaVerifier);
-                alert('OTP sent to your mobile number.');
-            } catch (error) {
-                console.error("Error sending OTP:", error);
-                showError(`Error sending OTP: ${error.message}`);
-                if (recaptchaVerifier) {
-                    recaptchaVerifier.render().then(function(widgetId) {
-                        grecaptcha.reset(widgetId);
-                    });
-                }
-            }
-        }
-
-        async function saveUserData(uid, fullName, email, mobile) {
-            try {
-                const registrationDate = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
-                const formattedRegistrationDate = registrationDate.toLocaleDateString('en-IN', options);
-
-                const userData = {
-                    uid: uid,
-                    fullName: fullName,
-                    email: email || null,
-                    mobile: mobile || null,
-                    coinBalance: 0,
-                    registrationDate: formattedRegistrationDate,
-                    registrationTimestamp: serverTimestamp()
-                };
-                await setDoc(doc(db, 'users', uid), userData);
-                console.log('User data saved to Firestore');
-            } catch (error) {
-                console.error('Error saving user data to Firestore:', error);
-                alert('Error saving user data.');
-            }
-        }
-
-        function showError(message) {
-            document.getElementById('errorMessage').textContent = message;
-            document.getElementById('errorMessage').style.display = 'block';
-        }
-
-        function clearError() {
-            document.getElementById('errorMessage').style.display = 'none';
-            document.getElementById('errorMessage').textContent = '';
-        }
-    </script>
+    .terms a {
+      color: white;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="avatar-container">
-            <div class="avatar-icon">👤</div>
-        </div>
-        <h2>Create Account</h2>
-        <form id="createAccountForm">
-            <div class="input-group">
-                <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" placeholder="Your Full Name" required>
-            </div>
-            <div class="toggle-container">
-                <button type="button" id="emailButton" class="toggle-button active">Email</button>
-                <button type="button" id="mobileButton" class="toggle-button">Mobile</button>
-                <input type="radio" name="registrationType" id="emailRadio" value="email" style="display:none;" checked>
-                <input type="radio" name="registrationType" id="mobileRadio" value="mobile" style="display:none;">
-            </div>
-            <div class="input-group">
-                <label for="emailMobile">Email</label>
-                <input type="text" id="emailMobile" placeholder="Email" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Password" required>
-            </div>
-            <div class="input-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-            </div>
-            <button type="submit" id="createAccountButton">Create Account</button>
-        </form>
-        <p class="disclaimer">By creating an account, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms & Conditions</a>.</p>
-        <div class="error-message" id="errorMessage"></div>
+  <div class="container">
+    <div class="avatar"></div>
+    <h2>Create Account</h2>
+    <input type="text" id="fullName" placeholder="Full Name" />
+
+    <div class="toggle">
+      <button id="emailBtn" class="toggle-email">Email</button>
+      <button id="mobileBtn">Mobile</button>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const emailButton = document.getElementById('emailButton');
-            const mobileButton = document.getElementById('mobileButton');
-            const emailMobileInput = document.getElementById('emailMobile');
 
-            emailButton.addEventListener('click', () => {
-                emailButton.classList.add('active');
-                mobileButton.classList.remove('active');
-                emailMobileInput.placeholder = 'Email';
-            });
+    <div id="emailField">
+      <input type="email" id="email" placeholder="Email" />
+    </div>
 
-            mobileButton.addEventListener('click', () => {
-                mobileButton.classList.add('active');
-                emailButton.classList.remove('active');
-                emailMobileInput.placeholder = 'Mobile Number (10 digits)';
-            });
-        });
-    </script>
+    <div id="mobileField" style="display: none;">
+      <input type="tel" id="mobile" placeholder="Mobile Number" />
+    </div>
+
+    <input type="password" id="password" placeholder="Password" />
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+    <button id="createAccountBtn">Create Account</button>
+    <p class="terms">
+      By creating an account, you agree to our
+      <a href="#">Privacy Policy</a> and
+      <a href="#">Terms & Conditions</a>.
+    </p>
+  </div>
+
+  <!-- Register logic -->
+  <script type="module" src="register.js"></script>
 </body>
 </html>
-my current html modify it to make fully functional
