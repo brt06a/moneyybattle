@@ -1,115 +1,78 @@
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+// register.js
 
-import {
-  getFirestore,
-  collection,
-  doc,
-  setDoc,
-  getDocs,
-  query,
-  where,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
-  authDomain: "money-master-official-site-new.firebaseapp.com",
-  databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "money-master-official-site-new",
-  storageBucket: "money-master-official-site-new.firebasestorage.app",
-  messagingSenderId: "580013071708",
-  appId: "1:580013071708:web:76363a43638401cda07599",
-  measurementId: "G-26CBLGCKC1"
+  apiKey: "AIzaSyBGmEOf7tUoP9OGL8I2OdUmuAmJmjB1lwE",
+  authDomain: "money-master-89c02.firebaseapp.com",
+  projectId: "money-master-89c02",
+  storageBucket: "money-master-89c02.appspot.com",
+  messagingSenderId: "39858594207",
+  appId: "1:39858594207:web:f4eb3ff396f7dfb6a6b3db",
+  measurementId: "G-K9FKX0PC8Z"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-document.getElementById("registerForm").addEventListener("submit", async (e) => {
+document.getElementById('register-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const name = document.getElementById("name").value.trim();
-  const emailOrPhone = document.getElementById("emailOrPhone").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const confirm = document.getElementById("confirmPassword").value.trim();
-  const referral = document.getElementById("referralCode").value.trim();
+  const fullName = document.getElementById('fullName').value.trim();
+  const emailOrPhone = document.getElementById('emailOrPhone').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const isMobile = document.querySelector('.tab.active').dataset.value === 'mobile';
 
-  if (!name || !emailOrPhone || !password || !confirm) {
-    alert("Please fill in all fields.");
-    return;
-  }
-
-  if (password !== confirm) {
-    alert("Passwords do not match.");
-    return;
-  }
-
-  const isEmail = emailOrPhone.includes("@") && emailOrPhone.includes(".");
-  const isPhone = /^[6-9]\d{9}$/.test(emailOrPhone);
-
-  if (!isEmail && !isPhone) {
-    alert("Enter a valid email or 10-digit mobile number.");
-    return;
-  }
-
-  // Daily registration limit check
-  const today = new Date().toISOString().split("T")[0]; // e.g., "2025-04-19"
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, where("date", "==", today));
-  const snapshot = await getDocs(q);
-
-  let alreadyRegistered = false;
-  snapshot.forEach((doc) => {
-    const data = doc.data();
-    if (
-      (data.email && data.email === emailOrPhone) ||
-      (data.mobile && data.mobile === emailOrPhone)
-    ) {
-      alreadyRegistered = true;
-    }
-  });
-
-  if (alreadyRegistered) {
-    alert("You have already registered today with this email or mobile.");
+  if (!fullName || !emailOrPhone || !password || !confirmPassword || password !== confirmPassword) {
+    alert("Please fill all fields correctly.");
     return;
   }
 
   try {
-    // Register using email (Firebase Auth required only for email)
-    let userId;
-    if (isEmail) {
-      const userCred = await createUserWithEmailAndPassword(auth, emailOrPhone, password);
-      await updateProfile(userCred.user, { displayName: name });
-      userId = userCred.user.uid;
-    } else {
-      // For mobile, just generate UID manually (not using Auth)
-      userId = "mob_" + Date.now();
+    const today = new Date().toISOString().split('T')[0];
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("emailOrPhone", "==", emailOrPhone), where("registrationDate", "==", today));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      alert("You have already registered today.");
+      return;
     }
 
-    const userData = {
-      uid: userId,
-      name,
-      email: isEmail ? emailOrPhone : null,
-      mobile: isPhone ? emailOrPhone : null,
-      referredBy: referral || null,
-      coins: 0,
-      date: today,
-      registeredAt: serverTimestamp()
-    };
+    const email = isMobile ? `${emailOrPhone}@money.master` : emailOrPhone;
 
-    await setDoc(doc(db, "users", userId), userData);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    await setDoc(doc(db, "users", uid), {
+      uid,
+      fullName,
+      emailOrPhone,
+      registrationDate: today,
+      type: isMobile ? "mobile" : "email",
+      coins: 0
+    });
 
     alert("Registration successful!");
-    window.location.href = "tap.html";
-  } catch (err) {
-    console.error(err);
-    alert("Registration failed: " + err.message);
+    window.location.href = "login.html";
+  } catch (error) {
+    console.error(error);
+    alert("Registration failed: " + error.message);
   }
+});
+
+// Tab toggle
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    const input = document.getElementById('emailOrPhone');
+    input.placeholder = tab.dataset.value === 'mobile' ? "Mobile Number" : "Email";
+    input.type = tab.dataset.value === 'mobile' ? "tel" : "email";
+  });
 });

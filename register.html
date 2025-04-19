@@ -1,31 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Account - Money Master</title>
-  <link rel="stylesheet" href="register.css" />
-  <link rel="icon" href="assets/money_master_favicon.png" />
+  <title>Create Account</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-analytics-compat.js"></script>
 </head>
 <body>
   <div class="container">
-    <img src="assets/icon_create.png" class="app-icon" alt="Create Icon" />
-    <h2 class="title">Create Account</h2>
-
-    <form id="registerForm">
-      <input type="text" id="name" placeholder="Full Name" required />
-      <input type="text" id="emailOrPhone" placeholder="Email or Mobile" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
-      <input type="text" id="referralCode" placeholder="Referral Code (optional)" />
-      <button type="submit">Create Account</button>
-    </form>
-
-    <p class="disclaimer">Only one account allowed per day per user. Use a valid email or mobile.</p>
-    <p class="small-link">By creating an account, you agree to our <a href="terms.html">Terms & Policy</a>.</p>
+    <div class="card">
+      <div class="icon">
+        <img src="https://img.icons8.com/ios-filled/100/ffffff/user.png" alt="user" />
+      </div>
+      <h2>Create Account</h2>
+      <input type="text" id="fullName" placeholder="Full Name" />
+      <div class="toggle-button">
+        <button id="emailBtn" class="active">Email</button>
+        <button id="mobileBtn">Mobile</button>
+      </div>
+      <input type="text" id="contactInput" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+      <button class="submit-btn" onclick="registerUser()">Create Account</button>
+      <p class="terms">By creating an account, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms & Conditions</a>.</p>
+    </div>
   </div>
-
-  <!-- JavaScript -->
-  <script type="module" src="register.js"></script>
+  <script src="register.js"></script>
 </body>
 </html>
