@@ -1,4 +1,3 @@
-// login.js
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -41,7 +40,7 @@ window.handleLogin = function (event) {
     }
 
     grecaptcha.enterprise.ready(() => {
-      grecaptcha.enterprise.execute("6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1", { action: "login" })
+      grecaptcha.enterprise.execute("6LeFqjUpAAAAAIzY-55jSl_z4_mI_l4q91_VvS", { action: "login" })
         .then((token) => {
           sendOTP("+91" + mobile);
         });
@@ -63,19 +62,13 @@ function sendOTP(mobileNumber) {
     auth
   );
 
-  signInWithPhoneNumber(auth, mobileNumber, recaptchaVerifier)
+  signInWithPhoneNumber(auth, mobileNumber, window.recaptchaVerifier) // Use window.recaptchaVerifier
     .then((confirmationResult) => {
       window.confirmationResult = confirmationResult;
       document.querySelector(".login-form").style.display = "none";
 
-      // Create OTP input box dynamically
-      const otpBox = document.createElement("div");
-      otpBox.className = "otp-box";
-      otpBox.innerHTML = `
-        <input type="text" id="otpInput" placeholder="Enter OTP" />
-        <button onclick="verifyOTP()">Verify OTP</button>
-      `;
-      document.querySelector(".login-container").appendChild(otpBox);
+      // Show OTP input box
+      document.getElementById("otpBox").style.display = "block";
     })
     .catch((error) => {
       console.error("OTP error:", error);
@@ -85,24 +78,27 @@ function sendOTP(mobileNumber) {
 
 window.verifyOTP = function () {
   playClickSound();
-  const otp = document.getElementById("otpInput").value;
+  const otp = document.getElementById("otpCode").value;
   if (!otp) return alert("Enter OTP");
 
-  confirmationResult
-    .confirm(otp)
-    .then((result) => {
-      const user = result.user;
-      localStorage.setItem("mode", "login");
-      localStorage.setItem("userUID", user.uid);
-      localStorage.setItem("userName", user.displayName || "MobileUser");
-      localStorage.setItem("userPhone", user.phoneNumber);
-      alert("Login via OTP successful!");
-      window.location.href = "tap.html";
-    })
-    .catch((error) => {
-      console.error("OTP verification failed:", error);
-      alert("Invalid OTP. Try again.");
-    });
+  if (window.confirmationResult) { // Check if confirmationResult exists
+    window.confirmationResult.confirm(otp)
+      .then((result) => {
+        const user = result.user;
+        localStorage.setItem("mode", "login");
+        localStorage.setItem("userUID", user.uid);
+        localStorage.setItem("userName", user.displayName || "MobileUser");
+        localStorage.setItem("userPhone", user.phoneNumber);
+        alert("Login via OTP successful!");
+        window.location.href = "tap.html";
+      })
+      .catch((error) => {
+        console.error("OTP verification failed:", error);
+        alert("Invalid OTP. Try again.");
+      });
+  } else {
+    alert("No OTP confirmation in progress. Please request OTP again.");
+  }
 };
 
 function playClickSound() {

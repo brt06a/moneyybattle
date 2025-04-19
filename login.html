@@ -7,21 +7,20 @@
   <title>Login - Money Master</title>
   <link rel="stylesheet" href="login.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
-  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1"></script>
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeFqjUpAAAAAIzY-55jSl_z4_mI_l4q91_VvS"></script>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
-      authDomain: "money-master-89c02.firebaseapp.com",
-      projectId: "money-master-89c02",
-      storageBucket: "money-master-89c02.appspot.com",
-      messagingSenderId: "226410161274",
-      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
-      measurementId: "G-62K0SFSZK4"
+      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+      authDomain: "money-master-official-site-new.firebaseapp.com",
+      projectId: "money-master-official-site-new",
+      storageBucket: "money-master-official-site-new.firebasestorage.app",
+      messagingSenderId: "580013071708",
+      appId: "1:580013071708:web:76363a43638401cda07599",
+      measurementId: "G-26CBLGCKC1"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -29,14 +28,12 @@
 </head>
 <body>
 
-  <!-- Navigation Back Icon -->
   <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
 
   <div class="login-container">
     <img src="assets/money_master_logo.png" class="app-logo" alt="Logo" />
     <h2 class="login-title">LOGIN</h2>
 
-    <!-- Email/Mobile with Password Login -->
     <form class="login-form" onsubmit="handleLogin(event)">
       <input type="text" id="email" placeholder="Mobile or Email" required />
       <input type="password" id="password" placeholder="Password" required />
@@ -45,7 +42,6 @@
 
     <p class="or-line">OR</p>
 
-    <!-- OTP Login -->
     <div class="otp-login">
       <input type="text" id="phoneNumber" placeholder="Enter Mobile Number (+91...)" />
       <div id="recaptcha-container"></div>
@@ -68,7 +64,6 @@
     }
   </script>
 
-  <!-- Firebase Login Logic -->
   <script type="module" src="login.js"></script>
 </body>
 </html>
