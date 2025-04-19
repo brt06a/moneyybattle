@@ -2,143 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Create Account</title>
-  <style>
-    body {
-      margin: 0;
-      background: #0d0d0d;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: white;
-    }
-
-    .container {
-      background: #121212;
-      border-radius: 20px;
-      padding: 30px;
-      width: 350px;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
-      position: relative;
-    }
-
-    .avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: #1a1a1a;
-      border: 5px solid #121212;
-      position: absolute;
-      top: -35px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .avatar::before {
-      content: '';
-      display: block;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at center, #fff 15%, #f44336 15% 60%, transparent 60%);
-      border-radius: 50%;
-    }
-
-    h2 {
-      margin-top: 50px;
-      margin-bottom: 20px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: none;
-      background: #1f1f1f;
-      color: white;
-      font-size: 14px;
-    }
-
-    .toggle {
-      display: flex;
-      justify-content: space-between;
-      margin: 10px 0;
-    }
-
-    .toggle button {
-      width: 48%;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #1f1f1f;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .toggle-email {
-      background: linear-gradient(145deg, #e53935, #f44336);
-    }
-
-    #createAccountBtn {
-      margin-top: 15px;
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(145deg, #e53935, #f44336);
-      color: white;
-      font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .terms {
-      margin-top: 15px;
-      font-size: 12px;
-      color: #aaa;
-    }
-
-    .terms a {
-      color: white;
-      text-decoration: underline;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account - Money Master</title>
+  <link rel="stylesheet" href="register.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
 </head>
 <body>
   <div class="container">
-    <div class="avatar"></div>
-    <h2>Create Account</h2>
-    <input type="text" id="fullName" placeholder="Full Name" />
+    <img src="assets/icon_create.png" class="app-icon" alt="Create Icon" />
+    <h2 class="title">Create Account</h2>
 
-    <div class="toggle">
-      <button id="emailBtn" class="toggle-email">Email</button>
-      <button id="mobileBtn">Mobile</button>
-    </div>
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="Full Name" required />
+      <input type="text" id="emailOrPhone" placeholder="Email or Mobile" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+      <input type="text" id="referralCode" placeholder="Referral Code (optional)" />
+      <button type="submit">Create Account</button>
+    </form>
 
-    <div id="emailField">
-      <input type="email" id="email" placeholder="Email" />
-    </div>
-
-    <div id="mobileField" style="display: none;">
-      <input type="tel" id="mobile" placeholder="Mobile Number" />
-    </div>
-
-    <input type="password" id="password" placeholder="Password" />
-    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
-    <button id="createAccountBtn">Create Account</button>
-    <p class="terms">
-      By creating an account, you agree to our
-      <a href="#">Privacy Policy</a> and
-      <a href="#">Terms & Conditions</a>.
-    </p>
+    <p class="disclaimer">Only one account allowed per day per user. Use a valid email or mobile.</p>
+    <p class="small-link">By creating an account, you agree to our <a href="terms.html">Terms & Policy</a>.</p>
   </div>
 
-  <!-- Register logic -->
+  <!-- JavaScript -->
   <script type="module" src="register.js"></script>
 </body>
 </html>
