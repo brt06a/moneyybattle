@@ -1,164 +1,126 @@
-/* register.css */
-
+/* Styles to match the "Create Account" image */
 body {
-  font-family: sans-serif;
-  background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 20px;
-  box-sizing: border-box;
+    font-family: sans-serif;
+    background-color: #181818; /* Dark background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
 }
 
-.nav-icon {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
+.container {
+    background-color: #222; /* Darker container background */
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+    width: 90%;
+    max-width: 400px; /* Limit container width */
+    text-align: center;
 }
 
-.register-container {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 90%;
-  max-width: 400px;
-}
-
-.app-icon {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 20px;
-}
-
-.register-title {
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.toggle-type {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.toggle-type label {
-  margin: 0 10px;
-}
-
-.toggle-type input[type="radio"] {
-  margin-right: 5px;
-}
-
-.register-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.register-form input[type="text"],
-.register-form input[type="email"],
-.register-form input[type="tel"],
-.register-form input[type="password"] {
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-.register-form button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-  padding: 14px;
-  border: none;
-  border-radius: 4px;
-  font-size: 18px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.register-form button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-
-#otpBox {
-  margin-bottom: 15px;
-}
-
-#otpBox input[type="text"] {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-.disclaimer,
-.small-link {
-  color: #777;
-  font-size: 12px;
-  margin-top: 15px;
-}
-
-.small-link a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.small-link a:hover {
-  text-decoration: underline;
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .register-container {
-    width: 95%;
-    padding: 20px;
-  }
-
-  .app-icon {
+.avatar-container {
+    background-color: #333; /* Darker circle */
+    border-radius: 50%;
     width: 60px;
     height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px; /* Center and add bottom margin */
+}
+
+.avatar-icon {
+    color: #eee; /* Light gray icon color */
+    font-size: 2em; /* Larger icon */
+}
+
+h2 {
+    color: #eee; /* Light gray title */
+    margin-bottom: 20px;
+}
+
+.input-group {
     margin-bottom: 15px;
-  }
+    text-align: left; /* Align labels to the left */
+}
 
-  .register-title {
-    font-size: 20px;
-    margin-bottom: 15px;
-  }
+label {
+    color: #ccc; /* Light gray label text */
+    display: block;
+    margin-bottom: 5px;
+}
 
-  .register-form input[type="text"],
-  .register-form input[type="email"],
-  .register-form input[type="tel"],
-  .register-form input[type="password"],
-  #otpBox input[type="text"] {
-    padding: 10px;
-    margin-bottom: 10px;
-    font-size: 14px;
-  }
-
-  .register-form button[type="submit"] {
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
     padding: 12px;
+    border: 1px solid #555; /* Darker border */
+    border-radius: 5px;
+    background-color: #333; /* Darker input background */
+    color: #eee; /* Light gray input text */
+    box-sizing: border-box; /* Prevent padding from affecting width */
     font-size: 16px;
-  }
+}
 
-  .disclaimer,
-  .small-link {
-    font-size: 10px;
+.toggle-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.toggle-button {
+    background-color: #444; /* Darker button background */
+    color: #eee; /* Light gray button text */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.toggle-button.active {
+    background-color: #e50914; /* Red active button */
+}
+
+button#createAccountButton {
+    background-color: #e50914; /* Red submit button */
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+button#createAccountButton:hover {
+    background-color: #c40812; /* Darker red on hover */
+}
+
+.disclaimer {
+    color: #777; /* Dark gray disclaimer text */
+    font-size: 0.8em;
+    margin-top: 20px;
+    text-align: center;
+}
+
+a {
+    color: #bbb; /* Light gray link color */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #ff4d4d; /* Red error text */
     margin-top: 10px;
-  }
-
-  .nav-icon {
-    width: 25px;
-    height: 25px;
-    top: 15px;
-    left: 15px;
-  }
+    text-align: center;
+    display: none; /* Hidden by default */
 }
