@@ -20,7 +20,7 @@ const db = window.db;
 let confirmationResult;
 let isMobile = false;
 
-window.registerUser = function (e) {
+window.registerUser = function (e, token = null) {
   e.preventDefault();
 
   const name = document.getElementById("name").value.trim();
@@ -48,7 +48,7 @@ window.registerUser = function (e) {
       return;
     }
 
-    // Send OTP
+    // Mobile OTP
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
         "otpBox",
@@ -85,7 +85,7 @@ window.registerUser = function (e) {
         return updateProfile(userCred.user, { displayName: name }).then(() => {
           const uid = userCred.user.uid;
 
-          // Store in DB
+          // Save to DB
           set(ref(db, "users/" + uid), {
             name: name,
             email: input,
@@ -123,8 +123,8 @@ window.verifyOTP = function () {
   const name = document.getElementById("name").value.trim();
   const mobile = document.getElementById("email").value.trim();
   const referral = document.getElementById("referralCode").value.trim();
-
   const code = document.getElementById("otpCode").value.trim();
+
   if (!code) {
     alert("Enter OTP");
     return;
@@ -137,7 +137,6 @@ window.verifyOTP = function () {
       return updateProfile(user, { displayName: name }).then(() => {
         const uid = user.uid;
 
-        // Store user in DB
         set(ref(db, "users/" + uid), {
           name: name,
           email: null,

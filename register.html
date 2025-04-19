@@ -46,7 +46,7 @@
     </div>
 
     <!-- Registration Form -->
-    <form class="register-form" onsubmit="registerUser(event)">
+    <form class="register-form" id="registerForm" onsubmit="handleCaptcha(event)">
       <input type="text" id="name" placeholder="Your Name" required />
       <input type="text" id="email" placeholder="Email or Mobile" required />
       <input type="password" id="password" placeholder="Password" required />
@@ -58,9 +58,6 @@
 
     <p class="disclaimer">Use a valid mobile or email. Required for withdrawals & recovery.</p>
     <p class="small-link">By signing up, you agree to our <a href="terms.html">Terms & Privacy Policy</a></p>
-
-    <!-- Ad Script Slot -->
-    <!-- <script src="your-ad-script.js"></script> -->
   </div>
 
   <script>
@@ -80,8 +77,20 @@
         document.getElementById("otpBox").innerHTML = "";
       }
     }
+
+    function handleCaptcha(e) {
+      e.preventDefault();
+
+      grecaptcha.ready(function () {
+        grecaptcha.execute('6LfWNRorAAAAANtRO74W-GG8rmOwqly3ZNOZ5Py1', { action: 'submit' })
+          .then(function (token) {
+            registerUser(e, token); // Pass token to registerUser
+          });
+      });
+    }
   </script>
 
+  <!-- Load register.js last so it gets token properly -->
   <script type="module" src="register.js"></script>
 </body>
 </html>
