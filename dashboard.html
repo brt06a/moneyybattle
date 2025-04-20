@@ -18,19 +18,9 @@
 
     <div class="icon-list">
 
-      <div class="dashboard-item" onclick="goTo('wallet.html')">
-        <img src="assets/icon_wallet.png" alt="Wallet" />
-        <p>WALLET</p>
-      </div>
-
       <div class="dashboard-item" onclick="goTo('withdraw.html')">
         <img src="assets/icon_withdraw.png" alt="Withdraw" />
         <p>WITHDRAW</p>
-      </div>
-
-      <div class="dashboard-item" onclick="goTo('referral.html')">
-        <img src="assets/icon_referral.png" alt="Referral" />
-        <p>REFERRAL</p>
       </div>
 
       <div class="dashboard-item" onclick="goTo('tasks.html')">
@@ -69,6 +59,46 @@
   <!-- Click Sound -->
   <audio id="clickSound" src="assets/sound.mp3" preload="auto"></audio>
 
-  <script src="dashboard.js"></script>
+  <script>
+    function initDashboard() {
+      const clickSound = document.getElementById("clickSound");
+
+      // Check for login
+      const secretCode = localStorage.getItem("userUID");
+      if (!secretCode || secretCode.length !== 10) {
+        alert("Unauthorized access. Please login first.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Optional: Display user name
+      const userName = localStorage.getItem("userName");
+      if (userName) {
+        document.querySelector(".dashboard-heading").textContent = "Welcome, " + userName.toUpperCase();
+      }
+    }
+
+    function goTo(page) {
+      const clickSound = document.getElementById("clickSound");
+      clickSound.play();
+      setTimeout(() => {
+        window.location.href = page;
+      }, 150);
+    }
+
+    function goBack() {
+      const clickSound = document.getElementById("clickSound");
+      clickSound.play();
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 150);
+    }
+
+    function logoutUser() {
+      localStorage.clear();
+      alert("You have been logged out.");
+      window.location.href = "login.html";
+    }
+  </script>
 </body>
 </html>
