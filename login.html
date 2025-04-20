@@ -4,106 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login</title>
-  <style>
-    body {
-      background-color: #111;
-      font-family: sans-serif;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .card {
-      background-color: #1a1a1a;
-      padding: 2rem;
-      border-radius: 20px;
-      width: 300px;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
-    }
-    input, button {
-      width: 100%;
-      padding: 0.7rem;
-      margin-top: 1rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    input {
-      background-color: #333;
-      color: white;
-    }
-    button {
-      background-color: red;
-      color: white;
-      cursor: pointer;
-    }
-    a {
-      color: #bbb;
-      font-size: 0.9rem;
-      display: block;
-      text-align: center;
-      margin-top: 1rem;
-    }
-  </style>
+  <link rel="stylesheet" href="login.css" />
 </head>
 <body>
-  <div class="card">
-    <h2 style="text-align:center;">Login</h2>
-    <form id="loginForm">
-      <input type="text" id="fullName" placeholder="Full Name" required />
-      <input type="text" id="uniqueCode" placeholder="Your 10-Digit Code" maxlength="10" minlength="10" required />
+  <div class="login-container">
+    <div class="icon">
+      <img src="assets/user-icon.png" alt="User Icon" />
+    </div>
+    <h2>Login</h2>
+    <form id="loginForm" class="login-form">
+      <input type="text" id="uid" placeholder="Enter UID" required />
+      <input type="password" id="pin" placeholder="Enter PIN" required />
       <button type="submit">Login</button>
     </form>
-    <a href="register.html">Don't have an account? Register</a>
+    <p class="small-link">Don’t have an account? <a href="register.html">Register here</a></p>
   </div>
-
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
-      authDomain: "money-master-official-site-new.firebaseapp.com",
-      databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "money-master-official-site-new",
-      storageBucket: "money-master-official-site-new.firebasestorage.app",
-      messagingSenderId: "580013071708",
-      appId: "1:580013071708:web:76363a43638401cda07599",
-      measurementId: "G-26CBLGCKC1"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const nameInput = document.getElementById("fullName").value.trim().toLowerCase();
-      const uidInput = document.getElementById("uniqueCode").value.trim();
-
-      try {
-        const userRef = doc(db, "User", uidInput);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-          const storedName = userData.fullName?.trim().toLowerCase();
-
-          if (storedName === nameInput) {
-            window.location.href = "tap.html";
-          } else {
-            alert("Name does not match. Please check your spelling.");
-          }
-        } else {
-          alert("Code not found. Please check your 10-digit code.");
-        }
-      } catch (error) {
-        console.error("Login error:", error);
-        alert("Something went wrong. Try again.");
-      }
-    });
-  </script>
+  <script src="login.js"></script>
 </body>
 </html>

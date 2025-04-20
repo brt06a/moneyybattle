@@ -1,104 +1,87 @@
-/* login.css */
-
 body {
-  font-family: sans-serif;
-  background-color: #181818;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0d0d0d;
+  color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  margin: 0;
 }
 
-.container {
-  background-color: #222;
-  border-radius: 10px;
-  padding: 30px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+.login-container {
+  background: #1a1a1a;
+  padding: 30px 25px;
+  border-radius: 16px;
   width: 90%;
   max-width: 400px;
   text-align: center;
+  box-shadow: 0 0 10px rgba(255, 82, 82, 0.15);
 }
 
-.avatar-container {
-  background-color: #333;
+.icon {
+  background: #ff5252;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 15px;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto 20px;
 }
 
-.avatar-icon {
-  color: #eee;
-  font-size: 2em;
+.icon img {
+  width: 32px;
+  height: 32px;
 }
 
 h2 {
-  color: #eee;
   margin-bottom: 20px;
+  color: #ffffff;
 }
 
-.input-group {
-  margin-bottom: 15px;
-  text-align: left;
+.login-form {
+  display: flex;
+  flex-direction: column;
 }
 
-label {
-  color: #ccc;
-  display: block;
-  margin-bottom: 5px;
-}
-
-input[type="text"],
-input[type="password"] {
-  width: 100%;
+.login-form input {
+  background: #2a2a2a;
+  border: none;
   padding: 12px;
-  border: 1px solid #555;
-  border-radius: 5px;
-  background-color: #333;
-  color: #eee;
-  box-sizing: border-box;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  color: #ffffff;
   font-size: 16px;
 }
 
-button#loginButton {
-  background-color: #e50914;
+.login-form input::placeholder {
+  color: #999;
+}
+
+.login-form button {
+  padding: 12px;
+  background-color: #ff5252;
   color: white;
   border: none;
-  padding: 15px;
-  border-radius: 5px;
-  font-size: 18px;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
-button#loginButton:hover {
-  background-color: #c40812;
+.login-form button:hover {
+  background-color: #e53935;
 }
 
-.disclaimer {
-  color: #777;
-  font-size: 0.8em;
+.small-link {
   margin-top: 20px;
-  text-align: center;
+  font-size: 13px;
+  color: #aaa;
 }
 
-a {
-  color: #bbb;
+.small-link a {
+  color: #ff5252;
   text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-.error-message {
-  color: #ff4d4d;
-  margin-top: 10px;
-  text-align: center;
-  display: none;
 }

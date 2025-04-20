@@ -1,20 +1,14 @@
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-import {
   getFirestore,
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
 // Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
   authDomain: "money-master-official-site-new.firebaseapp.com",
-  databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "money-master-official-site-new",
   storageBucket: "money-master-official-site-new.appspot.com",
   messagingSenderId: "580013071708",
@@ -22,65 +16,44 @@ const firebaseConfig = {
   measurementId: "G-26CBLGCKC1"
 };
 
-// Init
+// Init Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Main login function
-window.loginUser = function (e) {
+window.loginUser = async function (e) {
   e.preventDefault();
 
-  const input = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const uid = document.getElementById("uid").value.trim();
+  const pin = document.getElementById("pin").value.trim();
 
-  if (!input || !password) {
-    alert("Please fill all fields.");
+  if (!uid || !pin) {
+    alert("Please enter both UID and PIN.");
     return;
   }
 
-  const isEmail = input.includes("@");
-  const isMobile = /^[6-9]\d{9}$/.test(input);
+  try {
+    const docRef = doc(db, "User", uid);
+    const docSnap = await getDoc(docRef);
 
-  if (!isEmail && !isMobile) {
-    alert("Enter a valid email or 10-digit mobile number.");
-    return;
-  }
+    if (!docSnap.exists()) {
+      alert("No account found with this UID.");
+      return;
+    }
 
-  const loginWithCredentials = (email) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCred) => {
-        const uid = userCred.user.uid;
-        const userSnap = await getDoc(doc(db, "users", uid));
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-          localStorage.setItem("userUID", uid);
-          localStorage.setItem("userName", userData.fullName || "");
-          localStorage.setItem("mode", "login");
+    const userData = docSnap.data();
 
-          console.log("Login Success:");
-          console.log("userUID:", localStorage.getItem("userUID"));
-          console.log("userName:", localStorage.getItem("userName"));
-          console.log("mode:", localStorage.getItem("mode"));
+    if (userData.pin === pin) {
+      localStorage.setItem("userUID", uid);
+      localStorage.setItem("userName", userData.name);
+      localStorage.setItem("mode", "login");
 
-          alert("Login successful!");
-          setTimeout(() => {
-            window.location.href = "tap.html";
-          }, 300); // small delay ensures localStorage is ready
-        } else {
-          alert("No user data found.");
-        }
-      })
-      .catch((err) => {
-        console.error("Login error:", err);
-        alert("Login failed. Check credentials.");
-      });
-  };
-
-  if (isEmail) {
-    loginWithCredentials(input);
-  } else {
-    const fakeEmail = `${input}@moneymaster.com`;
-    loginWithCredentials(fakeEmail);
+      alert("Login successful!");
+      window.location.href = "tap.html";
+    } else {
+      alert("Incorrect PIN. Please try again.");
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Failed to login. Try again.");
   }
 };
