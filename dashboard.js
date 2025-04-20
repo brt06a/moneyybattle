@@ -1,7 +1,8 @@
 function initDashboard() {
-  const mode = localStorage.getItem("mode");
+  const uid = localStorage.getItem("userUID");
 
-  if (!mode || mode === "guest") {
+  if (!uid || uid.length !== 10) {
+    alert("Unauthorized access. Please login first.");
     window.location.href = "index.html";
   }
 }
