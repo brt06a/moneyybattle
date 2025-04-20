@@ -15,7 +15,7 @@ function startReminderTimer() {
       reminderSound.play().catch(() => {});
       reminderPlayed = true;
     }
-  }, 360000); // 6 minutes = 360000 ms
+  }, 360000); // 6 minutes
 }
 
 // Coin increment and animation
@@ -23,17 +23,14 @@ function handleTap(event) {
   coinCount++;
   coinCountDisplay.textContent = coinCount;
 
-  // Rotate icon
   tapIcon.style.transform = "rotate(-20deg)";
   setTimeout(() => {
     tapIcon.style.transform = "rotate(0deg)";
   }, 100);
 
-  // Play sound
   tapSound.currentTime = 0;
   tapSound.play().catch(() => {});
 
-  // Ripple
   const ripple = document.createElement("span");
   ripple.className = "tap-ripple";
   ripple.style.left = `${event.clientX}px`;
@@ -42,7 +39,7 @@ function handleTap(event) {
   setTimeout(() => ripple.remove(), 600);
 }
 
-// Dashboard button redirection
+// Go to dashboard
 function goToDashboard() {
   window.location.href = "dashboard.html";
 }
@@ -52,14 +49,10 @@ function onTapAnywhere(event) {
   const isAd = event.target.tagName === "IFRAME" || event.target.closest(".ad");
   const isDashboard = event.target.id === "dashboardIcon";
 
-  if (isDashboard) {
-    goToDashboard();
-    return;
-  }
+  if (isDashboard) return; // let its own handler work
 
   if (!isAd) {
     handleTap(event);
-
     if (!firstTapDone) {
       loadAdScript();
       firstTapDone = true;
@@ -75,16 +68,18 @@ function loadAdScript() {
   document.body.appendChild(script);
 }
 
-// Init function called on body onload
+// Initialize everything
 function initTapPage() {
   document.body.addEventListener("click", onTapAnywhere);
-  startReminderTimer();
 
-  const dashboard = document.getElementById("dashboardIcon");
-  if (dashboard) {
-    dashboard.addEventListener("click", (e) => {
-      e.stopPropagation(); // prevent tap handler
+  if (dashboardIcon) {
+    dashboardIcon.addEventListener("click", function (e) {
+      e.stopPropagation();
       goToDashboard();
     });
   }
+
+  startReminderTimer();
 }
+
+window.initTapPage = initTapPage;
