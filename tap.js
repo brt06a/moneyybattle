@@ -79,4 +79,12 @@ function loadAdScript() {
 function initTapPage() {
   document.body.addEventListener("click", onTapAnywhere);
   startReminderTimer();
+
+  const dashboard = document.getElementById("dashboardIcon");
+  if (dashboard) {
+    dashboard.addEventListener("click", (e) => {
+      e.stopPropagation(); // prevent tap handler
+      goToDashboard();
+    });
+  }
 }
