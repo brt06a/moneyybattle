@@ -2,37 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - Money Master</title>
-  <link rel="stylesheet" href="login.css" />
-  <link rel="icon" href="assets/money_master_favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <style>
+    body {
+      background-color: #111;
+      font-family: sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background-color: #1a1a1a;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 300px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+    }
+    input, button {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    input {
+      background-color: #333;
+      color: white;
+    }
+    button {
+      background-color: red;
+      color: white;
+      cursor: pointer;
+    }
+    a {
+      color: #bbb;
+      font-size: 0.9rem;
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
-
-  <!-- Back Navigation -->
-  <img src="assets/icon_navigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
-
-  <div class="login-container">
-    <h2 class="login-title">LOGIN</h2>
-
-    <form class="login-form" onsubmit="loginUser(event)">
-      <input type="text" id="email" placeholder="Email or Mobile" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">LOGIN</button>
+  <div class="card">
+    <h2 style="text-align:center;">Login</h2>
+    <form id="loginForm">
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="uniqueCode" placeholder="Your 10-Digit Code" maxlength="10" minlength="10" required />
+      <button type="submit">Login</button>
     </form>
-
-    <p class="disclaimer">Use your registered mobile/email & password to login.</p>
-    <p class="small-link">Don't have an account? <a href="register.html">Create one</a></p>
+    <a href="register.html">Don't have an account? Register</a>
   </div>
 
-  <script>
-    function goBack() {
-      const clickSound = new Audio("assets/sound.mp3");
-      clickSound.play();
-      window.location.href = "index.html";
-    }
-  </script>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-  <script type="module" src="login.js"></script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+      authDomain: "money-master-official-site-new.firebaseapp.com",
+      databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "money-master-official-site-new",
+      storageBucket: "money-master-official-site-new.firebasestorage.app",
+      messagingSenderId: "580013071708",
+      appId: "1:580013071708:web:76363a43638401cda07599",
+      measurementId: "G-26CBLGCKC1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const loginForm = document.getElementById('loginForm');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const uniqueUid = document.getElementById('uniqueCode').value.trim();
+
+      const userDoc = doc(db, "User", uniqueUid);
+      const docSnap = await getDoc(userDoc);
+
+      if (docSnap.exists() && docSnap.data().fullName === fullName) {
+        // Redirect to task page
+        window.location.href = "tap.html";
+      } else {
+        alert("Incorrect name or code. Please try again.");
+      }
+    });
+  </script>
 </body>
 </html>

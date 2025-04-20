@@ -1,32 +1,116 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Account</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-analytics-compat.js"></script>
+  <style>
+    body {
+      background-color: #111;
+      font-family: sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background-color: #1a1a1a;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 300px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+    }
+    input, button {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    input {
+      background-color: #333;
+      color: white;
+    }
+    button {
+      background-color: red;
+      color: white;
+      cursor: pointer;
+    }
+    a {
+      color: #bbb;
+      font-size: 0.9rem;
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="icon">
-        <img src="https://img.icons8.com/ios-filled/100/ffffff/user.png" alt="user" />
-      </div>
-      <h2>Create Account</h2>
-      <input type="text" id="fullName" placeholder="Full Name" />
-      <div class="toggle-button">
-        <button id="emailBtn" class="active">Email</button>
-        <button id="mobileBtn">Mobile</button>
-      </div>
-      <input type="text" id="contactInput" placeholder="Email" />
-      <input type="password" id="password" placeholder="Password" />
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" />
-      <button class="submit-btn" onclick="registerUser()">Create Account</button>
-      <p class="terms">By creating an account, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Terms & Conditions</a>.</p>
-    </div>
+  <div class="card">
+    <h2 style="text-align:center;">Create Account</h2>
+    <form id="registrationForm">
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="uniqueCode" placeholder="Choose Your 10-Digit Code" maxlength="10" minlength="10" required />
+      <button type="submit">Create Account</button>
+    </form>
+    <a href="security.html">Learn why we don’t use OTP authentication?</a>
   </div>
-  <script src="register.js"></script>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+      authDomain: "money-master-official-site-new.firebaseapp.com",
+      databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "money-master-official-site-new",
+      storageBucket: "money-master-official-site-new.firebasestorage.app",
+      messagingSenderId: "580013071708",
+      appId: "1:580013071708:web:76363a43638401cda07599",
+      measurementId: "G-26CBLGCKC1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const registrationForm = document.getElementById('registrationForm');
+
+    registrationForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const uniqueUid = document.getElementById('uniqueCode').value.trim();
+
+      if (uniqueUid.length !== 10) {
+        alert("Code must be exactly 10 characters long.");
+        return;
+      }
+
+      const userDoc = doc(db, "User", uniqueUid);
+      const existing = await getDoc(userDoc);
+
+      if (existing.exists()) {
+        alert("This code is already in use. Try a different one.");
+      } else {
+        const now = new Date().toISOString();
+
+        await setDoc(userDoc, {
+          fullName: fullName,
+          uniqueUid: uniqueUid,
+          email: "",
+          coinBalance: 0,
+          adViewCount: 0,
+          taskCompleted: 0,
+          registrationDate: now
+        });
+
+        window.location.href = "tap.html";
+      }
+    });
+  </script>
 </body>
 </html>
