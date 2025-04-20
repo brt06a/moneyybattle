@@ -6,6 +6,7 @@ const tapIcon = document.getElementById("tapIcon");
 const coinCountDisplay = document.getElementById("coinCount");
 const tapSound = document.getElementById("tapSound");
 const reminderSound = document.getElementById("reminderSound");
+const dashboardIcon = document.getElementById("dashboardIcon");
 
 // ⏱ Reminder after 6 minutes
 function startReminderTimer() {
@@ -51,7 +52,12 @@ function onTapAnywhere(event) {
   const isAd = event.target.tagName === "IFRAME" || event.target.closest(".ad");
   const isDashboard = event.target.id === "dashboardIcon";
 
-  if (!isAd && !isDashboard) {
+  if (isDashboard) {
+    goToDashboard();
+    return;
+  }
+
+  if (!isAd) {
     handleTap(event);
 
     if (!firstTapDone) {

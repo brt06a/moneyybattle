@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="tap.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
 
-  <!-- Firebase CDN -->
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
@@ -31,10 +31,9 @@
 </head>
 <body onload="initTapPage()">
 
-  <!-- Dashboard Icon -->
+  <!-- Dashboard -->
   <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" onclick="goToDashboard()" alt="Dashboard" />
 
-  <!-- Tap Area -->
   <div class="tap-container" id="tapZone">
     <img src="assets/bitcoin_idle.png" id="tapIcon" alt="Bitcoin Tap Icon" />
     <p>COINS: <span id="coinCount">0</span></p>
@@ -44,7 +43,27 @@
   <audio id="tapSound" src="assets/tap_sound.mp3" preload="auto"></audio>
   <audio id="reminderSound" src="assets/reminder_user.mp3" preload="auto"></audio>
 
-  <!-- Ripple CSS -->
+  <!-- Abuse warning -->
+  <div id="abuseWarning" style="
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff4d4d;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    display: none;
+    z-index: 9999;
+    text-align: center;
+  ">
+    ⚠️ Don’t exploit the system — your ID may get banned! 🚫
+  </div>
+
+  <!-- Ripple Style -->
   <style>
     .tap-ripple {
       position: fixed;
@@ -69,9 +88,12 @@
   <script type="module">
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
+    const db = window.db;
     let firstTap = true;
     let reminderPlayed = false;
-    const db = window.db;
+    let tapCount = 0;
+    let lastReset = Date.now();
+    let frozen = false;
 
     function initTapPage() {
       const uid = localStorage.getItem("userUID");
@@ -94,8 +116,7 @@
     async function loadInitialCoins() {
       const uid = localStorage.getItem("userUID");
       if (!uid) return;
-      const userRef = doc(db, "User", uid);
-      const snap = await getDoc(userRef);
+      const snap = await getDoc(doc(db, "User", uid));
       if (snap.exists()) {
         const coins = snap.data().coins || 0;
         document.getElementById("coinCount").textContent = coins;
@@ -106,23 +127,50 @@
       window.location.href = "dashboard.html";
     }
 
+    function showWarning() {
+      document.getElementById("abuseWarning").style.display = "block";
+    }
+
+    function hideWarning() {
+      document.getElementById("abuseWarning").style.display = "none";
+    }
+
     async function handleTap(e) {
+      const now = Date.now();
+      if (frozen) return;
+
+      if (now - lastReset > 5000) {
+        tapCount = 0;
+        lastReset = now;
+        hideWarning();
+      }
+
+      tapCount++;
+      if (tapCount > 300) {
+        showWarning();
+        frozen = true;
+        setTimeout(() => {
+          frozen = false;
+          tapCount = 0;
+          hideWarning();
+        }, 5000);
+        return;
+      }
+
       const tapIcon = document.getElementById("tapIcon");
       const tapSound = document.getElementById("tapSound");
       const coinCountEl = document.getElementById("coinCount");
 
       tapSound.currentTime = 0;
       tapSound.play().catch(() => {});
-
       tapIcon.style.transform = "rotate(-20deg)";
       setTimeout(() => {
         tapIcon.style.transform = "rotate(0deg)";
       }, 100);
 
-      let coins = parseInt(coinCountEl.textContent);
-      coins += 1;
+      let coins = parseInt(coinCountEl.textContent) + 1;
       coinCountEl.textContent = coins;
-      updateFirestoreCoins(coins);
+      await updateDoc(doc(db, "User", localStorage.getItem("userUID")), { coins });
 
       const ripple = document.createElement("span");
       ripple.className = "tap-ripple";
@@ -130,17 +178,6 @@
       ripple.style.top = `${e.clientY}px`;
       document.body.appendChild(ripple);
       setTimeout(() => ripple.remove(), 600);
-    }
-
-    async function updateFirestoreCoins(newCoins) {
-      const uid = localStorage.getItem("userUID");
-      if (!uid) return;
-      const userRef = doc(db, "User", uid);
-      try {
-        await updateDoc(userRef, { coins: newCoins });
-      } catch (err) {
-        console.error("Firestore update error:", err);
-      }
     }
 
     document.body.addEventListener("click", function (e) {
