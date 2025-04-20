@@ -13,28 +13,20 @@
     import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
-      authDomain: "money-master-89c02.firebaseapp.com",
-      projectId: "money-master-89c02",
-      storageBucket: "money-master-89c02.appspot.com",
-      messagingSenderId: "226410161274",
-      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
-      measurementId: "G-62K0SFSZK4"
+      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+      authDomain: "money-master-official-site-new.firebaseapp.com",
+      projectId: "money-master-official-site-new",
+      storageBucket: "money-master-official-site-new.appspot.com",
+      messagingSenderId: "580013071708",
+      appId: "1:580013071708:web:76363a43638401cda07599",
+      measurementId: "G-26CBLGCKC1"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
   </script>
-  <script type="text/javascript">
-	atOptions = {
-		'key' : '72e48f2c684ec84979b2f74d47085728',
-		'format' : 'iframe',
-		'height' : 90,
-		'width' : 728,
-		'params' : {}
-	};
-</script>
-<style>
+
+  <style>
     .floating-icon {
       position: fixed;
       width: 60px;
@@ -63,9 +55,8 @@
     <img src="assets/money_master_logo.png" alt="Money Master Logo" class="app-logo" />
 
     <div class="login-options">
-      <button class="login-btn" onclick="goToLogin()">LOGIN</button>
+      <!-- Removed LOGIN and GUEST buttons -->
       <button class="create-btn" onclick="goToRegister()">CREATE ACCOUNT</button>
-      <button class="guest-btn" onclick="continueAsGuest()">CONTINUE AS GUEST</button>
     </div>
 
     <p class="small-link" onclick="goToForgot()">Forgot Password?</p>
@@ -106,17 +97,8 @@
       }, 1000);
     });
 
-    function goToLogin() {
-      window.location.href = "login.html";
-    }
-
     function goToRegister() {
       window.location.href = "register.html";
-    }
-
-    function continueAsGuest() {
-      localStorage.setItem("mode", "guest");
-      window.location.href = "tap.html";
     }
 
     function goToForgot() {
