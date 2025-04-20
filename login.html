@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login</title>
   <style>
     body {
@@ -77,22 +77,31 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const loginForm = document.getElementById('loginForm');
-
-    loginForm.addEventListener('submit', async (e) => {
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const fullName = document.getElementById('fullName').value.trim();
-      const uniqueUid = document.getElementById('uniqueCode').value.trim();
+      const nameInput = document.getElementById("fullName").value.trim().toLowerCase();
+      const uidInput = document.getElementById("uniqueCode").value.trim();
 
-      const userDoc = doc(db, "User", uniqueUid);
-      const docSnap = await getDoc(userDoc);
+      try {
+        const userRef = doc(db, "User", uidInput);
+        const userSnap = await getDoc(userRef);
 
-      if (docSnap.exists() && docSnap.data().fullName === fullName) {
-        // Redirect to task page
-        window.location.href = "tap.html";
-      } else {
-        alert("Incorrect name or code. Please try again.");
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          const storedName = userData.fullName?.trim().toLowerCase();
+
+          if (storedName === nameInput) {
+            window.location.href = "tap.html";
+          } else {
+            alert("Name does not match. Please check your spelling.");
+          }
+        } else {
+          alert("Code not found. Please check your 10-digit code.");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Something went wrong. Try again.");
       }
     });
   </script>

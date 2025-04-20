@@ -1,78 +1,70 @@
-// register.js
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+    authDomain: "money-master-official-site-new.firebaseapp.com",
+    databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "money-master-official-site-new",
+    storageBucket: "money-master-official-site-new.firebasestorage.app",
+    messagingSenderId: "580013071708",
+    appId: "1:580013071708:web:76363a43638401cda07599",
+    measurementId: "G-26CBLGCKC1"
+  };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBGmEOf7tUoP9OGL8I2OdUmuAmJmjB1lwE",
-  authDomain: "money-master-89c02.firebaseapp.com",
-  projectId: "money-master-89c02",
-  storageBucket: "money-master-89c02.appspot.com",
-  messagingSenderId: "39858594207",
-  appId: "1:39858594207:web:f4eb3ff396f7dfb6a6b3db",
-  measurementId: "G-K9FKX0PC8Z"
-};
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  // Registration function
+  window.registerUser = async function (e) {
+    e.preventDefault();
 
-document.getElementById('register-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const uid = document.getElementById("uid").value.trim();
 
-  const fullName = document.getElementById('fullName').value.trim();
-  const emailOrPhone = document.getElementById('emailOrPhone').value.trim();
-  const password = document.getElementById('password').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-  const isMobile = document.querySelector('.tab.active').dataset.value === 'mobile';
-
-  if (!fullName || !emailOrPhone || !password || !confirmPassword || password !== confirmPassword) {
-    alert("Please fill all fields correctly.");
-    return;
-  }
-
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("emailOrPhone", "==", emailOrPhone), where("registrationDate", "==", today));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      alert("You have already registered today.");
+    if (!name || !uid) {
+      alert("Please fill in both name and ID.");
       return;
     }
 
-    const email = isMobile ? `${emailOrPhone}@money.master` : emailOrPhone;
+    if (uid.length !== 10) {
+      alert("User ID must be exactly 10 characters.");
+      return;
+    }
 
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = userCredential.user.uid;
+    const userRef = doc(db, "users", uid);
+    const userSnap = await getDoc(userRef);
 
-    await setDoc(doc(db, "users", uid), {
-      uid,
-      fullName,
-      emailOrPhone,
-      registrationDate: today,
-      type: isMobile ? "mobile" : "email",
-      coins: 0
-    });
+    if (userSnap.exists()) {
+      alert("This ID is already registered. Try a different one.");
+      return;
+    }
 
-    alert("Registration successful!");
-    window.location.href = "login.html";
-  } catch (error) {
-    console.error(error);
-    alert("Registration failed: " + error.message);
-  }
-});
+    try {
+      await setDoc(userRef, {
+        name: name,
+        uid: uid,
+        coinBalance: 0,
+        registrationTimestamp: serverTimestamp()
+      });
 
-// Tab toggle
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
+      localStorage.setItem("userUID", uid);
+      localStorage.setItem("userName", name);
 
-    const input = document.getElementById('emailOrPhone');
-    input.placeholder = tab.dataset.value === 'mobile' ? "Mobile Number" : "Email";
-    input.type = tab.dataset.value === 'mobile' ? "tel" : "email";
-  });
-});
+      alert("Account created successfully!");
+      window.location.href = "tap.html";
+    } catch (err) {
+      console.error("Registration error:", err);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+</script>
