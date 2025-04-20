@@ -1,70 +1,59 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-    setDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+// Firebase setup
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-  // Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
-    authDomain: "money-master-official-site-new.firebaseapp.com",
-    databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "money-master-official-site-new",
-    storageBucket: "money-master-official-site-new.firebasestorage.app",
-    messagingSenderId: "580013071708",
-    appId: "1:580013071708:web:76363a43638401cda07599",
-    measurementId: "G-26CBLGCKC1"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+  authDomain: "money-master-official-site-new.firebaseapp.com",
+  projectId: "money-master-official-site-new",
+  storageBucket: "money-master-official-site-new.appspot.com",
+  messagingSenderId: "580013071708",
+  appId: "1:580013071708:web:76363a43638401cda07599",
+  measurementId: "G-26CBLGCKC1"
+};
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  // Registration function
-  window.registerUser = async function (e) {
-    e.preventDefault();
+// Register user
+async function registerUser(e) {
+  e.preventDefault();
 
-    const name = document.getElementById("name").value.trim();
-    const uid = document.getElementById("uid").value.trim();
+  const name = document.getElementById("name").value.trim();
+  const uid = document.getElementById("uid").value.trim();
 
-    if (!name || !uid) {
-      alert("Please fill in both name and ID.");
-      return;
-    }
+  if (!uid || uid.length !== 10 || !name) {
+    alert("Please enter a 10-character ID and name.");
+    return;
+  }
 
-    if (uid.length !== 10) {
-      alert("User ID must be exactly 10 characters.");
-      return;
-    }
+  const userRef = doc(db, "User", uid);
+  const docSnap = await getDoc(userRef);
 
-    const userRef = doc(db, "users", uid);
-    const userSnap = await getDoc(userRef);
+  if (docSnap.exists()) {
+    alert("This ID is already registered. Please try another.");
+    return;
+  }
 
-    if (userSnap.exists()) {
-      alert("This ID is already registered. Try a different one.");
-      return;
-    }
+  const now = new Date().toISOString();
 
-    try {
-      await setDoc(userRef, {
-        name: name,
-        uid: uid,
-        coinBalance: 0,
-        registrationTimestamp: serverTimestamp()
-      });
+  try {
+    await setDoc(userRef, {
+      fullName: name,
+      email: "",
+      uniqueUid: uid,
+      registrationDate: now,
+      coinBalance: 0,
+      adViewCount: 0,
+      taskCompleted: 0
+    });
 
-      localStorage.setItem("userUID", uid);
-      localStorage.setItem("userName", name);
+    alert("Account created successfully!");
+    window.location.href = "tap.html";
+  } catch (err) {
+    alert("Error creating account: " + err.message);
+    console.error(err);
+  }
+}
 
-      alert("Account created successfully!");
-      window.location.href = "tap.html";
-    } catch (err) {
-      console.error("Registration error:", err);
-      alert("Something went wrong. Please try again.");
-    }
-  };
-</script>
+window.registerUser = registerUser;
