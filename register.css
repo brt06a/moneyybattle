@@ -1,0 +1,103 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #121212;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.register-container {
+  background: #1e1e1e;
+  padding: 30px 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.5);
+  text-align: center;
+}
+
+.register-container h2 {
+  margin-bottom: 20px;
+  color: #ff5252;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.register-form input {
+  background: #2c2c2c;
+  border: none;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.register-form input::placeholder {
+  color: #888;
+}
+
+.register-form button {
+  padding: 12px;
+  border: none;
+  background-color: #ff5252;
+  color: white;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.register-form button:hover {
+  background-color: #e53935;
+}
+
+.disclaimer,
+.small-link {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.small-link a {
+  color: #ff5252;
+  text-decoration: none;
+}
+
+.copy-section {
+  display: none;
+  margin-top: 20px;
+  background: #2b2b2b;
+  padding: 10px;
+  border-radius: 8px;
+  position: relative;
+}
+
+#generatedUID {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #00ffcc;
+  margin-bottom: 10px;
+}
+
+.copy-section button {
+  background: #444;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.copy-section button:hover {
+  background: #666;
+}
