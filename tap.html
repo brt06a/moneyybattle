@@ -7,39 +7,139 @@
   <title>Tap to Earn - Money Master</title>
   <link rel="stylesheet" href="tap.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
+
+  <!-- Firebase CDN -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+      authDomain: "money-master-official-site-new.firebaseapp.com",
+      projectId: "money-master-official-site-new",
+      storageBucket: "money-master-official-site-new.appspot.com",
+      messagingSenderId: "580013071708",
+      appId: "1:580013071708:web:76363a43638401cda07599",
+      measurementId: "G-26CBLGCKC1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+  </script>
 </head>
 <body onload="initTapPage()">
 
-  <!-- Dashboard Icon (Top Right) -->
+  <!-- Dashboard Icon -->
   <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" onclick="goToDashboard()" alt="Dashboard" />
 
-  <!-- Main Tap Container -->
+  <!-- Tap Area -->
   <div class="tap-container" id="tapZone">
     <img src="assets/bitcoin_idle.png" id="tapIcon" alt="Bitcoin Tap Icon" />
     <p>COINS: <span id="coinCount">0</span></p>
   </div>
 
-  <!-- Tap Sound + Reminder Sound -->
+  <!-- Sounds -->
   <audio id="tapSound" src="assets/tap_sound.mp3" preload="auto"></audio>
   <audio id="reminderSound" src="assets/reminder_user.mp3" preload="auto"></audio>
 
-  <!-- Inject Real Ad Script on First Tap -->
-  <script>
+  <!-- Ripple CSS -->
+  <style>
+    .tap-ripple {
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.4);
+      transform: translate(-50%, -50%) scale(0);
+      animation: ripple 0.5s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
+    }
+    @keyframes ripple {
+      to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+  </style>
+
+  <!-- Tap Script -->
+  <script type="module">
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
     let firstTap = true;
     let reminderPlayed = false;
+    const db = window.db;
 
     function initTapPage() {
-      // After 6 min reminder
+      const uid = localStorage.getItem("userUID");
+      if (!uid) {
+        alert("Please login first.");
+        window.location.href = "index.html";
+        return;
+      }
+
       setTimeout(() => {
         if (!reminderPlayed) {
           document.getElementById("reminderSound").play().catch(() => {});
           reminderPlayed = true;
         }
-      }, 360000); // 6 minutes
+      }, 360000);
+
+      loadInitialCoins();
+    }
+
+    async function loadInitialCoins() {
+      const uid = localStorage.getItem("userUID");
+      if (!uid) return;
+      const userRef = doc(db, "User", uid);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        const coins = snap.data().coins || 0;
+        document.getElementById("coinCount").textContent = coins;
+      }
     }
 
     function goToDashboard() {
       window.location.href = "dashboard.html";
+    }
+
+    async function handleTap(e) {
+      const tapIcon = document.getElementById("tapIcon");
+      const tapSound = document.getElementById("tapSound");
+      const coinCountEl = document.getElementById("coinCount");
+
+      tapSound.currentTime = 0;
+      tapSound.play().catch(() => {});
+
+      tapIcon.style.transform = "rotate(-20deg)";
+      setTimeout(() => {
+        tapIcon.style.transform = "rotate(0deg)";
+      }, 100);
+
+      let coins = parseInt(coinCountEl.textContent);
+      coins += 1;
+      coinCountEl.textContent = coins;
+      updateFirestoreCoins(coins);
+
+      const ripple = document.createElement("span");
+      ripple.className = "tap-ripple";
+      ripple.style.left = `${e.clientX}px`;
+      ripple.style.top = `${e.clientY}px`;
+      document.body.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    }
+
+    async function updateFirestoreCoins(newCoins) {
+      const uid = localStorage.getItem("userUID");
+      if (!uid) return;
+      const userRef = doc(db, "User", uid);
+      try {
+        await updateDoc(userRef, { coins: newCoins });
+      } catch (err) {
+        console.error("Firestore update error:", err);
+      }
     }
 
     document.body.addEventListener("click", function (e) {
@@ -59,56 +159,7 @@
       }
     });
 
-    function handleTap(e) {
-      const tapIcon = document.getElementById("tapIcon");
-      const tapSound = document.getElementById("tapSound");
-      const coinCount = document.getElementById("coinCount");
-
-      tapSound.currentTime = 0;
-      tapSound.play().catch(() => {});
-
-      tapIcon.style.transform = "rotate(-20deg)";
-      setTimeout(() => {
-        tapIcon.style.transform = "rotate(0deg)";
-      }, 100);
-
-      // Add coin
-      let coins = parseInt(coinCount.textContent);
-      coinCount.textContent = coins + 1;
-
-      // Ripple Effect
-      const ripple = document.createElement("span");
-      ripple.className = "tap-ripple";
-      ripple.style.left = `${e.clientX}px`;
-      ripple.style.top = `${e.clientY}px`;
-      document.body.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 600);
-    }
+    window.initTapPage = initTapPage;
   </script>
-
-  <!-- Ripple Effect Styles -->
-  <style>
-    .tap-ripple {
-      position: fixed;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: rgba(0, 255, 255, 0.4);
-      transform: translate(-50%, -50%) scale(0);
-      animation: ripple 0.5s ease-out forwards;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    @keyframes ripple {
-      to {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0;
-      }
-    }
-  </style>
-
-  <!-- Optionally Load tap.js -->
-  <script src="tap.js" defer></script>
 </body>
 </html>
