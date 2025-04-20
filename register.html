@@ -2,108 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Create Account</title>
-  <style>
-    body {
-      background-color: #0d0d0d;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .card {
-      background-color: #1a1a1a;
-      border-radius: 20px;
-      padding: 2rem;
-      width: 340px;
-      box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
-      color: white;
-      text-align: center;
-      position: relative;
-    }
-
-    .avatar {
-      background-color: #e53935;
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      margin: 0 auto;
-      margin-top: -60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .avatar::before {
-      content: '';
-      width: 26px;
-      height: 26px;
-      background-color: white;
-      border-radius: 50%;
-    }
-
-    h2 {
-      margin-top: 1rem;
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 14px;
-      background-color: #121212;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: white;
-      font-size: 0.9rem;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(45deg, #ff3d3d, #b30000);
-      border: none;
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    .info {
-      margin-top: 1rem;
-      font-size: 0.75rem;
-      color: #aaa;
-    }
-
-    #status {
-      margin-top: 10px;
-      font-size: 0.8rem;
-      color: #ff6666;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account - Money Master</title>
+  <link rel="stylesheet" href="register.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
 </head>
 <body>
 
-  <div class="card">
-    <div class="avatar"></div>
-    <h2>Create Account</h2>
-    <input type="text" id="name" placeholder="Full Name" />
-    <input type="text" id="uid" placeholder="Unique 10-digit ID" />
-    <button onclick="registerUser(event)">Create Account</button>
-    <p class="info">By creating an account, you agree to our<br>
-      <a href="#" style="color: #fff; text-decoration: underline;">Privacy Policy</a> and
-      <a href="#" style="color: #fff; text-decoration: underline;">Terms & Conditions</a>.
-    </p>
-    <div id="status"></div>
+  <div class="register-container">
+    <img src="assets/icon_create.png" class="app-icon" alt="Create Icon" />
+    <h2 class="register-title">CREATE ACCOUNT</h2>
+
+    <form class="register-form" onsubmit="registerUser(event)">
+      <input type="text" id="name" placeholder="Your Name" required />
+      <input type="text" id="uid" placeholder="Choose Unique UID (10 chars)" maxlength="10" required />
+      <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4" required />
+      <input type="password" id="confirm" placeholder="Confirm PIN" maxlength="4" required />
+
+      <button type="submit">CREATE ACCOUNT</button>
+    </form>
+
+    <div class="copy-section" style="display:none;" id="copyBox">
+      <p>Your UID: <span id="generatedUID"></span></p>
+      <button onclick="copyUID()">Copy UID</button>
+    </div>
+
+    <p class="disclaimer">Save your UID & PIN. You will need it to log in again.</p>
+    <p class="small-link">By signing up, you agree to our <a href="terms.html">Terms & Privacy Policy</a></p>
   </div>
 
   <script type="module" src="register.js"></script>
-
+  <script>
+    function copyUID() {
+      const uid = document.getElementById("generatedUID").textContent;
+      const temp = document.createElement("input");
+      temp.value = uid;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+      alert("UID copied to clipboard!");
+    }
+  </script>
 </body>
 </html>

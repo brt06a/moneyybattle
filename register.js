@@ -1,7 +1,12 @@
-// Firebase setup
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
   authDomain: "money-master-official-site-new.firebaseapp.com",
@@ -12,48 +17,72 @@ const firebaseConfig = {
   measurementId: "G-26CBLGCKC1"
 };
 
+// Init Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Register user
-async function registerUser(e) {
+window.registerUser = async function (e) {
   e.preventDefault();
 
   const name = document.getElementById("name").value.trim();
   const uid = document.getElementById("uid").value.trim();
+  const pin = document.getElementById("pin").value.trim();
+  const confirm = document.getElementById("confirm").value.trim();
 
-  if (!uid || uid.length !== 10 || !name) {
-    alert("Please enter a 10-character ID and name.");
+  if (!name || !uid || !pin || !confirm) {
+    alert("Please fill all fields.");
     return;
   }
 
-  const userRef = doc(db, "User", uid);
-  const docSnap = await getDoc(userRef);
-
-  if (docSnap.exists()) {
-    alert("This ID is already registered. Please try another.");
+  if (uid.length !== 10 || !/^[a-zA-Z0-9]+$/.test(uid)) {
+    alert("UID must be 10 characters (letters and numbers only).");
     return;
   }
 
-  const now = new Date().toISOString();
+  if (!/^\d{4}$/.test(pin)) {
+    alert("PIN must be exactly 4 digits.");
+    return;
+  }
+
+  if (pin !== confirm) {
+    alert("PINs do not match.");
+    return;
+  }
 
   try {
-    await setDoc(userRef, {
-      fullName: name,
-      email: "",
-      uniqueUid: uid,
-      registrationDate: now,
+    const docRef = doc(db, "User", uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      alert("UID already taken. Choose a different one.");
+      return;
+    }
+
+    const userData = {
+      name: name,
+      uid: uid,
+      pin: pin,
       coinBalance: 0,
-      adViewCount: 0,
-      taskCompleted: 0
-    });
+      createdAt: new Date().toISOString()
+    };
 
-    alert("Account created successfully!");
-    window.location.href = "tap.html";
+    await setDoc(docRef, userData);
+
+    // Save to localStorage for session
+    localStorage.setItem("userUID", uid);
+    localStorage.setItem("userName", name);
+    localStorage.setItem("mode", "login");
+
+    // Show copy section
+    document.getElementById("generatedUID").textContent = uid;
+    document.getElementById("copyBox").style.display = "block";
+
+    setTimeout(() => {
+      alert("Account created successfully!");
+      window.location.href = "tap.html";
+    }, 1500);
   } catch (err) {
-    alert("Error creating account: " + err.message);
-    console.error(err);
+    console.error("Registration error:", err);
+    alert("Failed to create account. Try again.");
   }
-}
-
-window.registerUser = registerUser;
+};
