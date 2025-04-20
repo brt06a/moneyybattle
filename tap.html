@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>(function(d,z,s){s.src='https://'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('groleegni.net',9237617,document.createElement('script'))</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="monetag" content="3aebd9ebbba1b779613f4488fb3b0da1" />
   <title>Tap to Earn - Money Master</title>
   <link rel="stylesheet" href="tap.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
@@ -32,7 +30,7 @@
 <body onload="initTapPage()">
 
   <!-- Dashboard -->
-  <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" onclick="goToDashboard()" alt="Dashboard" />
+  <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" alt="Dashboard" />
 
   <div class="tap-container" id="tapZone">
     <img src="assets/bitcoin_idle.png" id="tapIcon" alt="Bitcoin Tap Icon" />
@@ -63,7 +61,6 @@
     ⚠️ Don’t exploit the system — your ID may get banned! 🚫
   </div>
 
-  <!-- Ripple Style -->
   <style>
     .tap-ripple {
       position: fixed;
@@ -84,7 +81,6 @@
     }
   </style>
 
-  <!-- Tap Script -->
   <script type="module">
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
@@ -111,6 +107,17 @@
       }, 360000);
 
       loadInitialCoins();
+
+      // Setup click listener
+      document.body.addEventListener("click", function (e) {
+        if (e.target.id === "dashboardIcon") {
+          window.location.href = "dashboard.html";
+          return;
+        }
+
+        const clickedAd = e.target.tagName === "IFRAME" || e.target.classList.contains("ad") || e.target.closest(".ad");
+        if (!clickedAd) handleTap(e);
+      });
     }
 
     async function loadInitialCoins() {
@@ -121,10 +128,6 @@
         const coins = snap.data().coins || 0;
         document.getElementById("coinCount").textContent = coins;
       }
-    }
-
-    function goToDashboard() {
-      window.location.href = "dashboard.html";
     }
 
     function showWarning() {
@@ -179,23 +182,6 @@
       document.body.appendChild(ripple);
       setTimeout(() => ripple.remove(), 600);
     }
-
-    document.body.addEventListener("click", function (e) {
-      const clickedAd = e.target.tagName === "IFRAME" || e.target.classList.contains("ad") || e.target.closest(".ad");
-      const clickedDashboard = e.target.id === "dashboardIcon";
-
-      if (!clickedAd && !clickedDashboard) {
-        handleTap(e);
-
-        if (firstTap) {
-          const adScript = document.createElement("script");
-          adScript.src = "https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33";
-          adScript.async = true;
-          document.body.appendChild(adScript);
-          firstTap = false;
-        }
-      }
-    });
 
     window.initTapPage = initTapPage;
   </script>
