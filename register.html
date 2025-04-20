@@ -2,210 +2,108 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Create Account</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
-      margin: 0;
-      background-color: #0c0c0c;
-      font-family: 'Inter', sans-serif;
+      background-color: #0d0d0d;
+      font-family: 'Segoe UI', sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      color: white;
+      margin: 0;
     }
 
     .card {
-      background: #151515;
-      border-radius: 16px;
+      background-color: #1a1a1a;
+      border-radius: 20px;
       padding: 2rem;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 12px rgba(255, 0, 0, 0.1);
+      width: 340px;
+      box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+      color: white;
+      text-align: center;
       position: relative;
     }
 
-    .card img {
+    .avatar {
+      background-color: #e53935;
       width: 70px;
-      position: absolute;
-      top: -35px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #151515;
+      height: 70px;
       border-radius: 50%;
-      padding: 0.5rem;
+      margin: 0 auto;
+      margin-top: -60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar::before {
+      content: '';
+      width: 26px;
+      height: 26px;
+      background-color: white;
+      border-radius: 50%;
     }
 
     h2 {
-      text-align: center;
-      margin-top: 40px;
-      margin-bottom: 20px;
-    }
-
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: none;
-      font-size: 1rem;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
     }
 
     input {
-      background: #1e1e1e;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 14px;
+      background-color: #121212;
+      border: 1px solid #333;
+      border-radius: 8px;
       color: white;
-    }
-
-    .tab-btns {
-      display: flex;
-      margin-bottom: 8px;
-    }
-
-    .tab-btns button {
-      flex: 1;
-      background: #2b2b2b;
-      color: white;
-      margin-right: 4px;
-    }
-
-    .tab-btns button.active {
-      background: red;
-    }
-
-    button#createAccount {
-      background: red;
-      color: white;
-      font-weight: bold;
-      margin-top: 16px;
-    }
-
-    .info-text {
-      font-size: 0.8rem;
-      text-align: center;
-      margin-top: 12px;
-      color: #bbb;
-    }
-
-    .message {
-      text-align: center;
-      margin-top: 10px;
       font-size: 0.9rem;
     }
 
-    .message.success {
-      color: green;
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(45deg, #ff3d3d, #b30000);
+      border: none;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
     }
 
-    .message.error {
-      color: red;
+    .info {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: #aaa;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #ff6666;
     }
   </style>
 </head>
 <body>
+
   <div class="card">
-    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User Icon" />
+    <div class="avatar"></div>
     <h2>Create Account</h2>
-    <input type="text" id="fullName" placeholder="Full Name" />
-    <div class="tab-btns">
-      <button id="emailTab" class="active" onclick="switchTab('email')">Email</button>
-      <button id="mobileTab" onclick="switchTab('mobile')">Mobile</button>
-    </div>
-    <input type="text" id="identifier" placeholder="Email or Mobile" />
-    <input type="password" id="password" placeholder="Password" />
-    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
-    <button id="createAccount">Create Account</button>
-    <div class="message" id="message"></div>
-    <div class="info-text">
-      By creating an account, you agree to our<br />
-      Privacy Policy and Terms & Conditions.
-    </div>
+    <input type="text" id="name" placeholder="Full Name" />
+    <input type="text" id="uid" placeholder="Unique 10-digit ID" />
+    <button onclick="registerUser(event)">Create Account</button>
+    <p class="info">By creating an account, you agree to our<br>
+      <a href="#" style="color: #fff; text-decoration: underline;">Privacy Policy</a> and
+      <a href="#" style="color: #fff; text-decoration: underline;">Terms & Conditions</a>.
+    </p>
+    <div id="status"></div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  <script type="module" src="register.js"></script>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
-      authDomain: "money-master-official-site-new.firebaseapp.com",
-      databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "money-master-official-site-new",
-      storageBucket: "money-master-official-site-new.appspot.com",
-      messagingSenderId: "580013071708",
-      appId: "1:580013071708:web:76363a43638401cda07599",
-      measurementId: "G-26CBLGCKC1"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    let selectedMethod = "email";
-    window.switchTab = function (method) {
-      selectedMethod = method;
-      document.getElementById("emailTab").classList.remove("active");
-      document.getElementById("mobileTab").classList.remove("active");
-      document.getElementById(method + "Tab").classList.add("active");
-      document.getElementById("identifier").placeholder = method === "email" ? "Email" : "Mobile";
-    };
-
-    document.getElementById("createAccount").addEventListener("click", async () => {
-      const fullName = document.getElementById("fullName").value.trim();
-      const identifier = document.getElementById("identifier").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-      const messageBox = document.getElementById("message");
-
-      messageBox.textContent = "";
-      messageBox.className = "message";
-
-      if (!fullName || !identifier || !password || !confirmPassword) {
-        messageBox.textContent = "Please fill all fields.";
-        messageBox.classList.add("error");
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        messageBox.textContent = "Passwords do not match.";
-        messageBox.classList.add("error");
-        return;
-      }
-
-      const uniqueUid = Math.random().toString(36).substring(2, 10).toUpperCase();
-
-      const docRef = doc(db, "User", identifier);
-
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        messageBox.textContent = "Account already exists.";
-        messageBox.classList.add("error");
-        return;
-      }
-
-      try {
-        await setDoc(docRef, {
-          fullName,
-          email: selectedMethod === "email" ? identifier : "",
-          mobile: selectedMethod === "mobile" ? identifier : "",
-          password,
-          registrationDate: new Date().toISOString(),
-          coinBalance: 0,
-          adViewCount: 0,
-          taskCompleted: 0,
-          uniqueUid
-        });
-
-        messageBox.textContent = "Account created successfully!";
-        messageBox.classList.add("success");
-        setTimeout(() => {
-          window.location.href = "tap.html";
-        }, 1200);
-      } catch (error) {
-        messageBox.textContent = "Error: " + error.message;
-        messageBox.classList.add("error");
-      }
-    });
-  </script>
 </body>
 </html>
