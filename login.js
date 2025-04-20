@@ -47,9 +47,8 @@ window.loginUser = function (e) {
     return;
   }
 
-  if (isEmail) {
-    // Email login
-    signInWithEmailAndPassword(auth, input, password)
+  const loginWithCredentials = (email) => {
+    signInWithEmailAndPassword(auth, email, password)
       .then(async (userCred) => {
         const uid = userCred.user.uid;
         const userSnap = await getDoc(doc(db, "users", uid));
@@ -58,31 +57,16 @@ window.loginUser = function (e) {
           localStorage.setItem("userUID", uid);
           localStorage.setItem("userName", userData.fullName || "");
           localStorage.setItem("mode", "login");
-          alert("Login successful!");
-          window.location.href = "tap.html";
-        } else {
-          alert("No user data found.");
-        }
-      })
-      .catch((err) => {
-        console.error("Login error:", err);
-        alert("Login failed. Check credentials.");
-      });
 
-  } else {
-    // Mobile login: generate fake email
-    const fakeEmail = `${input}@moneymaster.com`;
-    signInWithEmailAndPassword(auth, fakeEmail, password)
-      .then(async (userCred) => {
-        const uid = userCred.user.uid;
-        const userSnap = await getDoc(doc(db, "users", uid));
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-          localStorage.setItem("userUID", uid);
-          localStorage.setItem("userName", userData.fullName || "");
-          localStorage.setItem("mode", "login");
+          console.log("Login Success:");
+          console.log("userUID:", localStorage.getItem("userUID"));
+          console.log("userName:", localStorage.getItem("userName"));
+          console.log("mode:", localStorage.getItem("mode"));
+
           alert("Login successful!");
-          window.location.href = "tap.html";
+          setTimeout(() => {
+            window.location.href = "tap.html";
+          }, 300); // small delay ensures localStorage is ready
         } else {
           alert("No user data found.");
         }
@@ -91,5 +75,12 @@ window.loginUser = function (e) {
         console.error("Login error:", err);
         alert("Login failed. Check credentials.");
       });
+  };
+
+  if (isEmail) {
+    loginWithCredentials(input);
+  } else {
+    const fakeEmail = `${input}@moneymaster.com`;
+    loginWithCredentials(fakeEmail);
   }
 };
