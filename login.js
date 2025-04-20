@@ -1,11 +1,11 @@
 import {
   getFirestore,
   doc,
-  getDoc
+  getDoc,
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
-// Firebase config
+// Firebase config (same as register.js)
 const firebaseConfig = {
   apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
   authDomain: "money-master-official-site-new.firebaseapp.com",
@@ -20,14 +20,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Login handler
 window.loginUser = async function (e) {
   e.preventDefault();
 
   const uid = document.getElementById("uid").value.trim();
   const pin = document.getElementById("pin").value.trim();
 
-  if (!uid || !pin) {
-    alert("Please enter both UID and PIN.");
+  if (uid.length !== 10 || !/^[a-zA-Z0-9]+$/.test(uid)) {
+    alert("UID must be 10 alphanumeric characters.");
+    return;
+  }
+
+  if (!/^\d{4}$/.test(pin)) {
+    alert("PIN must be exactly 4 digits.");
     return;
   }
 
@@ -36,24 +42,22 @@ window.loginUser = async function (e) {
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
-      alert("No account found with this UID.");
+      alert("Account not found. Please check your UID.");
       return;
     }
 
-    const userData = docSnap.data();
-
-    if (userData.pin === pin) {
+    const data = docSnap.data();
+    if (data.pin === pin) {
       localStorage.setItem("userUID", uid);
-      localStorage.setItem("userName", userData.name);
+      localStorage.setItem("userName", data.name);
       localStorage.setItem("mode", "login");
-
       alert("Login successful!");
       window.location.href = "tap.html";
     } else {
-      alert("Incorrect PIN. Please try again.");
+      alert("Incorrect PIN.");
     }
   } catch (err) {
     console.error("Login error:", err);
-    alert("Failed to login. Try again.");
+    alert("Error logging in. Please try again.");
   }
 };
