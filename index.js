@@ -20,14 +20,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Utility to generate UID
-function generateUID(length = 10) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-}
-
-// Toggle mode: login or register
-let mode = "register"; // or "login"
+// Mode toggle logic
+let mode = "register"; // "login" or "register"
 
 window.toggleMode = function (selected) {
   mode = selected;
@@ -38,10 +32,52 @@ window.toggleMode = function (selected) {
   document.getElementById("submitBtn").textContent = selected === "register" ? "Create Account" : "Login";
 };
 
+// Handle form submission
 window.handleSubmit = async function (e) {
   e.preventDefault();
+  if (mode === "register") {
+    await window.registerUser();
+  } else {
+    await window.loginUser();
+  }
+};
 
+// Register new user
+window.registerUser = async function () {
   const name = document.getElementById("name")?.value?.trim();
+  const uid = document.getElementById("uid").value.trim();
+  const pin = document.getElementById("pin").value.trim();
+
+  if (!name || !uid || !pin) {
+    alert("All fields are required for registration.");
+    return;
+  }
+
+  const userRef = doc(db, "User", uid);
+  const snap = await getDoc(userRef);
+  if (snap.exists()) {
+    alert("UID already exists. Choose another.");
+    return;
+  }
+
+  await setDoc(userRef, {
+    name,
+    uid,
+    pin,
+    coins: 0,
+    createdAt: new Date().toISOString()
+  });
+
+  localStorage.setItem("userUID", uid);
+  localStorage.setItem("userName", name);
+  localStorage.setItem("mode", "login");
+
+  alert("Account created successfully!");
+  window.location.href = "tap.html";
+};
+
+// Login existing user
+window.loginUser = async function () {
   const uid = document.getElementById("uid").value.trim();
   const pin = document.getElementById("pin").value.trim();
 
@@ -50,54 +86,24 @@ window.handleSubmit = async function (e) {
     return;
   }
 
-  if (mode === "register") {
-    if (!name) {
-      alert("Name is required.");
-      return;
-    }
+  const userRef = doc(db, "User", uid);
+  const snap = await getDoc(userRef);
 
-    const userRef = doc(db, "User", uid);
-    const snap = await getDoc(userRef);
-    if (snap.exists()) {
-      alert("UID already exists. Choose another.");
-      return;
-    }
-
-    await setDoc(userRef, {
-      name,
-      uid,
-      pin,
-      coins: 0,
-      createdAt: new Date().toISOString()
-    });
-
-    localStorage.setItem("userUID", uid);
-    localStorage.setItem("userName", name);
-    localStorage.setItem("mode", "login");
-
-    alert("Account created successfully!");
-    window.location.href = "tap.html";
-  } else {
-    // login mode
-    const userRef = doc(db, "User", uid);
-    const snap = await getDoc(userRef);
-
-    if (!snap.exists()) {
-      alert("Account not found.");
-      return;
-    }
-
-    const data = snap.data();
-    if (data.pin !== pin) {
-      alert("Incorrect PIN.");
-      return;
-    }
-
-    localStorage.setItem("userUID", uid);
-    localStorage.setItem("userName", data.name);
-    localStorage.setItem("mode", "login");
-
-    alert("Login successful!");
-    window.location.href = "tap.html";
+  if (!snap.exists()) {
+    alert("Account not found.");
+    return;
   }
+
+  const data = snap.data();
+  if (data.pin !== pin) {
+    alert("Incorrect PIN.");
+    return;
+  }
+
+  localStorage.setItem("userUID", uid);
+  localStorage.setItem("userName", data.name);
+  localStorage.setItem("mode", "login");
+
+  alert("Login successful!");
+  window.location.href = "tap.html";
 };
