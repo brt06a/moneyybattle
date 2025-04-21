@@ -1,83 +1,78 @@
 body {
   margin: 0;
   padding: 0;
-  background: url('assets/brt_bg.png') no-repeat center center fixed;
-  background-size: cover;
   font-family: 'Segoe UI', sans-serif;
-  color: #ffffff;
-  text-align: center;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-
-*:focus {
-  outline: none;
-  box-shadow: none;
+  background-color: #121212;
+  color: white;
 }
 
 .nav-icon {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
+  top: 15px;
+  left: 15px;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
-  z-index: 10;
-  background: rgba(255,255,255,0.06);
-  padding: 5px;
-  box-shadow: 0 0 10px #00f5a0;
 }
 
 .dashboard-container {
-  padding-top: 100px;
+  padding: 60px 20px 20px;
 }
 
 .dashboard-heading {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 40px;
-  color: #00f5a0;
-  text-shadow: 1px 1px 3px #000;
-  letter-spacing: 1px;
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 25px;
+  color: #fff;
 }
 
 .icon-list {
   display: flex;
   flex-direction: column;
-  gap: 25px;
   align-items: flex-start;
-  margin-left: 30px;
+  padding-left: 20px;
 }
 
 .dashboard-item {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
+  margin-bottom: 15px;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;
+  opacity: 0;
+  transform: translateX(-50px);
+  animation: slideIn 0.4s ease forwards;
+  transition: transform 0.25s ease, filter 0.25s ease;
 }
 
+.dashboard-item:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
+}
+
+.dashboard-item:nth-child(1) { animation-delay: 0.1s; }
+.dashboard-item:nth-child(2) { animation-delay: 0.2s; }
+.dashboard-item:nth-child(3) { animation-delay: 0.3s; }
+.dashboard-item:nth-child(4) { animation-delay: 0.4s; }
+.dashboard-item:nth-child(5) { animation-delay: 0.5s; }
+.dashboard-item:nth-child(6) { animation-delay: 0.6s; }
+.dashboard-item:nth-child(7) { animation-delay: 0.7s; }
+
 .dashboard-item img {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-  padding: 10px;
-  box-shadow: 0 0 10px #00f5a0;
+  width: 32px;
+  height: 32px;
 }
 
 .dashboard-item p {
   margin: 0;
   font-size: 16px;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-  text-align: left;
+  color: white;
 }
 
-.dashboard-item:hover {
-  transform: scale(1.05);
+/* Animation */
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

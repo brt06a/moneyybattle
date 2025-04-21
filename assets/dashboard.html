@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="monetag" content="3aebd9ebbba1b779613f4488fb3b0da1" />
   <title>DASHBOARD - Money Master</title>
   <link rel="stylesheet" href="dashboard.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
@@ -21,7 +20,24 @@
       gap: 12px;
       margin-bottom: 15px;
       cursor: pointer;
+      opacity: 0;
+      transform: translateX(-50px);
+      animation: slideIn 0.4s ease forwards;
+      transition: transform 0.2s ease, filter 0.2s ease;
     }
+
+    .dashboard-item:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+
+    .dashboard-item:nth-child(1) { animation-delay: 0.1s; }
+    .dashboard-item:nth-child(2) { animation-delay: 0.2s; }
+    .dashboard-item:nth-child(3) { animation-delay: 0.3s; }
+    .dashboard-item:nth-child(4) { animation-delay: 0.4s; }
+    .dashboard-item:nth-child(5) { animation-delay: 0.5s; }
+    .dashboard-item:nth-child(6) { animation-delay: 0.6s; }
+    .dashboard-item:nth-child(7) { animation-delay: 0.7s; }
 
     .dashboard-item img {
       width: 32px;
@@ -32,6 +48,13 @@
       margin: 0;
       font-size: 16px;
       color: white;
+    }
+
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
   </style>
 </head>
@@ -93,7 +116,7 @@
       const secretCode = localStorage.getItem("userUID");
       if (!secretCode || secretCode.length !== 10) {
         alert("Unauthorized access. Please login first.");
-        window.location.href = "login.html";
+        window.location.href = "index.html";
         return;
       }
 
@@ -121,8 +144,8 @@
 
     function logoutUser() {
       localStorage.clear();
-      alert("You have been logged out.");
-      window.location.href = "login.html";
+      a7lert("You have been logged out.");
+      window.location.href = "index.html";
     }
   </script>
 </body>
