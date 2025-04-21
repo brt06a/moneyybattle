@@ -185,5 +185,22 @@
 
     window.initTapPage = initTapPage;
   </script>
+<script>
+  let startX = 0;
+
+  document.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+  });
+
+  document.addEventListener('touchend', (e) => {
+    const endX = e.changedTouches[0].clientX;
+    const diffX = startX - endX;
+
+    // Swipe left to right (right swipe)
+    if (diffX < -70) {
+      window.location.href = "dashboard.html";
+    }
+  });
+</script>
 </body>
 </html>
