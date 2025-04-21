@@ -23,23 +23,23 @@
 
     if (!uid || uid.length !== 10) {
       alert("Unauthorized access. Please login first.");
-      window.location.href = "index.html";
+      window.location.href = "login.html";
       return;
     }
 
     try {
-      const userRef = doc(db, "users", uid);
+      const userRef = doc(db, "User", uid); // Fixed path: "User"
       const userSnap = await getDoc(userRef);
 
       if (!userSnap.exists()) {
         alert("Invalid user. Please login again.");
         localStorage.clear();
-        window.location.href = "index.html";
+        window.location.href = "login.html";
       }
     } catch (error) {
       console.error("Error verifying user:", error);
       alert("Error verifying session.");
-      window.location.href = "index.html";
+      window.location.href = "login.html";
     }
   };
 
@@ -73,4 +73,4 @@
       window.location.href = "index.html";
     }, 300);
   };
-</script>Let me know if you also want to show the user’s name or coin balance on the dashboard.
+</script>

@@ -7,6 +7,33 @@
   <title>DASHBOARD - Money Master</title>
   <link rel="stylesheet" href="dashboard.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
+  <style>
+    .icon-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-left: 20px;
+    }
+
+    .dashboard-item {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+
+    .dashboard-item img {
+      width: 32px;
+      height: 32px;
+      margin-right: 12px;
+    }
+
+    .dashboard-item p {
+      margin: 0;
+      font-size: 16px;
+      color: white;
+    }
+  </style>
 </head>
 <body onload="initDashboard()">
 
@@ -63,7 +90,6 @@
     function initDashboard() {
       const clickSound = document.getElementById("clickSound");
 
-      // Check for login
       const secretCode = localStorage.getItem("userUID");
       if (!secretCode || secretCode.length !== 10) {
         alert("Unauthorized access. Please login first.");
@@ -71,7 +97,6 @@
         return;
       }
 
-      // Optional: Display user name
       const userName = localStorage.getItem("userName");
       if (userName) {
         document.querySelector(".dashboard-heading").textContent = "Welcome, " + userName.toUpperCase();
@@ -90,7 +115,7 @@
       const clickSound = document.getElementById("clickSound");
       clickSound.play();
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "tap.html";
       }, 150);
     }
 
