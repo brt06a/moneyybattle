@@ -2,11 +2,11 @@ import {
   getFirestore,
   doc,
   setDoc,
-  getDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
-// Firebase config
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
   authDomain: "money-master-official-site-new.firebaseapp.com",
@@ -21,32 +21,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Mode toggle logic
-let mode = "register";
-
-// Define toggleMode before any potential button click
-window.toggleMode = function (selected) {
-  mode = selected;
-  document.getElementById("modeTitle").textContent = selected === "register" ? "Create Account" : "Login";
-  document.getElementById("nameGroup").style.display = selected === "register" ? "block" : "none";
-  document.getElementById("toggle-register").classList.toggle("active", selected === "register");
-  document.getElementById("toggle-login").classList.toggle("active", selected === "login");
-  document.getElementById("submitBtn").textContent = selected === "register" ? "Create Account" : "Login";
-};
-
-// Define handler function globally so HTML can find it
-window.handleSubmit = async function (e) {
-  e.preventDefault();
-  if (mode === "register") {
-    await window.registerUser();
-  } else {
-    await window.loginUser();
-  }
-};
-
-// Register user function
+// Register new user
 window.registerUser = async function () {
-  const name = document.getElementById("name")?.value?.trim();
+  const name = document.getElementById("name").value.trim();
   const uid = document.getElementById("uid").value.trim();
   const pin = document.getElementById("pin").value.trim();
 
@@ -78,7 +55,7 @@ window.registerUser = async function () {
   window.location.href = "tap.html";
 };
 
-// Login user function
+// Login existing user
 window.loginUser = async function () {
   const uid = document.getElementById("uid").value.trim();
   const pin = document.getElementById("pin").value.trim();

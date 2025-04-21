@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Money Master - UID Access</title>
   <link rel="icon" href="assets/money_master_favicon.png" />
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       background-color: #121212;
       font-family: "Segoe UI", sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      height: 100%;
       color: #eee;
     }
 
@@ -23,6 +22,7 @@
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
       width: 90%;
       max-width: 400px;
+      margin: 60px auto;
       text-align: center;
     }
 
@@ -116,13 +116,13 @@
     <img src="assets/money_master_logo.png" alt="Money Master" class="logo" />
 
     <div class="toggle-group">
-      <button id="toggle-register" class="toggle-btn active" onclick="toggleMode('register')">Create</button>
-      <button id="toggle-login" class="toggle-btn" onclick="toggleMode('login')">Login</button>
+      <button id="toggle-register" class="toggle-btn active">Create</button>
+      <button id="toggle-login" class="toggle-btn">Login</button>
     </div>
 
     <h2 id="modeTitle">Create Account</h2>
 
-    <form onsubmit="handleSubmit(event)">
+    <form id="authForm">
       <div id="nameGroup">
         <input type="text" id="name" placeholder="Your Name" />
       </div>
@@ -131,15 +131,22 @@
       <button id="submitBtn" type="submit">Create Account</button>
     </form>
 
-    <p class="footer-text">By continuing, you agree to our <a href="terms.html">Terms</a> & <a href="privacy.html">Privacy</a></p>
+    <p class="footer-text">
+      By continuing, you agree to our
+      <a href="terms.html">Terms</a> &
+      <a href="privacy.html">Privacy</a>
+    </p>
   </div>
 
+  <script type="module" src="index.js"></script>
   <script>
     let currentMode = "register";
 
+    document.getElementById("toggle-register").addEventListener("click", () => toggleMode("register"));
+    document.getElementById("toggle-login").addEventListener("click", () => toggleMode("login"));
+
     function toggleMode(mode) {
       currentMode = mode;
-
       document.getElementById("toggle-register").classList.toggle("active", mode === "register");
       document.getElementById("toggle-login").classList.toggle("active", mode === "login");
       document.getElementById("modeTitle").innerText = mode === "register" ? "Create Account" : "Login";
@@ -147,23 +154,22 @@
       document.getElementById("nameGroup").style.display = mode === "register" ? "block" : "none";
     }
 
-    function handleSubmit(e) {
+    document.getElementById("authForm").addEventListener("submit", (e) => {
       e.preventDefault();
       if (currentMode === "register") {
-        if (typeof registerUser === "function") {
-          registerUser();
+        if (typeof window.registerUser === "function") {
+          window.registerUser();
         } else {
           alert("Registration logic missing.");
         }
       } else {
-        if (typeof loginUser === "function") {
-          loginUser();
+        if (typeof window.loginUser === "function") {
+          window.loginUser();
         } else {
           alert("Login logic missing.");
         }
       }
-    }
+    });
   </script>
-  <script type="module" src="register.js"></script>
 </body>
 </html>
