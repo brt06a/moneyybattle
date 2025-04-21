@@ -17,12 +17,14 @@ const firebaseConfig = {
   measurementId: "G-26CBLGCKC1"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Mode toggle logic
-let mode = "register"; // "login" or "register"
+let mode = "register";
 
+// Define toggleMode before any potential button click
 window.toggleMode = function (selected) {
   mode = selected;
   document.getElementById("modeTitle").textContent = selected === "register" ? "Create Account" : "Login";
@@ -32,7 +34,7 @@ window.toggleMode = function (selected) {
   document.getElementById("submitBtn").textContent = selected === "register" ? "Create Account" : "Login";
 };
 
-// Handle form submission
+// Define handler function globally so HTML can find it
 window.handleSubmit = async function (e) {
   e.preventDefault();
   if (mode === "register") {
@@ -42,7 +44,7 @@ window.handleSubmit = async function (e) {
   }
 };
 
-// Register new user
+// Register user function
 window.registerUser = async function () {
   const name = document.getElementById("name")?.value?.trim();
   const uid = document.getElementById("uid").value.trim();
@@ -76,7 +78,7 @@ window.registerUser = async function () {
   window.location.href = "tap.html";
 };
 
-// Login existing user
+// Login user function
 window.loginUser = async function () {
   const uid = document.getElementById("uid").value.trim();
   const pin = document.getElementById("pin").value.trim();
