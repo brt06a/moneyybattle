@@ -81,5 +81,18 @@ function initTapPage() {
 
   startReminderTimer();
 }
+function initTapPage() {
+  const uid = localStorage.getItem("userUID");
 
+  if (!uid || uid.length !== 10) {
+    alert("Session expired or unauthorized. Please login again.");
+    localStorage.clear();
+    window.location.href = "index.html";
+    return;
+  }
+
+  // Load user data
+  loadInitialCoins();
+  // ...rest of your code
+}
 window.initTapPage = initTapPage;
