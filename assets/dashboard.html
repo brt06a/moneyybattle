@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="monetag" content="3aebd9ebbba1b779613f4488fb3b0da1" />
+  <title>DASHBOARD - Money Master</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+  <style>
+    .icon-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin: 20px;
+    }
+
+    .dashboard-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+
+    .dashboard-item img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .dashboard-item p {
+      margin: 0;
+      font-size: 16px;
+      color: white;
+    }
+  </style>
+</head>
+<body onload="initDashboard()">
+
+  <!-- Back Button -->
+  <img src="assets/icon_navigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+
+  <div class="dashboard-container">
+    <h1 class="dashboard-heading">DASHBOARD</h1>
+
+    <div class="icon-list">
+
+      <div class="dashboard-item" onclick="goTo('withdraw.html')">
+        <img src="assets/icon_withdraw.png" alt="Withdraw" />
+        <p>WITHDRAW</p>
+      </div>
+
+      <div class="dashboard-item" onclick="goTo('tasks.html')">
+        <img src="assets/icon_tasks.png" alt="Tasks" />
+        <p>TASKS</p>
+      </div>
+
+      <div class="dashboard-item" onclick="goTo('leaderboard.html')">
+        <img src="assets/icon_leaderboard.png" alt="Leaderboard" />
+        <p>LEADERBOARD</p>
+      </div>
+
+      <div class="dashboard-item" onclick="goTo('premium.html')">
+        <img src="assets/icon_premium.png" alt="Premium" />
+        <p>PREMIUM</p>
+      </div>
+
+      <div class="dashboard-item" onclick="goTo('settings.html')">
+        <img src="assets/icon_settings.png" alt="Settings" />
+        <p>SETTINGS</p>
+      </div>
+
+      <div class="dashboard-item" onclick="goTo('support.html')">
+        <img src="assets/icon_support.png" alt="Support" />
+        <p>SUPPORT</p>
+      </div>
+
+      <div class="dashboard-item" onclick="logoutUser()">
+        <img src="assets/icon_logout.png" alt="Logout" />
+        <p>LOGOUT</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Click Sound -->
+  <audio id="clickSound" src="assets/sound.mp3" preload="auto"></audio>
+
+  <script>
+    function initDashboard() {
+      const clickSound = document.getElementById("clickSound");
+
+      const secretCode = localStorage.getItem("userUID");
+      if (!secretCode || secretCode.length !== 10) {
+        alert("Unauthorized access. Please login first.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const userName = localStorage.getItem("userName");
+      if (userName) {
+        document.querySelector(".dashboard-heading").textContent = "Welcome, " + userName.toUpperCase();
+      }
+    }
+
+    function goTo(page) {
+      const clickSound = document.getElementById("clickSound");
+      clickSound.play();
+      setTimeout(() => {
+        window.location.href = page;
+      }, 150);
+    }
+
+    function goBack() {
+      const clickSound = document.getElementById("clickSound");
+      clickSound.play();
+      setTimeout(() => {
+        window.location.href = "tap.html";
+      }, 150);
+    }
+
+    function logoutUser() {
+      localStorage.clear();
+      alert("You have been logged out.");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
