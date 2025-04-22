@@ -233,7 +233,7 @@
       if (diffX < -70) {
         const coins = document.getElementById("coinCount").textContent;
         localStorage.setItem("tempCoins", coins);
-        window.location.href = "dashboard.html";
+        window.location.href = "withdraw.html";
         setTimeout(() => localStorage.removeItem("tempCoins"), 2000);
       }
     });
