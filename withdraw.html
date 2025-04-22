@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>(function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://shebudriftaiter.net/tag.min.js',9226042,document.body||document.documentElement)</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
   <title>Withdraw - Money Master</title>
   <link rel="stylesheet" href="withdraw.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
 
-  <!-- Firebase Auth -->
+  <!-- Firebase + Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
@@ -25,24 +23,41 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = "login.html";
-    });
+    window.loadWithdrawPage = async function () {
+      const uid = localStorage.getItem("userUID");
+      if (!uid || uid.length !== 10) {
+        alert("Unauthorized access. Please login.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      try {
+        const userRef = doc(db, "User", uid);
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+          const coins = snap.data().coins || 0;
+          document.getElementById("coinDisplay").textContent = coins;
+          const inr = (coins / 1000).toFixed(2);
+          document.getElementById("inrValue").textContent = `₹${inr}`;
+        } else {
+          alert("User data not found.");
+        }
+      } catch (err) {
+        console.error("Firestore error:", err);
+        alert("Error fetching user data.");
+      }
+    };
   </script>
 </head>
 
 <body onload="loadWithdrawPage()">
-
-  <!-- Back Icon -->
   <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
 
-  <!-- Heading -->
   <h1 class="withdraw-title">WITHDRAW</h1>
 
   <div class="withdraw-container">
-    <!-- Balance Info -->
     <div class="wallet-info">
       <h3>TOTAL COINS</h3>
       <p id="coinDisplay">0</p>
@@ -50,20 +65,17 @@
       <p id="inrValue">₹0.00</p>
     </div>
 
-    <!-- Option Selector -->
     <div class="method-select">
       <label><input type="radio" name="method" value="upi" onchange="showForm('upi')"> UPI</label>
       <label><input type="radio" name="method" value="bank" onchange="showForm('bank')"> Bank</label>
       <label><input type="radio" name="method" value="paypal" onchange="showForm('paypal')"> PayPal</label>
     </div>
 
-    <!-- UPI Form -->
     <div id="upiForm" class="form-box" style="display:none;">
       <input type="text" id="upiID" placeholder="Enter UPI ID" />
       <input type="number" id="upiAmount" placeholder="Enter Amount" />
     </div>
 
-    <!-- Bank Form -->
     <div id="bankForm" class="form-box" style="display:none;">
       <input type="text" id="bankName" placeholder="Account Holder Name" />
       <input type="text" id="bankIFSC" placeholder="IFSC Code" />
@@ -71,39 +83,49 @@
       <input type="number" id="bankAmount" placeholder="Enter Amount" />
     </div>
 
-    <!-- PayPal Form -->
     <div id="paypalForm" class="form-box" style="display:none;">
       <input type="text" id="paypalEmail" placeholder="PayPal Email or Phone" />
       <input type="number" id="paypalAmount" placeholder="Enter Amount" />
     </div>
 
-    <!-- Confirm Button -->
     <button id="confirmBtn" onclick="submitWithdraw()" disabled>Confirm Withdraw</button>
 
-    <!-- Disclaimer -->
     <p class="disclaimer">Please ensure all details are valid and accurate to receive your money securely.</p>
 
-    <!-- Info Notes -->
     <div class="wallet-note">
       <p>1000 Coins = ₹1</p>
-      <p>Each Referral = 10,000 Coins</p>
+      <p>Each Referral = 40% commision Coins</p>
       <p>Each Ad Watch = 500 Coins</p>
     </div>
   </div>
 
-  <!-- Working Monetized Ad Script -->
-  <script src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33" async></script>
-
-  <!-- Sound + Back -->
   <script>
     function goBack() {
       const snd = new Audio("assets/sound.mp3");
       snd.play();
-      window.location.href = "dashboard.html";
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 200);
+    }
+
+    function showForm(method) {
+      document.getElementById("upiForm").style.display = "none";
+      document.getElementById("bankForm").style.display = "none";
+      document.getElementById("paypalForm").style.display = "none";
+      document.getElementById("confirmBtn").disabled = false;
+
+      if (method === "upi") {
+        document.getElementById("upiForm").style.display = "block";
+      } else if (method === "bank") {
+        document.getElementById("bankForm").style.display = "block";
+      } else if (method === "paypal") {
+        document.getElementById("paypalForm").style.display = "block";
+      }
+    }
+
+    function submitWithdraw() {
+      alert("Withdraw request submitted!");
     }
   </script>
-
-  <!-- Withdraw JS -->
-  <script src="withdraw.js"></script>
 </body>
 </html>
