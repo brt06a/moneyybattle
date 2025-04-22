@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="monetag" content="3aebd9ebbba1b779613f4488fb3b0da1" />
   <title>DASHBOARD - Money Master</title>
   <link rel="stylesheet" href="dashboard.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
@@ -62,7 +61,7 @@
 <body onload="initDashboard()">
 
   <!-- Back Button -->
-  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+  <img src="assets/icon_navigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
 
   <div class="dashboard-container">
     <h1 class="dashboard-heading">DASHBOARD</h1>
@@ -146,7 +145,7 @@
     function logoutUser() {
       localStorage.clear();
       alert("You have been logged out.");
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     }
   </script>
 </body>
