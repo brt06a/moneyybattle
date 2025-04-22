@@ -25,7 +25,7 @@ function startReminderTimer() {
 // Create floating coin animation
 function createFloatingCoin(x, y) {
   const float = document.createElement("div");
-  float.textContent = "+1 BITCOIN";
+  float.textContent = "+1 $";
   float.style.position = "absolute";
   float.style.left = x + "px";
   float.style.top = y + "px";
@@ -43,7 +43,13 @@ function handleTap(event) {
   coinCount++;
   tapTotal++;
   coinCountDisplay.textContent = coinCount;
-
+const withdrawBtn = document.getElementById("withdrawBtn");
+if (withdrawBtn) {
+  withdrawBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent ripple or tap triggers
+    window.location.href = "withdraw.html";
+  });
+}
   // Animate icon
   tapIcon.style.transform = "rotate(-20deg)";
   setTimeout(() => {
