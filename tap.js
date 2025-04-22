@@ -19,7 +19,7 @@ function startReminderTimer() {
       reminderSound.play().catch(() => {});
       reminderPlayed = true;
     }
-  }, 360000);
+  }, 180000);
 }
 
 // Create floating coin animation
