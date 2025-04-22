@@ -52,7 +52,7 @@ window.registerUser = async function () {
   localStorage.setItem("mode", "login");
 
   alert("Account created successfully!");
-  window.location.href = "tap.html";
+  window.location.href = "tapp.html";
 };
 
 // Login existing user
@@ -84,5 +84,5 @@ window.loginUser = async function () {
   localStorage.setItem("mode", "login");
 
   alert("Login successful!");
-  window.location.href = "tap.html";
+  window.location.href = "tapp.html";
 };

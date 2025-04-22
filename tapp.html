@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Money Master - All In One</title>
+  <link rel="stylesheet" href="tap.css" />
+  <link rel="stylesheet" href="withdraw.css" />
+  <link rel="stylesheet" href="referral.css" />
+  <link rel="stylesheet" href="leaderboard.css" />
+  <link rel="stylesheet" href="premium.css" />
+  <link rel="stylesheet" href="settings.css" />
+  <link rel="stylesheet" href="support.css" />
+  <link rel="icon" href="assets/money_master_favicon.png" />
+  <style>
+    section {
+      min-height: 100vh;
+      scroll-snap-align: start;
+    }
+    main {
+      scroll-snap-type: x mandatory;
+      display: flex;
+      overflow-x: scroll;
+      width: 100vw;
+      height: 100vh;
+      scroll-behavior: smooth;
+    }
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body onload="initTapPage()">
+  <main>
+    <!-- Section 1: Withdraw -->
+    <section id="withdrawSection">
+      <div class="withdraw-container">
+        <h1 class="withdraw-title">WITHDRAW</h1>
+        <div class="wallet-info">
+          <h3>TOTAL COINS</h3>
+          <p id="coinDisplay">0</p>
+          <h3>INR VALUE</h3>
+          <p id="inrValue">0</p>
+        </div>
+        <div class="method-select">
+          <label><input type="radio" name="method" value="upi" onchange="showForm('upi')"> UPI</label>
+          <label><input type="radio" name="method" value="bank" onchange="showForm('bank')"> Bank</label>
+          <label><input type="radio" name="method" value="paypal" onchange="showForm('paypal')"> PayPal</label>
+        </div>
+        <div id="upiForm" class="form-box" style="display:none">
+          <input type="text" id="upiID" placeholder="Enter UPI ID" />
+          <input type="number" id="upiAmount" placeholder="Enter Amount" />
+        </div>
+        <div id="bankForm" class="form-box" style="display:none">
+          <input type="text" id="bankName" placeholder="Account Holder Name" />
+          <input type="text" id="bankIFSC" placeholder="IFSC Code" />
+          <input type="text" id="bankAcc" placeholder="Account Number" />
+          <input type="number" id="bankAmount" placeholder="Enter Amount" />
+        </div>
+        <div id="paypalForm" class="form-box" style="display:none">
+          <input type="text" id="paypalEmail" placeholder="PayPal Email or Phone" />
+          <input type="number" id="paypalAmount" placeholder="Enter Amount" />
+        </div>
+        <button id="confirmBtn" onclick="submitWithdraw()" disabled>Confirm Withdraw</button>
+        <p class="disclaimer">Ensure details are valid for a successful withdrawal.</p>
+      </div>
+    </section><!-- Section 2: Referral -->
+<section id="referralSection">
+  <div class="referral-container">
+    <h1>Your Referral Code</h1>
+    <p id="referralCodeDisplay">Loading...</p>
+    <button onclick="copyReferralCode()">Copy Code</button>
+    <p>Share your code with friends to earn bonus coins!</p>
+  </div>
+</section>
+
+<!-- Section 3: Tasks -->
+<section id="tasksSection">
+  <div class="tasks-container">
+    <h1>Daily Tasks</h1>
+    <ul id="taskList">
+      <li>Watch Ads</li>
+      <li>Complete Offers</li>
+      <li>Invite Friends</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Section 4: Settings -->
+<section id="settingsSection">
+  <div class="settings-container">
+    <h1>Settings</h1>
+    <p>Change PIN, language, etc.</p>
+  </div>
+</section>
+
+<!-- Section 5: Tap (Main Section) -->
+<section id="tapSection">
+  <div class="tap-container" id="tapZone">
+    <img src="assets/bitcoin_idle.png" id="tapIcon" alt="Bitcoin Tap Icon" />
+    <p>COINS: <span id="coinCount">0</span></p>
+  </div>
+  <audio id="tapSound" src="assets/tap_sound.mp3" preload="auto"></audio>
+  <audio id="reminderSound" src="assets/reminder_user.mp3" preload="auto"></audio>
+  <div id="abuseWarning" style="display:none">⚠️ Don’t exploit the system — your ID may get banned! 🚫</div>
+</section>
+
+<!-- Section 6: Leaderboard -->
+<section id="leaderboardSection">
+  <div class="leaderboard-container">
+    <h1>Top Users</h1>
+    <ul id="leaderboardList">
+      <!-- Populated by JS -->
+    </ul>
+  </div>
+</section>
+
+<!-- Section 7: Premium -->
+<section id="premiumSection">
+  <div class="premium-container">
+    <h1>Go Premium</h1>
+    <p>Unlock exclusive rewards and faster earnings.</p>
+    <button>Upgrade Now</button>
+  </div>
+</section>
+
+<!-- Section 8: Support -->
+<section id="supportSection">
+  <div class="support-container">
+    <h1>Need Help?</h1>
+    <p>Email us at support@moneymaster.com</p>
+    <p>Response within 24 hours</p>
+  </div>
+</section>
+
+  </main>  <script type="module" src="tap.js"></script>  <script type="module" src="withdraw.js"></script>  <script type="module" src="referral.js"></script>  <script type="module" src="leaderboard.js"></script>  <script type="module" src="premium.js"></script>  <script type="module" src="settings.js"></script>  <script type="module" src="support.js"></script></body>
+</html>
