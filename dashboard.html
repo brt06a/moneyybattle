@@ -12,26 +12,50 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      margin-left: 20px;
+      margin: 20px;
     }
 
     .dashboard-item {
       display: flex;
       align-items: center;
-      margin: 10px 0;
+      gap: 12px;
+      margin-bottom: 15px;
       cursor: pointer;
+      opacity: 0;
+      transform: translateX(-50px);
+      animation: slideIn 0.4s ease forwards;
+      transition: transform 0.2s ease, filter 0.2s ease;
     }
+
+    .dashboard-item:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+
+    .dashboard-item:nth-child(1) { animation-delay: 0.1s; }
+    .dashboard-item:nth-child(2) { animation-delay: 0.2s; }
+    .dashboard-item:nth-child(3) { animation-delay: 0.3s; }
+    .dashboard-item:nth-child(4) { animation-delay: 0.4s; }
+    .dashboard-item:nth-child(5) { animation-delay: 0.5s; }
+    .dashboard-item:nth-child(6) { animation-delay: 0.6s; }
+    .dashboard-item:nth-child(7) { animation-delay: 0.7s; }
 
     .dashboard-item img {
       width: 32px;
       height: 32px;
-      margin-right: 12px;
     }
 
     .dashboard-item p {
       margin: 0;
       font-size: 16px;
       color: white;
+    }
+
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
   </style>
 </head>
