@@ -1,10 +1,14 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tap to Earn - Money Master</title>
   <link rel="stylesheet" href="tap.css" />
-  <link rel="icon" href="assets/money_master_favicon.png" />  <!-- Firebase -->  <script type="module">
+  <link rel="icon" href="assets/money_master_favicon.png" />
+
+  <!-- Firebase -->
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
@@ -21,13 +25,80 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     window.db = db;
-  </script></head>
-<body onload="initTapPage()">  <!-- Dashboard -->  <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" alt="Dashboard" />  <div class="tap-container" id="tapZone">
+  </script>
+
+  <style>
+    .tap-ripple {
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.4);
+      transform: translate(-50%, -50%) scale(0);
+      animation: ripple 0.5s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+
+    .withdraw-btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 15px;
+      background-color: #ff9800;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .floating-coin {
+      position: absolute;
+      font-weight: bold;
+      font-size: 18px;
+      opacity: 1;
+      animation: floatUp 0.9s ease-out forwards;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    @keyframes floatUp {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body onload="initTapPage()">
+
+  <!-- Dashboard Icon -->
+  <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" alt="Dashboard" />
+
+  <!-- Tap Area -->
+  <div class="tap-container" id="tapZone">
     <img src="assets/bitcoin_idle.png" id="tapIcon" alt="Bitcoin Tap Icon" />
     <p>COINS: <span id="coinCount">0</span></p>
-  </div>  <!-- Sounds --><audio id="tapSound" src="assets/tap_sound.mp3" preload="auto"></audio> <audio id="reminderSound" src="assets/reminder_user.mp3" preload="auto"></audio>
+    <p><button onclick="goToWithdraw()" class="withdraw-btn">Withdraw</button></p>
+  </div>
 
-  <!-- Abuse warning -->  <div id="abuseWarning" style="
+  <!-- Sounds -->
+  <audio id="tapSound" src="assets/tap_sound.mp3" preload="auto"></audio>
+  <audio id="reminderSound" src="assets/reminder_user.mp3" preload="auto"></audio>
+
+  <!-- Abuse Warning -->
+  <div id="abuseWarning" style="
     position: fixed;
     top: 15%;
     left: 50%;
@@ -44,25 +115,10 @@
     text-align: center;
   ">
     ⚠️ Don’t exploit the system — your ID may get banned! 🚫
-  </div>  <style>
-    .tap-ripple {
-      position: fixed;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: rgba(0, 255, 255, 0.4);
-      transform: translate(-50%, -50%) scale(0);
-      animation: ripple 0.5s ease-out forwards;
-      pointer-events: none;
-      z-index: 999;
-    }
-    @keyframes ripple {
-      to {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0;
-      }
-    }
-  </style>  <script type="module">
+  </div>
+
+  <!-- Tap Script -->
+  <script type="module">
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const db = window.db;
@@ -71,6 +127,10 @@
     let tapCount = 0;
     let lastReset = Date.now();
     let frozen = false;
+
+    let tapTotal = 0;
+    let colorStages = ["#ffc107", "#4caf50", "#03a9f4", "#e91e63", "#9c27b0"];
+    let tapColorIndex = 0;
 
     function initTapPage() {
       const uid = localStorage.getItem("userUID");
@@ -85,7 +145,7 @@
           document.getElementById("reminderSound").play().catch(() => {});
           reminderPlayed = true;
         }
-      }, 360000);
+      }, 180000);
 
       loadInitialCoins();
 
@@ -119,6 +179,17 @@
       document.getElementById("abuseWarning").style.display = "none";
     }
 
+    function createFloatingCoin(x, y) {
+      const float = document.createElement("div");
+      float.className = "floating-coin";
+      float.textContent = "+1 BITCOIN";
+      float.style.left = `${x}px`;
+      float.style.top = `${y}px`;
+      float.style.color = colorStages[tapColorIndex % colorStages.length];
+      document.body.appendChild(float);
+      setTimeout(() => float.remove(), 900);
+    }
+
     async function handleTap(e) {
       const now = Date.now();
       if (frozen) return;
@@ -130,6 +201,9 @@
       }
 
       tapCount++;
+      tapTotal++;
+      if (tapTotal % 20 === 0) tapColorIndex++;
+
       if (tapCount > 300) {
         showWarning();
         frozen = true;
@@ -162,25 +236,15 @@
       ripple.style.top = `${e.clientY}px`;
       document.body.appendChild(ripple);
       setTimeout(() => ripple.remove(), 600);
+
+      createFloatingCoin(e.clientX, e.clientY);
     }
 
     window.initTapPage = initTapPage;
-  </script><script>
-  let startX = 0;
 
-  document.addEventListener('touchstart', (e) => {
-    startX = e.touches[0].clientX;
-  });
-
-  document.addEventListener('touchend', (e) => {
-    const endX = e.changedTouches[0].clientX;
-    const diffX = startX - endX;
-
-    // Swipe left to right (right swipe)
-    if (diffX < -70) {
-      window.location.href = "dashboard.html";
+    function goToWithdraw() {
+      window.location.href = "withdraw.html";
     }
-  });
-</script></body>
+  </script>
+</body>
 </html>
-
