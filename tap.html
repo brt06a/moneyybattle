@@ -1,54 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tap to Earn - Money Master</title>
   <link rel="stylesheet" href="tap.css" />
-  <link rel="icon" href="assets/money_master_favicon.png" />
-  <style>
-    .tap-ripple {
-      position: fixed;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: rgba(0, 255, 255, 0.4);
-      transform: translate(-50%, -50%) scale(0);
-      animation: ripple 0.5s ease-out forwards;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    @keyframes ripple {
-      to {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0;
-      }
-    }
-
-    .coin-spark {
-      position: absolute;
-      font-weight: bold;
-      font-size: 16px;
-      animation: rise 600ms ease-out forwards;
-      pointer-events: none;
-      z-index: 1000;
-    }
-
-    @keyframes rise {
-      0% {
-        opacity: 1;
-        transform: translateY(0px);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-50px);
-      }
-    }
-  </style>
-
-  <!-- Firebase -->
-  <script type="module">
+  <link rel="icon" href="assets/money_master_favicon.png" />  <!-- Firebase -->  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
@@ -65,21 +21,13 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     window.db = db;
-  </script>
-</head>
-
-<body onload="initTapPage()">
-  <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" alt="Dashboard" />
-
-  <div class="tap-container" id="tapZone">
+  </script></head>
+<body onload="initTapPage()">  <!-- Dashboard -->  <img src="assets/icon_dashboard.png" class="dashboard-icon" id="dashboardIcon" alt="Dashboard" />  <div class="tap-container" id="tapZone">
     <img src="assets/bitcoin_idle.png" id="tapIcon" alt="Bitcoin Tap Icon" />
     <p>COINS: <span id="coinCount">0</span></p>
-  </div>
+  </div>  <!-- Sounds --><audio id="tapSound" src="assets/tap_sound.mp3" preload="auto"></audio> <audio id="reminderSound" src="assets/reminder_user.mp3" preload="auto"></audio>
 
-  <audio id="tapSound" src="assets/tap_sound.mp3" preload="auto"></audio>
-  <audio id="reminderSound" src="assets/reminder_user.mp3" preload="auto"></audio>
-
-  <div id="abuseWarning" style="
+  <!-- Abuse warning -->  <div id="abuseWarning" style="
     position: fixed;
     top: 15%;
     left: 50%;
@@ -96,9 +44,25 @@
     text-align: center;
   ">
     ⚠️ Don’t exploit the system — your ID may get banned! 🚫
-  </div>
-
-  <script type="module">
+  </div>  <style>
+    .tap-ripple {
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.4);
+      transform: translate(-50%, -50%) scale(0);
+      animation: ripple 0.5s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
+    }
+    @keyframes ripple {
+      to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+  </style>  <script type="module">
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const db = window.db;
@@ -107,24 +71,6 @@
     let tapCount = 0;
     let lastReset = Date.now();
     let frozen = false;
-
-    function getColorByMilestone(count) {
-      if (count >= 1000) return "#00ffff"; // Diamond
-      if (count >= 100) return "#ffd700";  // Gold
-      if (count >= 10) return "#c0c0c0";   // Silver
-      return "#cd7f32";                   // Bronze
-    }
-
-    function showSpark(e, count) {
-      const spark = document.createElement("div");
-      spark.className = "coin-spark";
-      spark.style.left = `${e.clientX}px`;
-      spark.style.top = `${e.clientY}px`;
-      spark.textContent = "+1";
-      spark.style.color = getColorByMilestone(count);
-      document.body.appendChild(spark);
-      setTimeout(() => spark.remove(), 600);
-    }
 
     function initTapPage() {
       const uid = localStorage.getItem("userUID");
@@ -139,16 +85,14 @@
           document.getElementById("reminderSound").play().catch(() => {});
           reminderPlayed = true;
         }
-      }, 180000);
+      }, 360000);
 
       loadInitialCoins();
 
+      // Setup click listener
       document.body.addEventListener("click", function (e) {
         if (e.target.id === "dashboardIcon") {
-          const coins = document.getElementById("coinCount").textContent;
-          localStorage.setItem("tempCoins", coins);
           window.location.href = "dashboard.html";
-          setTimeout(() => localStorage.removeItem("tempCoins"), 2000);
           return;
         }
 
@@ -204,13 +148,13 @@
       tapSound.currentTime = 0;
       tapSound.play().catch(() => {});
       tapIcon.style.transform = "rotate(-20deg)";
-      setTimeout(() => tapIcon.style.transform = "rotate(0deg)", 100);
+      setTimeout(() => {
+        tapIcon.style.transform = "rotate(0deg)";
+      }, 100);
 
       let coins = parseInt(coinCountEl.textContent) + 1;
       coinCountEl.textContent = coins;
       await updateDoc(doc(db, "User", localStorage.getItem("userUID")), { coins });
-
-      showSpark(e, coins);
 
       const ripple = document.createElement("span");
       ripple.className = "tap-ripple";
@@ -221,22 +165,22 @@
     }
 
     window.initTapPage = initTapPage;
-  </script>
+  </script><script>
+  let startX = 0;
 
-  <script>
-    let startX = 0;
-    document.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-    });
-    document.addEventListener('touchend', (e) => {
-      const diffX = startX - e.changedTouches[0].clientX;
-      if (diffX < -70) {
-        const coins = document.getElementById("coinCount").textContent;
-        localStorage.setItem("tempCoins", coins);
-        window.location.href = "withdraw.html";
-        setTimeout(() => localStorage.removeItem("tempCoins"), 2000);
-      }
-    });
-  </script>
-</body>
+  document.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+  });
+
+  document.addEventListener('touchend', (e) => {
+    const endX = e.changedTouches[0].clientX;
+    const diffX = startX - endX;
+
+    // Swipe left to right (right swipe)
+    if (diffX < -70) {
+      window.location.href = "dashboard.html";
+    }
+  });
+</script></body>
 </html>
+
