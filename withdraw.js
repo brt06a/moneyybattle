@@ -3,7 +3,10 @@ import {
   getFirestore,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
+  collection,
+  addDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 // Firebase config
@@ -119,7 +122,6 @@ window.submitWithdraw = async function () {
   try {
     const userRef = doc(db, "User", uid);
     const snap = await getDoc(userRef);
-
     if (!snap.exists()) return alert("User data not found.");
 
     const currentCoins = snap.data().coins || 0;
@@ -134,6 +136,17 @@ window.submitWithdraw = async function () {
       coins: currentCoins - coinToDeduct
     });
 
+    // Save withdrawal request
+    const requestRef = collection(db, "Withdrawals", uid, "requests");
+    await addDoc(requestRef, {
+      uid,
+      method,
+      amount,
+      details,
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
+
     alert("Withdraw request submitted successfully!");
     window.location.reload();
 
@@ -141,6 +154,4 @@ window.submitWithdraw = async function () {
     console.error("Withdrawal error:", err);
     alert("Failed to submit withdrawal. Try again.");
   }
-
-  console.log("Withdraw Request:", details);
 };
