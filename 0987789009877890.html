@@ -152,13 +152,6 @@
       }
     });
 
-    function startGame() {
-      if (adViews < adViewsRequired) {
-        adViews++;
-        alert(`Ad ${adViews} viewed. View ${adViewsRequired - adViews} more.`);
-        if (adViews >= adViewsRequired) startBtn.textContent = "Start Battle";
-        return;
-      }
 
       startBtn.style.display = "none";
       gameStarted = true;
