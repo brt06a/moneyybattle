@@ -1,5 +1,28 @@
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+  authDomain: "money-master-official-site-new.firebaseapp.com",
+  projectId: "money-master-official-site-new",
+  storageBucket: "money-master-official-site-new.appspot.com",
+  messagingSenderId: "580013071708",
+  appId: "1:580013071708:web:76363a43638401cda07599",
+  measurementId: "G-26CBLGCKC1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // Load wallet balance and update UI
-window.loadWithdrawPage = function () {
+window.loadWithdrawPage = async function () {
   const uid = localStorage.getItem("userUID");
   if (!uid) {
     alert("Please login first.");
@@ -7,20 +30,32 @@ window.loadWithdrawPage = function () {
     return;
   }
 
-  // Use coin data passed from tap page
-  const coins = parseInt(localStorage.getItem("tempCoins") || "0");
-  const inrValue = (coins / 1000).toFixed(2);
+  try {
+    const userRef = doc(db, "User", uid);
+    const snap = await getDoc(userRef);
 
-  document.getElementById("coinDisplay").textContent = coins;
-  document.getElementById("inrValue").textContent = "₹" + inrValue;
+    if (!snap.exists()) {
+      alert("User data not found.");
+      return;
+    }
 
-  const confirmBtn = document.getElementById("confirmBtn");
-  if (coins >= 200000) {
-    confirmBtn.classList.add("enabled");
-    confirmBtn.disabled = false;
-  } else {
-    confirmBtn.classList.remove("enabled");
-    confirmBtn.disabled = true;
+    const coins = snap.data().coins || 0;
+    const inrValue = (coins / 1000).toFixed(2);
+
+    document.getElementById("coinDisplay").textContent = coins;
+    document.getElementById("inrValue").textContent = "₹" + inrValue;
+
+    const confirmBtn = document.getElementById("confirmBtn");
+    if (coins >= 200000) {
+      confirmBtn.classList.add("enabled");
+      confirmBtn.disabled = false;
+    } else {
+      confirmBtn.classList.remove("enabled");
+      confirmBtn.disabled = true;
+    }
+  } catch (err) {
+    console.error("Error loading coin balance:", err);
+    alert("Error loading wallet. Try again later.");
   }
 };
 

@@ -6,50 +6,6 @@
   <title>Withdraw - Money Master</title>
   <link rel="stylesheet" href="withdraw.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
-
-  <!-- Firebase + Firestore -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
-      authDomain: "money-master-89c02.firebaseapp.com",
-      projectId: "money-master-89c02",
-      storageBucket: "money-master-89c02.appspot.com",
-      messagingSenderId: "226410161274",
-      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
-      measurementId: "G-62K0SFSZK4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.loadWithdrawPage = async function () {
-      const uid = localStorage.getItem("userUID");
-      if (!uid || uid.length !== 10) {
-        alert("Unauthorized access. Please login.");
-        window.location.href = "index.html";
-        return;
-      }
-
-      try {
-        const userRef = doc(db, "User", uid);
-        const snap = await getDoc(userRef);
-        if (snap.exists()) {
-          const coins = snap.data().coins || 0;
-          document.getElementById("coinDisplay").textContent = coins;
-          const inr = (coins / 1000).toFixed(2);
-          document.getElementById("inrValue").textContent = `₹${inr}`;
-        } else {
-          alert("User data not found.");
-        }
-      } catch (err) {
-        console.error("Firestore error:", err);
-        alert("Error fetching user data.");
-      }
-    };
-  </script>
 </head>
 
 <body onload="loadWithdrawPage()">
@@ -94,7 +50,7 @@
 
     <div class="wallet-note">
       <p>1000 Coins = ₹1</p>
-      <p>Each Referral = 40% commision Coins</p>
+      <p>Each Referral = 40% commission Coins</p>
       <p>Each Ad Watch = 500 Coins</p>
     </div>
   </div>
@@ -127,5 +83,8 @@
       alert("Withdraw request submitted!");
     }
   </script>
+
+  <!-- Now the Firebase fetch logic will come from withdraw.js -->
+  <script type="module" src="withdraw.js"></script>
 </body>
 </html>
