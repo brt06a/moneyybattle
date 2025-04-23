@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Money Master 3D Tap Game</title>
+  <link rel="stylesheet" href="game3d.css" />
+</head>
+<body>
+  <header class="game-header">MONEY MASTER</header>
+  <main class="game-container">
+    <div class="hud">
+      <div class="score-board">Score: <span id="Score">0</span></div>
+      <div class="timer">Time: <span id="timer">60</span>s</div>
+    </div>
+    <button id="startBtn">Start Game</button>
+    <div class="game-area" id="gameArea"></div>
+    <div class="result-overlay" id="resultOverlay">
+      <h2>You Win!</h2>
+      <p>Your Score: <span id="finalScore">0</span></p>
+      <p>Opponent: <span id="opponentName"></span> - <span id="opponentScore"></span></p>
+      <button onclick="location.reload()">Play Again</button>
+    </div>
+  </main>
+  <audio id="tapSound" src="sound.mp3" preload="auto"></audio>
+  <audio id="winSound" src="win.mp3" preload="auto"></audio>
+  <script src="game3d.js"></script>
+</body>
+</html>
