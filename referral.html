@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
   <title>Referral - Money Master</title>
   <link rel="stylesheet" href="referral.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
@@ -83,54 +81,65 @@
     .bottom-banner { position: fixed; bottom: 0; width: 100%; z-index: 1000; }
   </style>
 </head>
-<body>
+<body>    <!-- Navigation -->  <img src="assets/icon_navigation.png" class="nav-icon" onclick="goBack()" alt="Back" />  <!-- Referral Section -->  <div class="referral-container">
+    <h1>REFERRAL</h1><div class="ref-stats">
+  <p><strong>Total Referral Earnings:</strong> ₹<span id="refEarnings">0</span></p>
+</div>
 
-  <!-- Top Ad -->
-  <div class="ad-banner top-banner">[ Top Banner Ad ]</div>
+<h2>Your Referral Code</h2>
+<p>Share this code and earn 40% daily from your friend's earnings.</p>
+<div style="display: flex; align-items: center;">
+  <span id="refCode" style="font-size: 18px; font-weight: bold; color: lime;"></span>
+  <button onclick="copyRefCode()" style="margin-left: 10px;">Copy</button>
+</div>
+<p><strong>Total Referrals:</strong> <span id="refCount">0</span></p>
 
-  <!-- Navigation -->
-  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+<!-- History Section -->
+<div class="ref-history">
+  <h3>People Who Used Your Code:</h3>
+  <ul id="refList"></ul>
+</div>
 
-  <!-- Referral Section -->
-  <div class="referral-container">
-    <h1>REFERRAL</h1>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+      authDomain: "money-master-official-site-new.firebaseapp.com",
+      projectId: "money-master-official-site-new",
+      storageBucket: "money-master-official-site-new.appspot.com",
+      messagingSenderId: "580013071708",
+      appId: "1:580013071708:web:76363a43638401cda07599"
+    };
 
-    <div class="ref-stats">
-      <p><strong>Total Referral Earnings:</strong> ₹<span id="refEarnings">0</span></p>
-    </div>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    <p class="ref-label">Your Referral Code:</p>
-    <div class="copy-box">
-      <span id="refCode">ABC123</span>
-      <button onclick="copyCode()">COPY</button>
-    </div>
+    async function loadReferralData() {
+      const uid = localStorage.getItem("userUID");
+      if (!uid) return;
 
-    <p><strong>Total Referrals:</strong> <span id="refCount">0</span></p>
+      const userRef = doc(db, "User", uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) return;
 
-    <!-- History Section -->
-    <div class="ref-history">
-      <h3>People Who Used Your Code:</h3>
-      <ul id="refList">
-        <li>user01xyz</li>
-        <li>user02abc</li>
-        <li>user03def</li>
-      </ul>
-    </div>
-  </div>
+      const userData = userSnap.data();
+      document.getElementById("refCode").textContent = userData.referralCode || "N/A";
+      document.getElementById("refEarnings").textContent = (userData.referralEarnings || 0).toFixed(2);
 
-  <!-- Bottom Ad -->
-  <div class="ad-banner bottom-banner">[ Bottom Banner Ad ]</div>
+      const q = query(collection(db, "User"), where("referredBy", "==", userData.referralCode));
+      const querySnap = await getDocs(q);
 
-  <!-- Custom Tap Ad Script -->
-  <script>
-    const script = document.createElement("script");
-    script.src = "https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33";
-    script.async = true;
-    document.body.appendChild(script);
-  </script>
+      let count = 0;
+      let refList = document.getElementById("refList");
+      refList.innerHTML = "";
+      querySnap.forEach(docSnap => {
+        refList.innerHTML += `<li>${docSnap.id}</li>`;
+        count++;
+      });
 
-  <!-- Navigation & Copy -->
-  <script>
+      document.getElementById("refCount").textContent = count;
+    }
+
+    loadReferralData();
+  </script>  <script>
     function goBack() {
       const snd = new Audio("assets/sound.mp3");
       snd.play();
@@ -149,7 +158,5 @@
       document.body.removeChild(input);
       alert("Referral code copied!");
     }
-  </script>
-
-</body>
+  </script></body>
 </html>
