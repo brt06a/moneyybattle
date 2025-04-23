@@ -1,4 +1,22 @@
-// support.js
+// Firebase config (replace with your real config if needed)
+const firebaseConfig = {
+  apiKey: "AIzaSyBLoOGmPMpShYhIDNuF7PYR2U4fvA3vPZg",
+  authDomain: "money-master-89c02.firebaseapp.com",
+  projectId: "money-master-89c02",
+  storageBucket: "money-master-89c02.appspot.com",
+  messagingSenderId: "210193044537",
+  appId: "1:210193044537:web:4e23aee0fd69c594027434"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Check login session
+const uid = localStorage.getItem("uid");
+if (!uid) {
+  window.location.href = "index.html";
+}
 
 // Add 20 FAQs
 const faqData = [
@@ -84,8 +102,8 @@ const faqData = [
   }
 ];
 
-// Insert FAQs dynamically
-window.onload = function () {
+// Initialize support page (called in HTML onload)
+function initSupportPage() {
   const faqContainer = document.getElementById("faqList");
   if (!faqContainer) return;
 
@@ -110,7 +128,6 @@ window.onload = function () {
     faqContainer.appendChild(div);
   });
 
-  // Handle complaint submission display logic
   const complaintInput = document.getElementById("complaintInput");
   const submitBtn = document.getElementById("submitComplaint");
 
@@ -125,13 +142,21 @@ window.onload = function () {
       return;
     }
 
-    // Simulated submission
-    console.log("Complaint submitted:", message);
-    alert("Your complaint has been submitted. We'll get back to you soon.");
-    complaintInput.value = "";
-    submitBtn.style.display = "none";
+    // Optional: Save to Firestore instead of just console
+    db.collection("complaints").add({
+      uid: uid,
+      message: message,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      alert("Your complaint has been submitted. We'll get back to you soon.");
+      complaintInput.value = "";
+      submitBtn.style.display = "none";
+    }).catch((error) => {
+      alert("Failed to submit complaint. Please try again later.");
+      console.error("Error submitting complaint:", error);
+    });
   });
-};
+}
 
 // Back navigation
 function goBack() {
@@ -141,3 +166,4 @@ function goBack() {
     window.location.href = "dashboard.html";
   }, 200);
 }
+

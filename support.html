@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
   <title>SUPPORT - Money Master</title>
   <link rel="stylesheet" href="support.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
@@ -18,7 +17,7 @@
 <body style="background: url('assets/brt_bg.png') no-repeat center center fixed; background-size: cover;" onload="initSupportPage()">
 
   <!-- Navigation -->
-  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+  <img src="assets/icon_navigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
 
   <!-- Page Title -->
   <h1 class="page-title">SUPPORT</h1>
@@ -39,33 +38,19 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
-      authDomain: "money-master-89c02.firebaseapp.com",
-      projectId: "money-master-89c02",
-      storageBucket: "money-master-89c02.appspot.com",
-      messagingSenderId: "226410161274",
-      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
-      measurementId: "G-62K0SFSZK4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      }
-    });
-  </script>
-
   <!-- Tap Page Ad Script -->
-  <script async src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33"></script>
+
+  <!-- Login Session Check (UID) -->
+  <script>
+    window.onload = function () {
+      const uid = localStorage.getItem("uid");
+      if (!uid) {
+        window.location.href = "index.html";
+      } else {
+        initSupportPage();
+      }
+    };
+  </script>
 
   <!-- Go Back Sound -->
   <script>
