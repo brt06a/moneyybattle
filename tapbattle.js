@@ -2,26 +2,27 @@ const startScreen = document.getElementById("startScreen");
 const gameArea = document.getElementById("gameArea");
 const scoreBoard = document.getElementById("scoreBoard");
 const resultScreen = document.getElementById("resultScreen");
-const gameTitle = document.getElementById("gameTitle");
 
 let playerScore = 0;
-let gameInterval, timerInterval;
 let timeLeft = 60;
-
-const opponentNames = ["Ravi", "Pooja", "Anil", "Priya", "Raj", "Kiran", "Suman"];
+let gameInterval, timerInterval;
 
 const tapSound = new Audio("sound.mp3");
 const winSound = new Audio("win.mp3");
+const opponentNames = ["Ravi", "Pooja", "Anil", "Priya", "Raj", "Kiran", "Suman"];
 
-// Immediately start game (no ads)
-startScreen.style.display = "none";
-scoreBoard.style.display = "flex";
-startGame();
+// Start button logic (no ads for now)
+document.getElementById("startBtn").addEventListener("click", () => {
+  startScreen.style.display = "none";
+  scoreBoard.style.display = "flex";
+  startGame();
+});
 
 function startGame() {
   playerScore = 0;
   timeLeft = 60;
   updateScore();
+  updateTimer();
 
   timerInterval = setInterval(() => {
     timeLeft--;
@@ -45,6 +46,7 @@ function spawnImage() {
   circle.className = "falling";
   circle.style.left = Math.random() * 90 + "%";
   circle.style.backgroundColor = getRandomColor();
+
   circle.addEventListener("click", () => {
     playerScore += 2;
     updateScore();
