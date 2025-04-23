@@ -1,3 +1,28 @@
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  increment,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+  authDomain: "money-master-official-site-new.firebaseapp.com",
+  projectId: "money-master-official-site-new",
+  storageBucket: "money-master-official-site-new.appspot.com",
+  messagingSenderId: "580013071708",
+  appId: "1:580013071708:web:76363a43638401cda07599",
+  measurementId: "G-26CBLGCKC1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Variables
 let coinCount = 0;
 let firstTapDone = false;
 let reminderPlayed = false;
@@ -12,7 +37,7 @@ const tapSound = document.getElementById("tapSound");
 const reminderSound = document.getElementById("reminderSound");
 const dashboardIcon = document.getElementById("dashboardIcon");
 
-// Reminder timer (6 minutes)
+// Reminder timer (6 mins)
 function startReminderTimer() {
   setTimeout(() => {
     if (!reminderPlayed) {
@@ -22,7 +47,7 @@ function startReminderTimer() {
   }, 180000);
 }
 
-// Create floating coin animation
+// Floating +1 animation
 function createFloatingCoin(x, y) {
   const float = document.createElement("div");
   float.textContent = "+1 $";
@@ -34,33 +59,45 @@ function createFloatingCoin(x, y) {
   float.style.zIndex = 9999;
   float.style.animation = "floatUp 0.9s ease-out forwards";
   document.body.appendChild(float);
-
   setTimeout(() => float.remove(), 900);
 }
 
-// Coin tap handler
+// Safe coin update
+async function incrementCoin(uid) {
+  try {
+    await updateDoc(doc(db, "User", uid), {
+      coins: increment(1)
+    });
+  } catch (err) {
+    console.error("Failed to increment coins:", err);
+  }
+}
+
+// Tap logic
 function handleTap(event) {
+  const uid = window.loggedUID;
+  if (!uid) return;
+
   coinCount++;
   tapTotal++;
   coinCountDisplay.textContent = coinCount;
-const withdrawBtn = document.getElementById("withdrawBtn");
-if (withdrawBtn) {
-  withdrawBtn.addEventListener("click", (e) => {
-    e.stopPropagation(); // Prevent ripple or tap triggers
-    window.location.href = "withdraw.html";
-  });
-}
-  // Animate icon
+
+  const withdrawBtn = document.getElementById("withdrawBtn");
+  if (withdrawBtn) {
+    withdrawBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      window.location.href = "withdraw.html";
+    });
+  }
+
   tapIcon.style.transform = "rotate(-20deg)";
   setTimeout(() => {
     tapIcon.style.transform = "rotate(0deg)";
   }, 100);
 
-  // Play sound
   tapSound.currentTime = 0;
   tapSound.play().catch(() => {});
 
-  // Ripple effect
   const ripple = document.createElement("span");
   ripple.className = "tap-ripple";
   ripple.style.left = `${event.clientX}px`;
@@ -68,25 +105,24 @@ if (withdrawBtn) {
   document.body.appendChild(ripple);
   setTimeout(() => ripple.remove(), 600);
 
-  // Floating coin
   createFloatingCoin(event.clientX, event.clientY);
 
-  // Change color every 20 taps
   if (tapTotal % 20 === 0) tapColorIndex++;
+
+  // Firestore-safe increment
+  incrementCoin(uid);
 }
 
-// Navigate to dashboard
+// Navigation
 function goToDashboard() {
   window.location.href = "dashboard.html";
 }
 
-// Tap handler (excluding dashboard and ads)
+// Main page tap handler
 function onTapAnywhere(event) {
   const isAd = event.target.tagName === "IFRAME" || event.target.closest(".ad");
   const isDashboard = event.target.id === "dashboardIcon";
-
   if (isDashboard) return;
-
   if (!isAd) {
     handleTap(event);
     if (!firstTapDone) {
@@ -96,7 +132,15 @@ function onTapAnywhere(event) {
   }
 }
 
-// Main init
+// Lazy load ad
+function loadAdScript() {
+  const script = document.createElement("script");
+  script.src = "https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33";
+  script.async = true;
+  document.body.appendChild(script);
+}
+
+// Init
 function initTapPage() {
   const uid = localStorage.getItem("userUID");
   const pin = localStorage.getItem("userPIN");
@@ -108,7 +152,6 @@ function initTapPage() {
     return;
   }
 
-  // Optionally: Store session globally
   window.loggedUID = uid;
   window.loggedPIN = pin;
 
