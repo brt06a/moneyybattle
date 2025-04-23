@@ -109,6 +109,15 @@
     .footer-text a:hover {
       text-decoration: underline;
     }
+
+    .error-msg {
+      color: #ff4d4d;
+      font-size: 13px;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      display: none;
+      text-align: left;
+    }
   </style>
 </head>
 <body>
@@ -125,6 +134,8 @@
     <form id="authForm">
       <div id="nameGroup">
         <input type="text" id="name" placeholder="Your Name" />
+        <input type="text" id="contact" placeholder="Email or Mobile" />
+        <p id="contactError" class="error-msg"></p>
       </div>
       <input type="text" id="uid" placeholder="Unique ID (10 char)" maxlength="10" required />
       <input type="password" id="pin" placeholder="PIN (4-6 digits)" maxlength="6" required />
@@ -139,6 +150,7 @@
   </div>
 
   <script type="module" src="index.js"></script>
+
   <script>
     let currentMode = "register";
 
@@ -152,7 +164,40 @@
       document.getElementById("modeTitle").innerText = mode === "register" ? "Create Account" : "Login";
       document.getElementById("submitBtn").innerText = mode === "register" ? "Create Account" : "Login";
       document.getElementById("nameGroup").style.display = mode === "register" ? "block" : "none";
+      document.getElementById("submitBtn").disabled = false;
+      document.getElementById("contactError").style.display = "none";
     }
+
+    // Validate contact input
+    const contactInput = document.getElementById("contact");
+    const contactError = document.getElementById("contactError");
+    const submitBtn = document.getElementById("submitBtn");
+
+    contactInput?.addEventListener("input", () => {
+      if (currentMode !== "register") return;
+
+      const val = contactInput.value.trim();
+      contactError.style.display = "none";
+      submitBtn.disabled = false;
+
+      if (!val) return;
+
+      if (val.includes("@")) {
+        const emailRegex = /^[^\s@]+@gmail\.com$/;
+        if (!emailRegex.test(val)) {
+          contactError.innerText = "Enter a valid Gmail address.";
+          contactError.style.display = "block";
+          submitBtn.disabled = true;
+        }
+      } else {
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(val)) {
+          contactError.innerText = "Enter a 10-digit mobile number.";
+          contactError.style.display = "block";
+          submitBtn.disabled = true;
+        }
+      }
+    });
 
     document.getElementById("authForm").addEventListener("submit", (e) => {
       e.preventDefault();

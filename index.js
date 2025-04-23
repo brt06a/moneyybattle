@@ -26,8 +26,9 @@ window.registerUser = async function () {
   const name = document.getElementById("name").value.trim();
   const uid = document.getElementById("uid").value.trim();
   const pin = document.getElementById("pin").value.trim();
+  const contact = document.getElementById("contact")?.value.trim();
 
-  if (!name || !uid || !pin) {
+  if (!name || !uid || !pin || !contact) {
     alert("All fields are required for registration.");
     return;
   }
@@ -43,6 +44,7 @@ window.registerUser = async function () {
     name,
     uid,
     pin,
+    contact,
     coins: 0,
     createdAt: new Date().toISOString()
   });
