@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Money Master - Tap Battle</title>
+  <link rel="stylesheet" href="tapbattle.css">
+</head>
+<body>
+  <div id="gameContainer">
+    <!-- Game Heading -->
+    <div id="gameTitle">MONEY MASTER</div>
+
+    <!-- Start Screen -->
+    <div id="startScreen">
+      <h2>Tap Battle</h2>
+      <p>Watch 4 ads to unlock the game</p>
+      <button id="watchAdsBtn">Watch Ads (0/4)</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" style="display:none;">
+      <div id="scoreBoard">
+        <span id="playerScore"><strong>Your Score:</strong> 0</span>
+        <span id="timer"><strong>Time Left:</strong> 60s</span>
+      </div>
+      <div id="gameArea"></div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" style="display:none;">
+      <h2 id="resultText">You Win!</h2>
+      <p id="opponentStats"></p>
+      <p>You earned <strong>10,000 coins</strong>!</p>
+      <button onclick="location.reload()">Play Again</button>
+    </div>
+  </div>
+
+  <audio id="tapSound" src="sound.mp3"></audio>
+  <audio id="winSound" src="win.mp3"></audio>
+  <script src="tapbattle.js"></script>
+</body>
+</html>
