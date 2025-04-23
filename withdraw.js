@@ -1,10 +1,9 @@
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import {
   getFirestore,
   doc,
-  getDoc
+  getDoc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 // Firebase config
@@ -75,9 +74,11 @@ window.showForm = function (method) {
 };
 
 // Handle withdrawal submission
-window.submitWithdraw = function () {
-  const method = document.querySelector('input[name="method"]:checked')?.value;
+window.submitWithdraw = async function () {
+  const uid = localStorage.getItem("userUID");
+  if (!uid) return alert("Unauthorized request.");
 
+  const method = document.querySelector('input[name="method"]:checked')?.value;
   if (!method) {
     alert("Please select a payment method.");
     return;
@@ -87,30 +88,59 @@ window.submitWithdraw = function () {
   snd.play();
 
   let details = {};
+  let amount = 0;
 
   if (method === "upi") {
     const upiID = document.getElementById("upiID").value.trim();
-    const upiAmt = document.getElementById("upiAmount").value.trim();
-    if (!upiID || !upiAmt) return alert("Please fill all UPI fields.");
-    details = { method, upiID, amount: upiAmt };
+    amount = parseInt(document.getElementById("upiAmount").value.trim());
+    if (!upiID || !amount) return alert("Please fill all UPI fields.");
+    details = { method, upiID, amount };
   }
 
   if (method === "bank") {
     const name = document.getElementById("bankName").value.trim();
     const ifsc = document.getElementById("bankIFSC").value.trim();
     const acc = document.getElementById("bankAcc").value.trim();
-    const amt = document.getElementById("bankAmount").value.trim();
-    if (!name || !ifsc || !acc || !amt) return alert("Please fill all Bank fields.");
-    details = { method, name, ifsc, acc, amount: amt };
+    amount = parseInt(document.getElementById("bankAmount").value.trim());
+    if (!name || !ifsc || !acc || !amount) return alert("Please fill all Bank fields.");
+    details = { method, name, ifsc, acc, amount };
   }
 
   if (method === "paypal") {
     const payEmail = document.getElementById("paypalEmail").value.trim();
-    const payAmt = document.getElementById("paypalAmount").value.trim();
-    if (!payEmail || !payAmt) return alert("Please fill all PayPal fields.");
-    details = { method, email: payEmail, amount: payAmt };
+    amount = parseInt(document.getElementById("paypalAmount").value.trim());
+    if (!payEmail || !amount) return alert("Please fill all PayPal fields.");
+    details = { method, email: payEmail, amount };
+  }
+
+  // Now deduct coins from Firestore
+  const coinToDeduct = amount * 1000;
+
+  try {
+    const userRef = doc(db, "User", uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) return alert("User data not found.");
+
+    const currentCoins = snap.data().coins || 0;
+
+    if (coinToDeduct > currentCoins) {
+      alert("Insufficient coins for withdrawal.");
+      return;
+    }
+
+    // Deduct coins
+    await updateDoc(userRef, {
+      coins: currentCoins - coinToDeduct
+    });
+
+    alert("Withdraw request submitted successfully!");
+    window.location.reload();
+
+  } catch (err) {
+    console.error("Withdrawal error:", err);
+    alert("Failed to submit withdrawal. Try again.");
   }
 
   console.log("Withdraw Request:", details);
-  alert("Withdraw request submitted successfully!");
 };
