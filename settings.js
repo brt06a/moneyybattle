@@ -1,4 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import {
   getFirestore,
   doc,
@@ -6,6 +8,7 @@ import {
   updateDoc
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
   authDomain: "money-master-official-site-new.firebaseapp.com",
@@ -19,102 +22,102 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const nameInput = document.getElementById("userName");
-const emailInput = document.getElementById("userEmail");
-const upiInput = document.getElementById("userUpi");
-const notifySelect = document.getElementById("notifications");
-
+// Load Settings
 window.loadSettings = async function () {
   const uid = localStorage.getItem("userUID");
   if (!uid) {
-    alert("You are not logged in!");
+    alert("Please login first.");
     window.location.href = "index.html";
     return;
   }
 
   try {
-    const docRef = doc(db, "User", uid);
-    const snap = await getDoc(docRef);
+    const userRef = doc(db, "User", uid);
+    const snap = await getDoc(userRef);
 
-    if (snap.exists()) {
-      const data = snap.data();
-      nameInput.value = data.name || "User";
-      emailInput.value = data.email || "N/A";
-      upiInput.value = data.upi || "";
-      notifySelect.value = data.notifications || "on";
-    } else {
-      alert("User data not found.");
+    if (!snap.exists()) {
+      alert("User not found.");
+      return;
     }
+
+    const data = snap.data();
+    document.getElementById("userName").value = data.name || "";
+    document.getElementById("userEmail").value = data.email || data.mobile || "";
+    document.getElementById("userUpi").value = data.upi || "";
+    document.getElementById("notifications").value = data.notifications || "on";
   } catch (err) {
     console.error("Error loading settings:", err);
     alert("Failed to load settings.");
   }
 };
 
+// Save Settings
 window.saveSettings = async function () {
-  const sound = new Audio("assets/sound.mp3");
-  sound.play();
-
   const uid = localStorage.getItem("userUID");
-  if (!uid) return alert("Not logged in.");
+  if (!uid) return alert("Unauthorized request.");
 
-  const upi = upiInput.value.trim();
-  const notifyPref = notifySelect.value;
+  const upi = document.getElementById("userUpi").value.trim();
+  const notifications = document.getElementById("notifications").value;
 
   try {
-    await updateDoc(doc(db, "User", uid), {
+    const userRef = doc(db, "User", uid);
+    await updateDoc(userRef, {
       upi,
-      notifications: notifyPref
+      notifications
     });
-    alert("Settings saved!");
+    alert("Settings updated successfully.");
   } catch (err) {
-    console.error("Error saving settings:", err);
+    console.error("Save error:", err);
     alert("Failed to save settings.");
   }
 };
 
+// Change Name
 window.changeName = async function () {
-  const sound = new Audio("assets/sound.mp3");
-  sound.play();
-
-  const newName = document.getElementById("changeName").value.trim();
-  if (!newName) return alert("Please enter a name");
-
   const uid = localStorage.getItem("userUID");
-  if (!uid) return alert("Not logged in.");
+  const name = document.getElementById("changeName").value.trim();
+  if (!uid || !name) return alert("Enter a valid name.");
 
   try {
-    await updateDoc(doc(db, "User", uid), { name: newName });
-    alert("Name updated!");
-    nameInput.value = newName;
+    const userRef = doc(db, "User", uid);
+    await updateDoc(userRef, { name });
+    alert("Name updated successfully.");
+    window.loadSettings();
   } catch (err) {
-    console.error("Error updating name:", err);
+    console.error(err);
     alert("Failed to update name.");
   }
 };
 
-window.changeEmail = async function () {
-  const sound = new Audio("assets/sound.mp3");
-  sound.play();
-
-  const newEmail = document.getElementById("changeEmail").value.trim();
-  if (!newEmail) return alert("Please enter an email");
-
+// Change Password
+window.changePassword = async function () {
   const uid = localStorage.getItem("userUID");
-  if (!uid) return alert("Not logged in.");
+  const pin = document.getElementById("changePassword").value.trim();
+  if (!uid || pin.length < 4) return alert("Enter a 4-digit PIN.");
 
   try {
-    await updateDoc(doc(db, "User", uid), { email: newEmail });
-    alert("Email updated!");
-    emailInput.value = newEmail;
+    const userRef = doc(db, "User", uid);
+    await updateDoc(userRef, { pin });
+    alert("PIN updated successfully.");
   } catch (err) {
-    console.error("Error updating email:", err);
-    alert("Failed to update email.");
+    console.error(err);
+    alert("Failed to update PIN.");
   }
 };
 
-window.changePassword = function () {
-  const sound = new Audio("assets/sound.mp3");
-  sound.play();
-  alert("Password change is not supported with Firestore-only login.");
+// Change Email
+window.changeEmail = async function () {
+  const uid = localStorage.getItem("userUID");
+  const email = document.getElementById("changeEmail").value.trim();
+  if (!uid || !email.includes("@")) return alert("Enter a valid email.");
+
+  try {
+    const userRef = doc(db, "User", uid);
+    await updateDoc(userRef, { email });
+    alert("Email updated successfully.");
+    window.loadSettings();
+  } catch (err) {
+    console.error(err);
+    alert("Failed to update email.");
+  }
 };

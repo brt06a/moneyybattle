@@ -11,7 +11,7 @@
 
 
   <!-- Back Button -->
-  <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
+  <img src="assets/icon_navigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
 
   <!-- Page Title -->
   <h1 class="section-title">SETTINGS</h1>
@@ -67,32 +67,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Firebase Auth Guard with NEW CONFIG -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
-      authDomain: "money-master-official-site-new.firebaseapp.com",
-      databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "money-master-official-site-new",
-      storageBucket: "money-master-official-site-new.firebasestorage.app",
-      messagingSenderId: "580013071708",
-      appId: "1:580013071708:web:76363a43638401cda07599",
-      measurementId: "G-26CBLGCKC1"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      }
-    });
-  </script>
 
   <!-- Navigation Logic -->
   <script>
