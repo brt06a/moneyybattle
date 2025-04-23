@@ -90,7 +90,7 @@
   <div class="tap-container" id="tapZone">
     <img src="assets/bitcoin_idle.png" id="tapIcon" alt="Bitcoin Tap Icon" />
     <p>COINS: <span id="coinCount">0</span></p>
-<button id="withdrawBtn" class="withdraw-btn">Withdraw</button>
+    <button id="withdrawBtn" class="withdraw-btn">Withdraw</button>
   </div>
 
   <!-- Sounds -->
@@ -148,6 +148,14 @@
       }, 180000);
 
       loadInitialCoins();
+
+      const withdrawBtn = document.getElementById("withdrawBtn");
+      if (withdrawBtn) {
+        withdrawBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          window.location.href = "withdraw.html";
+        });
+      }
 
       // Setup click listener
       document.body.addEventListener("click", function (e) {
@@ -241,10 +249,6 @@
     }
 
     window.initTapPage = initTapPage;
-
-    function goToWithdraw() {
-      window.location.href = "withdraw.html";
-    }
   </script>
 </body>
 </html>
