@@ -4,30 +4,20 @@ const scoreBoard = document.getElementById("scoreBoard");
 const resultScreen = document.getElementById("resultScreen");
 const gameTitle = document.getElementById("gameTitle");
 
-let adsWatched = 0;
 let playerScore = 0;
 let gameInterval, timerInterval;
 let timeLeft = 60;
 
-// Dummy opponent names
 const opponentNames = ["Ravi", "Pooja", "Anil", "Priya", "Raj", "Kiran", "Suman"];
 
-// Tap sound
 const tapSound = new Audio("sound.mp3");
 const winSound = new Audio("win.mp3");
 
-document.getElementById("watchAdsBtn").addEventListener("click", () => {
-  adsWatched++;
-  if (adsWatched >= 4) {
-    startScreen.style.display = "none";
-    scoreBoard.style.display = "flex";
-    startGame();
-  } else {
-    alert(`Ad ${adsWatched} viewed! Watch ${4 - adsWatched} more.`);
-  }
-});
+// Immediately start game (no ads)
+startScreen.style.display = "none";
+scoreBoard.style.display = "flex";
+startGame();
 
-// Start the game
 function startGame() {
   playerScore = 0;
   timeLeft = 60;
@@ -42,17 +32,14 @@ function startGame() {
   gameInterval = setInterval(spawnImage, 800);
 }
 
-// Update timer
 function updateTimer() {
   document.getElementById("timer").innerText = `Time: ${timeLeft}s`;
 }
 
-// Update player score
 function updateScore() {
   document.getElementById("playerScore").innerText = `Score: ${playerScore}`;
 }
 
-// Spawn falling colorful circles
 function spawnImage() {
   const circle = document.createElement("div");
   circle.className = "falling";
@@ -70,13 +57,11 @@ function spawnImage() {
   gameArea.appendChild(circle);
 }
 
-// Generate a random color
 function getRandomColor() {
   const colors = ["#ff0055", "#00ccff", "#ffaa00", "#22ee66", "#9933ff"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-// End game
 function endGame() {
   clearInterval(timerInterval);
   clearInterval(gameInterval);
@@ -95,6 +80,4 @@ function endGame() {
     <p>Opponent Score: ${opponentScore}</p>
     <button onclick="location.reload()">Play Again</button>
   `;
-
-  // Add 10,000 coins to user Firestore here (optional)
 }
