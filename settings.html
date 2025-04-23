@@ -3,15 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="monetag" content="c2185f0f954c073056658902a99539ea" />
   <title>Settings - Money Master</title>
   <link rel="stylesheet" href="settings.css" />
   <link rel="icon" href="assets/money_master_favicon.png" />
 </head>
 <body onload="loadSettings()">
 
-  <!-- Monetag Ad Script (Tap Page Script) -->
-  <script async src="https://www.profitableratecpm.com/ibu3q4xj87?key=15bf92f761739f1b94851ca0199f3b33"></script>
 
   <!-- Back Button -->
   <img src="assets/icon_nevigation.png" class="nav-icon" onclick="goBack()" alt="Back" />
@@ -71,19 +68,20 @@
     </div>
   </div>
 
-  <!-- Firebase Auth Guard -->
+  <!-- Firebase Auth Guard with NEW CONFIG -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDo6BwWCRTexL_-lUwgy41FYB3zpJKRiWU",
-      authDomain: "money-master-89c02.firebaseapp.com",
-      projectId: "money-master-89c02",
-      storageBucket: "money-master-89c02.appspot.com",
-      messagingSenderId: "226410161274",
-      appId: "1:226410161274:web:62793ff8d39e0d642707c3",
-      measurementId: "G-62K0SFSZK4"
+      apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+      authDomain: "money-master-official-site-new.firebaseapp.com",
+      databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "money-master-official-site-new",
+      storageBucket: "money-master-official-site-new.firebasestorage.app",
+      messagingSenderId: "580013071708",
+      appId: "1:580013071708:web:76363a43638401cda07599",
+      measurementId: "G-26CBLGCKC1"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -91,7 +89,7 @@
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        window.location.href = "login.html";
+        window.location.href = "index.html";
       }
     });
   </script>
@@ -107,6 +105,8 @@
     }
   </script>
 
-  <script src="settings.js"></script>
+  <!-- Firebase Data Fetching Script -->
+  <script type="module" src="settings.js"></script>
+
 </body>
 </html>
