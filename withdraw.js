@@ -116,7 +116,6 @@ window.submitWithdraw = async function () {
     details = { method, email: payEmail, amount };
   }
 
-  // Now deduct coins from Firestore
   const coinToDeduct = amount * 1000;
 
   try {
@@ -125,18 +124,12 @@ window.submitWithdraw = async function () {
     if (!snap.exists()) return alert("User data not found.");
 
     const currentCoins = snap.data().coins || 0;
-
     if (coinToDeduct > currentCoins) {
       alert("Insufficient coins for withdrawal.");
       return;
     }
 
-    // Deduct coins
-    await updateDoc(userRef, {
-      coins: currentCoins - coinToDeduct
-    });
-
-    // Save withdrawal request
+    // First, log withdrawal request
     const requestRef = collection(db, "Withdrawals", uid, "requests");
     await addDoc(requestRef, {
       uid,
@@ -145,6 +138,11 @@ window.submitWithdraw = async function () {
       details,
       status: "pending",
       createdAt: serverTimestamp()
+    });
+
+    // Then deduct coins only if request is stored successfully
+    await updateDoc(userRef, {
+      coins: currentCoins - coinToDeduct
     });
 
     alert("Withdraw request submitted successfully!");
