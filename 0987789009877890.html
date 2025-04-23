@@ -1,0 +1,195 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1v1 Tap Battle</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    canvas {
+      background: #222;
+      border: 2px solid #fff;
+      border-radius: 12px;
+    }
+    #scoreboard {
+      position: absolute;
+      top: 10px;
+      text-align: center;
+      font-size: 1.2em;
+      width: 100%;
+    }
+    #startBtn {
+      padding: 12px 24px;
+      background: crimson;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      color: #fff;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      canvas {
+        width: 90vw !important;
+        height: 60vh !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="scoreboard">
+    <div>Time Left: <span id="timer">60</span>s</div>
+    <div>You: <span id="playerScore">0</span> | Opponent (<span id="opponentName"></span>): <span id="opponentScore">0</span></div>
+  </div>
+  <canvas id="gameCanvas" width="360" height="600"></canvas>
+  <button id="startBtn">Start Game (Watch 4 Ads)</button><audio id="tapSound" src="sound.mp3"></audio> <audio id="winSound" src="win.mp3"></audio>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBLoOGmPMpShYhIDNuF7PYR2U4fvA3vPZg",
+      authDomain: "money-master-89c02.firebaseapp.com",
+      projectId: "money-master-89c02",
+      storageBucket: "money-master-89c02.appspot.com",
+      messagingSenderId: "210193044537",
+      appId: "1:210193044537:web:4e23aee0fd69c594027434"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const uid = localStorage.getItem("uid");
+    if (!uid) window.location.href = "index.html";
+
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const tapSound = document.getElementById("tapSound");
+    const winSound = document.getElementById("winSound");
+    const startBtn = document.getElementById("startBtn");
+    const timerEl = document.getElementById("timer");
+    const playerScoreEl = document.getElementById("playerScore");
+    const opponentScoreEl = document.getElementById("opponentScore");
+    const opponentNameEl = document.getElementById("opponentName");
+
+    const names = ["Rahul", "Vikram", "Priya", "Anjali", "Arjun", "Ravi"];
+    const opponentName = names[Math.floor(Math.random() * names.length)];
+    opponentNameEl.textContent = opponentName;
+
+    const adViewsRequired = 4;
+    let adViews = 0;
+
+    const icons = ["circle", "square", "triangle", "star", "heart"];
+    const falling = [];
+    let playerScore = 0;
+    let opponentScore = 0;
+    let gameStarted = false;
+    let timer = 60;
+
+    function randomShape() {
+      return icons[Math.floor(Math.random() * icons.length)];
+    }
+
+    function drawShape(shape, x, y, size) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = "hsl(" + Math.random() * 360 + ", 100%, 60%)";
+      switch (shape) {
+        case "circle": ctx.beginPath(); ctx.arc(0, 0, size, 0, 2 * Math.PI); ctx.fill(); break;
+        case "square": ctx.fillRect(-size / 2, -size / 2, size, size); break;
+        case "triangle": ctx.beginPath(); ctx.moveTo(0, -size); ctx.lineTo(size, size); ctx.lineTo(-size, size); ctx.closePath(); ctx.fill(); break;
+        case "star": ctx.beginPath(); for (let i = 0; i < 5; i++) { ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * size, Math.sin((18 + i * 72) * Math.PI / 180) * size); ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * (size / 2), Math.sin((54 + i * 72) * Math.PI / 180) * (size / 2)); } ctx.closePath(); ctx.fill(); break;
+        case "heart": ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(0, -size, -size, -size, -size, 0); ctx.bezierCurveTo(-size, size, 0, size * 1.5, 0, size * 2); ctx.bezierCurveTo(0, size * 1.5, size, size, size, 0); ctx.bezierCurveTo(size, -size, 0, -size, 0, 0); ctx.fill(); break;
+      }
+      ctx.restore();
+    }
+
+    function spawn() {
+      falling.push({
+        shape: randomShape(),
+        x: Math.random() * canvas.width,
+        y: -30,
+        size: 30,
+        speed: 2 + Math.random() * 2
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let f of falling) {
+        drawShape(f.shape, f.x, f.y, f.size);
+        f.y += f.speed;
+      }
+    }
+
+    function update() {
+      draw();
+      requestAnimationFrame(update);
+    }
+
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      for (let i = 0; i < falling.length; i++) {
+        const f = falling[i];
+        if (Math.abs(f.x - x) < f.size && Math.abs(f.y - y) < f.size) {
+          playerScore += 2;
+          playerScoreEl.textContent = playerScore;
+          tapSound.play();
+          falling.splice(i, 1);
+          break;
+        }
+      }
+    });
+
+    function startGame() {
+      if (adViews < adViewsRequired) {
+        adViews++;
+        alert(`Ad ${adViews} viewed. View ${adViewsRequired - adViews} more.`);
+        if (adViews >= adViewsRequired) startBtn.textContent = "Start Battle";
+        return;
+      }
+
+      startBtn.style.display = "none";
+      gameStarted = true;
+      setInterval(spawn, 600);
+      update();
+      const gameInterval = setInterval(() => {
+        timer--;
+        timerEl.textContent = timer;
+        opponentScore += Math.floor(Math.random() * 3); // dummy opponent
+        opponentScoreEl.textContent = opponentScore;
+
+        if (timer <= 0) {
+          clearInterval(gameInterval);
+          setTimeout(endGame, 1000);
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      if (playerScore > opponentScore) {
+        winSound.play();
+        alert("You Win! +10,000 Coins");
+        db.collection("users").doc(uid).update({
+          coins: firebase.firestore.FieldValue.increment(10000)
+        });
+      } else {
+        alert("You Lost. Try Again!");
+      }
+      window.location.reload();
+    }
+
+    startBtn.addEventListener("click", startGame);
+  </script></body>
+</html>
