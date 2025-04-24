@@ -20,7 +20,7 @@ const auth = getAuth(app);
 // If user not logged in, redirect to login
 onAuthStateChanged(auth, (user) => {
   if (!user) {
-    window.location.href = "login.html";
+    window.location.href = "index.html";
   }
 });
 
@@ -29,7 +29,7 @@ window.goBack = function () {
   const s = new Audio("assets/sound.mp3");
   s.play();
   setTimeout(() => {
-    window.location.href = "dashboard.html";
+    window.location.href = "index.html";
   }, 200);
 };
 
