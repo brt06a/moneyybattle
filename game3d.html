@@ -1,6 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<div id="adPopup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:#111; padding:20px 30px; border-radius:10px; color:#fff; text-align:center;">
+    <h2>Advertisement</h2>
+    <div id="adScriptContainer"></div>
+    <button id="closeAdBtn" disabled style="margin-top:20px; padding:10px 20px; font-size:16px; background:red; color:white; border:none; border-radius:5px; opacity:0.6; cursor:not-allowed;">Close (10)</button>
+  </div>
+</div>
+
+<script>
+  function loadOriginalAdScript() {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `<script>(function(d,z,s){s.src='https://'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('groleegni.net',9253946,document.createElement('script'))<\/script>`;
+    document.getElementById('adScriptContainer').innerHTML = '';
+    document.getElementById('adScriptContainer').appendChild(wrapper);
+  }
+
+  function showAdPopup() {
+    const popup = document.getElementById('adPopup');
+    const closeBtn = document.getElementById('closeAdBtn');
+    loadOriginalAdScript();
+    popup.style.display = 'flex';
+    closeBtn.disabled = true;
+    closeBtn.style.cursor = 'not-allowed';
+    closeBtn.style.opacity = '0.6';
+
+    let countdown = 10;
+    closeBtn.innerText = `Close (${countdown})`;
+    const timer = setInterval(() => {
+      countdown--;
+      closeBtn.innerText = `Close (${countdown})`;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        closeBtn.disabled = false;
+        closeBtn.innerText = 'Close';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.opacity = '1';
+      }
+    }, 1000);
+
+    closeBtn.onclick = () => {
+      if (!closeBtn.disabled) popup.style.display = 'none';
+    };
+  }
+
+  // Show ad on load and every 2.5 minutes
+  window.addEventListener('load', () => {
+    showAdPopup();
+    setInterval(showAdPopup, 10000); // every 150,000ms = 2.5 minutes
+  });
+</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Money Master 3D Tap Game</title>
