@@ -1,145 +1,130 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, updateDoc
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
-  authDomain: "money-master-official-site-new.firebaseapp.com",
-  databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "money-master-official-site-new",
-  storageBucket: "money-master-official-site-new.firebasestorage.app",
-  messagingSenderId: "580013071708",
-  appId: "1:580013071708:web:76363a43638401cda07599",
-  measurementId: "G-26CBLGCKC1"
-};
+// Elements
+const startBtn = document.getElementById("startBtn");
+const gameArea = document.getElementById("gameArea");
+const timerEl = document.getElementById("timeLeft");
+const scoreEl = document.getElementById("playerScore");
+const tapSound = document.getElementById("tapSound");
+const winSound = document.getElementById("winSound");
+const resultOverlay = document.getElementById("resultOverlay");
+const finalScoreEl = document.getElementById("finalScore");
+const opponentNameEl = document.getElementById("opponentName");
+const opponentScoreEl = document.getElementById("opponentScore");
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const uid = localStorage.getItem("uid");
-
-const dummyNames = [
-  "Aryan", "Rohit", "Priya", "Sneha", "Karan", "Pooja", "Vikram", "Neha",
-  "Ravi", "Meena", "Amit", "Divya", "Suresh", "Anjali", "Deepak", "Kavita",
-  "Rahul", "Nisha", "Manish", "Alok", "Sakshi", "Gaurav", "Ritika", "Vivek"
+const colors = ["#FF5E5E", "#5EFF9D", "#5EDBFF", "#FFA45E", "#D95EFF"];
+const opponentNames = [
+  "Aryan", "Rohit", "Priya", "Sneha", "Aditya",
+  "Kiran", "Vikram", "Pooja", "Neha", "Raj", "Tanya", "Rishi"
 ];
 
-const tapSound = new Audio("sound.mp3");
-const winSound = new Audio("win.mp3");
-const images = ["★", "♛", "☼", "✿", "✪"];
-
-let playerScore = 0;
-let dummyScore = 0;
+let score = 0;
 let timeLeft = 60;
-let gameStarted = false;
+let gameInterval;
+let spawnInterval;
+let userUID = localStorage.getItem("uid");
+let userRef = null;
 
-document.getElementById("startButton").addEventListener("click", async () => {
-  if (gameStarted) return;
+// Load user and deduct entry coins
+async function setupUser() {
+  if (!userUID) {
+    alert("You must be logged in to play.");
+    startBtn.disabled = true;
+    return;
+  }
 
-  const userRef = doc(db, "users", uid);
-  const userSnap = await getDoc(userRef);
+  userRef = db.collection("users").doc(userUID);
+  const userDoc = await userRef.get();
 
-  if (!userSnap.exists()) return alert("User not found.");
-  const userData = userSnap.data();
+  if (!userDoc.exists) {
+    alert("User not found.");
+    startBtn.disabled = true;
+    return;
+  }
 
-  if (userData.coins < 500) return alert("Not enough coins to start the game.");
+  const userData = userDoc.data();
+  if (userData.coins < 50) {
+    alert("Not enough coins. You need at least 50 coins to play.");
+    startBtn.disabled = true;
+    return;
+  }
 
-  await updateDoc(userRef, {
-    coins: userData.coins - 500
+  // Deduct 50 coins for entry
+  await userRef.update({
+    coins: firebase.firestore.FieldValue.increment(-50)
+  });
+}
+
+// Game logic
+function startGame() {
+  startBtn.style.display = "none";
+  score = 0;
+  timeLeft = 60;
+  scoreEl.textContent = score;
+  timerEl.textContent = timeLeft;
+  resultOverlay.style.display = "none";
+
+  gameInterval = setInterval(updateTimer, 1000);
+  spawnInterval = setInterval(spawnBall, 800);
+}
+
+function updateTimer() {
+  timeLeft--;
+  timerEl.textContent = timeLeft;
+  if (timeLeft <= 0) endGame();
+}
+
+function spawnBall() {
+  const ball = document.createElement("div");
+  ball.className = "ball";
+  const size = 60;
+  ball.style.width = `${size}px`;
+  ball.style.height = `${size}px`;
+  ball.style.left = `${Math.random() * (gameArea.clientWidth - size)}px`;
+  ball.style.background = colors[Math.floor(Math.random() * colors.length)];
+  ball.style.animationDuration = `${2 + Math.random() * 2}s`;
+  gameArea.appendChild(ball);
+
+  ball.addEventListener("click", () => {
+    score += 2;
+    scoreEl.textContent = score;
+    tapSound.currentTime = 0;
+    tapSound.play();
+    ball.remove();
   });
 
-  document.getElementById("startButton").style.display = "none";
-  document.getElementById("scoreboard").style.display = "block";
-  document.getElementById("timer").textContent = `Time: ${timeLeft}s`;
-
-  const dummyName = dummyNames[Math.floor(Math.random() * dummyNames.length)];
-  document.getElementById("opponent").textContent = `VS ${dummyName}`;
-
-  gameStarted = true;
-  startGame();
-});
-
-function startGame() {
-  const gameArea = document.getElementById("gameArea");
-  const timerDisplay = document.getElementById("timer");
-
-  const interval = setInterval(() => {
-    timeLeft--;
-    timerDisplay.textContent = `Time: ${timeLeft}s`;
-    if (timeLeft <= 0) {
-      clearInterval(interval);
-      endGame();
-    }
-  }, 1000);
-
-  spawnImages(gameArea);
-}
-
-function spawnImages(container) {
-  const interval = setInterval(() => {
-    if (!gameStarted) {
-      clearInterval(interval);
-      return;
-    }
-
-    const img = document.createElement("div");
-    img.className = "tap-image";
-    img.innerHTML = images[Math.floor(Math.random() * images.length)];
-    img.style.left = Math.random() * 90 + "%";
-    img.style.top = "-5%";
-
-    img.addEventListener("click", () => {
-      tapSound.play();
-      playerScore++;
-      updateScoreDisplay();
-      img.remove();
-    });
-
-    container.appendChild(img);
-
-    let move = 0;
-    const fall = setInterval(() => {
-      move += 2;
-      img.style.top = move + "%";
-      if (move >= 100) {
-        clearInterval(fall);
-        img.remove();
-      }
-    }, 50);
-
-    dummyScore += Math.random() < 0.7 ? 1 : 0;
-    updateScoreDisplay();
-  }, 700);
-}
-
-function updateScoreDisplay() {
-  document.getElementById("playerScore").textContent = `You: ${playerScore}`;
-  document.getElementById("dummyScore").textContent = `Opponent: ${dummyScore}`;
+  setTimeout(() => {
+    ball.remove();
+  }, 4000);
 }
 
 async function endGame() {
-  gameStarted = false;
-  document.getElementById("result").style.display = "block";
-  document.getElementById("startButton").style.display = "block";
+  clearInterval(gameInterval);
+  clearInterval(spawnInterval);
+  gameArea.innerHTML = "";
 
-  const userRef = doc(db, "users", uid);
-  const userSnap = await getDoc(userRef);
-  const userData = userSnap.data();
+  const opponentName = opponentNames[Math.floor(Math.random() * opponentNames.length)];
+  const opponentScore = score - Math.floor(Math.random() * 20) - 1;
 
-  if (playerScore > dummyScore) {
-    winSound.play();
-    document.getElementById("result").textContent = "You Win! +5000 Coins";
+  opponentNameEl.textContent = opponentName;
+  opponentScoreEl.textContent = opponentScore;
+  finalScoreEl.textContent = score;
+  resultOverlay.style.display = "flex";
+  winSound.play();
 
-    await updateDoc(userRef, {
-      coins: userData.coins + 5000
+  // Reward 10,000 coins if player wins
+  if (score > opponentScore) {
+    await userRef.update({
+      coins: firebase.firestore.FieldValue.increment(10000)
     });
-  } else {
-    document.getElementById("result").textContent = "You Lose!";
   }
-
-  playerScore = 0;
-  dummyScore = 0;
-  timeLeft = 60;
-  document.getElementById("scoreboard").style.display = "none";
-  document.getElementById("opponent").textContent = "";
 }
+
+startBtn.addEventListener("click", () => {
+  startGame();
+});
+
+// Setup on load
+setupUser();

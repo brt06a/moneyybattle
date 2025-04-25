@@ -1,75 +1,152 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>1v1 Tap Battle</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #1f1c2c, #928dab);
-      color: white;
-      overflow: hidden;
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
+  <title>Money Master 3D Tap Game</title>  
+  <style>  
+    * {  
+      box-sizing: border-box;  
+      margin: 0;  
+      padding: 0;  
+    }  
+    body {  
+      font-family: 'Segoe UI', sans-serif;  
+      background: linear-gradient(145deg, #1b2735, #090a0f);  
+      overflow: hidden;  
+      height: 100vh;  
+      color: #fff;  
+    }  
+    .game-header {  
+      text-align: center;  
+      font-size: 2.5em;  
+      font-weight: bold;  
+      padding: 10px;  
+      background: #00bfff;  
+      color: #fff;  
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);  
+    }  
+    .game-container {  
+      position: relative;  
+      width: 100%;  
+      height: calc(100vh - 60px);  
+      display: flex;  
+      flex-direction: column;  
+      align-items: center;  
+      justify-content: flex-start;  
+      padding-top: 10px;  
+    }  
+    .hud {  
+      display: flex;  
+      justify-content: space-around;  
+      width: 90%;  
+      font-size: 1.5em;  
+      margin-bottom: 10px;  
+    }  
+    #startBtn {  
+      padding: 10px 20px;  
+      font-size: 1.2em;  
+      background: #ff4081;  
+      color: white;  
+      border: none;  
+      border-radius: 12px;  
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);  
+      cursor: pointer;  
+      z-index: 10;  
+    }  
+    .game-area {  
+      position: relative;  
+      width: 100%;  
+      height: 100%;  
+      overflow: hidden;  
+    }  
+    .ball {  
+      position: absolute;  
+      top: -60px;  
+      border-radius: 50%;  
+      animation: fall linear forwards;  
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);  
+    }  
+    @keyframes fall {  
+      to {  
+        top: 100%;  
+        transform: rotate(360deg);  
+      }  
+    }  
+    .result-overlay {  
+      position: absolute;  
+      top: 0; left: 0;  
+      width: 100%; height: 100%;  
+      background: rgba(0,0,0,0.85);  
+      display: none;  
+      flex-direction: column;  
+      justify-content: center;  
+      align-items: center;  
+      text-align: center;  
+      z-index: 100;  
+    }  
+    .result-overlay h2 {  
+      font-size: 2em;  
+      margin-bottom: 10px;  
+      color: #00ffae;  
+    }  
+    .result-overlay p {  
+      margin: 8px 0;  
+      font-size: 1.2em;  
+    }  
+    .result-overlay button {  
+      padding: 10px 18px;  
+      margin-top: 10px;  
+      font-size: 1em;  
+      border: none;  
+      background: #00bfff;  
+      color: white;  
+      border-radius: 8px;  
+      cursor: pointer;  
     }
-    #gameContainer {
-      text-align: center;
-      padding-top: 30px;
-    }
-    #startButton {
-      background: #e91e63;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      font-size: 20px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    #scoreboard {
-      display: none;
-      margin: 20px 0;
-    }
-    #playerScore, #dummyScore, #timer, #opponent {
-      font-size: 22px;
-      margin: 5px;
-    }
-    #result {
-      font-size: 24px;
-      margin-top: 20px;
-      color: #ffd700;
-    }
-    #gameArea {
-      position: relative;
-      width: 100%;
-      height: 70vh;
-      overflow: hidden;
-      margin-top: 20px;
-    }
-    .tap-image {
-      position: absolute;
-      font-size: 36px;
-      cursor: pointer;
-      animation: fall 3s linear;
-    }
-    @keyframes fall {
-      0% { top: -5%; }
-      100% { top: 100%; }
-    }
-  </style>
-</head>
-<body>
-  <div id="gameContainer">
-    <button id="startButton">Start Battle (-500 Coins)</button>
-    <div id="opponent"></div>
-    <div id="scoreboard">
-      <div id="playerScore">You: 0</div>
-      <div id="dummyScore">Opponent: 0</div>
-      <div id="timer">Time: 60s</div>
-    </div>
-    <div id="result"></div>
-    <div id="gameArea"></div>
-  </div>
 
-  <script type="module" src="yyyyyy.js"></script>
-</body>
-</html>
+    /* NEW: Bottom Fixed Start Game Redirect Button */
+    .fixed-start-btn {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #00ffae;
+      color: #000;
+      font-weight: bold;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      border-radius: 30px 30px 0 0;
+      box-shadow: 0 -2px 15px rgba(0,0,0,0.5);
+      text-decoration: none;
+      transition: 0.3s ease;
+      z-index: 999;
+    }
+
+    .fixed-start-btn:hover {
+      background: #00e29b;
+    }
+  </style>  
+</head>  
+<body>  
+  <header class="game-header">MONEY MASTER</header>  
+  <main class="game-container">  
+    <div class="hud">  
+      <div class="score-board">Score: <span id="playerScore">0</span></div>  
+      <div class="timer">Time: <span id="timeLeft">60</span>s</div>  
+    </div>  
+    <button id="startBtn">Start Game</button>  
+    <div class="game-area" id="gameArea"></div>  
+    <div class="result-overlay" id="resultOverlay">  
+      <h2>You Win!</h2>  
+      <p>Your Score: <span id="finalScore">0</span></p>  
+      <p>Opponent: <span id="opponentName"></span> - <span id="opponentScore"></span></p>  
+      <button onclick="location.reload()">Play Again</button>  
+    </div>  
+  </main>  
+
+  <!-- NEW Redirect Button -->
+  <a href="game3d.html" class="fixed-start-btn">Start Game</a>
+
+  <audio id="tapSound" src="sound.mp3" preload="auto"></audio>  
+  <audio id="winSound" src="win.mp3" preload="auto"></audio>
