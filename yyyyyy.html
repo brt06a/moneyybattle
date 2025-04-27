@@ -145,7 +145,29 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
-
+<script>
+// Initial login check
+const uid = localStorage.getItem("uid");
+if (!uid) {
+  alert("Please login or create account first to avail the service");
+  window.location.href = "index.html";
+} else {
+  db.collection("users").doc(uid).get().then((doc) => {
+    if (doc.exists) {
+      const userData = doc.data();
+      // Store user data in localStorage
+      localStorage.setItem("userData", JSON.stringify(userData));
+    } else {
+      alert("Please login or create account first to avail the service");
+      window.location.href = "index.html";
+    }
+  }).catch((error) => {
+    console.error("Error verifying user:", error);
+    alert("Please login or create account first to avail the service");
+    window.location.href = "index.html";
+  });
+}
+</script>
 <script>
   const startBtn = document.getElementById("startBtn");
   const gameArea = document.getElementById("gameArea");
