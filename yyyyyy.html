@@ -128,47 +128,24 @@
 
 <!-- Firebase SDK -->
 <!-- Firebase SDK - UPDATED -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-  // Firebase config
+<script>
+  // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
     authDomain: "money-master-official-site-new.firebaseapp.com",
+    databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "money-master-official-site-new",
     storageBucket: "money-master-official-site-new.appspot.com",
     messagingSenderId: "580013071708",
     appId: "1:580013071708:web:76363a43638401cda07599",
     measurementId: "G-26CBLGCKC1"
   };
-
+  
   // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // Load wallet balance and update UI
-  window.loadWithdrawPage = async function () {
-    const uid = localStorage.getItem("userUID");
-    if (!uid) {
-      alert("Please login first.");
-      window.location.href = "index.html";
-      return;
-    }
-
-    try {
-      const userRef = doc(db, "User", uid);
-      const snap = await getDoc(userRef);
-
-      if (!snap.exists()) {
-        alert("User data not found.");
-        return;
-      }
-    } catch (error) {
-      console.error("Error loading user data:", error);
-    }
-  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 </script>
+
 <script>
   const startBtn = document.getElementById("startBtn");
   const gameArea = document.getElementById("gameArea");
@@ -194,9 +171,12 @@
   let spawnInterval;
   let playerName = "Unknown";
   let playerCoins = 0;
-  let uid = localStorage.getItem("uid");
-
+  
+  // **IMPORTANT FIX**
+  let uid = localStorage.getItem("userUID"); // Correct key used ("userUID")
+  
   if (!uid) {
+    alert("Please login first.");
     window.location.href = "index.html";
   }
 
@@ -207,7 +187,7 @@
     }
 
     // Deduct 500 coins
-    db.collection("users").doc(uid).update({
+    db.collection("User").doc(uid).update({
       coins: firebase.firestore.FieldValue.increment(-500)
     }).then(() => {
       playerCoins -= 500;
@@ -276,7 +256,7 @@
     gameResult.textContent = win ? "You Win!" : "You Lose!";
 
     if (win) {
-      db.collection("users").doc(uid).update({
+      db.collection("User").doc(uid).update({
         coins: firebase.firestore.FieldValue.increment(10000)
       }).then(() => {
         playerCoins += 10000;
@@ -289,7 +269,7 @@
   }
 
   function fetchUserData() {
-    db.collection("users").doc(uid).get().then((doc) => {
+    db.collection("User").doc(uid).get().then((doc) => {
       if (doc.exists) {
         const data = doc.data();
         playerName = data.name || "Unknown";
@@ -306,6 +286,5 @@
 
   fetchUserData();
 </script>
-
 </body>
 </html>
