@@ -258,6 +258,8 @@
       }).then(() => {
         playerCoins += 10000;
         playerCoinsEl.textContent = playerCoins;
+      }).catch((err) => {
+        console.error("Error adding winning coins:", err);
       });
       winSound.play();
     }
@@ -281,8 +283,5 @@
 
   startBtn.addEventListener("click", startGame);
 
-  fetchUserData();
+  window.onload = fetchUserData;
 </script>
-
-</body>
-</html>
