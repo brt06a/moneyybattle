@@ -127,7 +127,9 @@
 <audio id="winSound" src="win.mp3" preload="auto"></audio>
 
 <!-- Firebase SDK -->
-<!-- Firebase SDK - UPDATED -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
 <script>
   // Firebase Config
   const firebaseConfig = {
@@ -140,8 +142,6 @@
     appId: "1:580013071708:web:76363a43638401cda07599",
     measurementId: "G-26CBLGCKC1"
   };
-  
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 </script>
@@ -171,12 +171,9 @@
   let spawnInterval;
   let playerName = "Unknown";
   let playerCoins = 0;
-  
-  // **IMPORTANT FIX**
-  let uid = localStorage.getItem("userUID"); // Correct key used ("userUID")
-  
+  let uid = localStorage.getItem("uid");
+
   if (!uid) {
-    alert("Please login first.");
     window.location.href = "index.html";
   }
 
@@ -187,8 +184,8 @@
     }
 
     // Deduct 500 coins
-    db.collection("User").doc(uid).update({
-      coins: firebase.firestore.FieldValue.increment(-500)
+    db.collection("users").doc(uid).update({
+      coin: firebase.firestore.FieldValue.increment(-500) // Changed 'coins' to 'coin'
     }).then(() => {
       playerCoins -= 500;
       playerCoinsEl.textContent = playerCoins;
@@ -256,8 +253,8 @@
     gameResult.textContent = win ? "You Win!" : "You Lose!";
 
     if (win) {
-      db.collection("User").doc(uid).update({
-        coins: firebase.firestore.FieldValue.increment(10000)
+      db.collection("users").doc(uid).update({
+        coin: firebase.firestore.FieldValue.increment(10000) // Changed 'coins' to 'coin'
       }).then(() => {
         playerCoins += 10000;
         playerCoinsEl.textContent = playerCoins;
@@ -269,11 +266,12 @@
   }
 
   function fetchUserData() {
-    db.collection("User").doc(uid).get().then((doc) => {
+    db.collection("users").doc(uid).get().then((doc) => {
       if (doc.exists) {
         const data = doc.data();
         playerName = data.name || "Unknown";
-        playerCoins = data.coins || 0;
+        playerCoins = data.coin || 0; // <-- Corrected here (coin instead of coins)
+        playerCoinsEl.textContent = playerCoins; // Optional: show coins immediately
       } else {
         console.log("No such user!");
       }
@@ -286,5 +284,6 @@
 
   fetchUserData();
 </script>
+
 </body>
 </html>
