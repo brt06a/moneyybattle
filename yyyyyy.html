@@ -127,25 +127,48 @@
 <audio id="winSound" src="win.mp3" preload="auto"></audio>
 
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<!-- Firebase SDK - UPDATED -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-<script>
-  // Firebase Config
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
     authDomain: "money-master-official-site-new.firebaseapp.com",
-    databaseURL: "https://money-master-official-site-new-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "money-master-official-site-new",
     storageBucket: "money-master-official-site-new.appspot.com",
     messagingSenderId: "580013071708",
     appId: "1:580013071708:web:76363a43638401cda07599",
     measurementId: "G-26CBLGCKC1"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
 
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Load wallet balance and update UI
+  window.loadWithdrawPage = async function () {
+    const uid = localStorage.getItem("userUID");
+    if (!uid) {
+      alert("Please login first.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "User", uid);
+      const snap = await getDoc(userRef);
+
+      if (!snap.exists()) {
+        alert("User data not found.");
+        return;
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
+    }
+  };
+</script>
 <script>
   const startBtn = document.getElementById("startBtn");
   const gameArea = document.getElementById("gameArea");
