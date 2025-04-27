@@ -1,130 +1,150 @@
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Firebase initialization
+const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 
-// Elements
-const startBtn = document.getElementById("startBtn");
-const gameArea = document.getElementById("gameArea");
-const timerEl = document.getElementById("timeLeft");
-const scoreEl = document.getElementById("playerScore");
-const tapSound = document.getElementById("tapSound");
-const winSound = document.getElementById("winSound");
-const resultOverlay = document.getElementById("resultOverlay");
-const finalScoreEl = document.getElementById("finalScore");
-const opponentNameEl = document.getElementById("opponentName");
-const opponentScoreEl = document.getElementById("opponentScore");
-
-const colors = ["#FF5E5E", "#5EFF9D", "#5EDBFF", "#FFA45E", "#D95EFF"];
-const opponentNames = [
-  "Aryan", "Rohit", "Priya", "Sneha", "Aditya",
-  "Kiran", "Vikram", "Pooja", "Neha", "Raj", "Tanya", "Rishi"
-];
-
+// Game variables
+let userCoins = 0;
+let gameTimer;
+let remainingTime = 60;
 let score = 0;
-let timeLeft = 60;
-let gameInterval;
-let spawnInterval;
-let userUID = localStorage.getItem("uid");
-let userRef = null;
+let gameStarted = false;
 
-// Load user and deduct entry coins
-async function setupUser() {
-  if (!userUID) {
-    alert("You must be logged in to play.");
-    startBtn.disabled = true;
-    return;
-  }
+// DOM elements
+const startButton = document.getElementById("start-button");
+const scoreDisplay = document.getElementById("score");
+const coinsDisplay = document.getElementById("coins");
+const timerDisplay = document.getElementById("timer");
+const gameBoard = document.getElementById("game-board");
+const messageDisplay = document.getElementById("message");
 
-  userRef = db.collection("users").doc(userUID);
-  const userDoc = await userRef.get();
-
-  if (!userDoc.exists) {
-    alert("User not found.");
-    startBtn.disabled = true;
-    return;
-  }
-
-  const userData = userDoc.data();
-  if (userData.coins < 50) {
-    alert("Not enough coins. You need at least 50 coins to play.");
-    startBtn.disabled = true;
-    return;
-  }
-
-  // Deduct 50 coins for entry
-  await userRef.update({
-    coins: firebase.firestore.FieldValue.increment(-50)
-  });
+// Helper function to update score
+function updateScore() {
+  scoreDisplay.innerText = "Score: " + score;
 }
 
-// Game logic
-function startGame() {
-  startBtn.style.display = "none";
-  score = 0;
-  timeLeft = 60;
-  scoreEl.textContent = score;
-  timerEl.textContent = timeLeft;
-  resultOverlay.style.display = "none";
-
-  gameInterval = setInterval(updateTimer, 1000);
-  spawnInterval = setInterval(spawnBall, 800);
-}
-
+// Helper function to update timer
 function updateTimer() {
-  timeLeft--;
-  timerEl.textContent = timeLeft;
-  if (timeLeft <= 0) endGame();
+  timerDisplay.innerText = "Time Left: " + remainingTime + "s";
 }
 
-function spawnBall() {
-  const ball = document.createElement("div");
-  ball.className = "ball";
-  const size = 60;
-  ball.style.width = `${size}px`;
-  ball.style.height = `${size}px`;
-  ball.style.left = `${Math.random() * (gameArea.clientWidth - size)}px`;
-  ball.style.background = colors[Math.floor(Math.random() * colors.length)];
-  ball.style.animationDuration = `${2 + Math.random() * 2}s`;
-  gameArea.appendChild(ball);
-
-  ball.addEventListener("click", () => {
-    score += 2;
-    scoreEl.textContent = score;
-    tapSound.currentTime = 0;
-    tapSound.play();
-    ball.remove();
+// Fetch user data from Firestore based on UID
+function fetchUserData(uid) {
+  db.collection("users").doc(uid).get().then(doc => {
+    if (doc.exists) {
+      userCoins = doc.data().coins;
+      coinsDisplay.innerText = "Coins: " + userCoins;
+    } else {
+      messageDisplay.innerText = "UID not found. Please login first.";
+    }
+  }).catch(error => {
+    console.error("Error fetching user data:", error);
   });
-
-  setTimeout(() => {
-    ball.remove();
-  }, 4000);
 }
 
-async function endGame() {
-  clearInterval(gameInterval);
-  clearInterval(spawnInterval);
-  gameArea.innerHTML = "";
+// Start game logic
+function startGame() {
+  if (userCoins >= 500) {
+    // Deduct coins and start the game
+    userCoins -= 500;
+    updateCoinsInFirestore();
+    gameStarted = true;
+    remainingTime = 60;
+    score = 0;
+    updateScore();
+    startButton.disabled = true; // Disable start button
 
-  const opponentName = opponentNames[Math.floor(Math.random() * opponentNames.length)];
-  const opponentScore = score - Math.floor(Math.random() * 20) - 1;
+    messageDisplay.innerText = "Game started! Click the falling balls!";
+    gameLoop();
+  } else {
+    messageDisplay.innerText = "Not enough coins to start the game. Please go back and tap to earn coins.";
+  }
+}
 
-  opponentNameEl.textContent = opponentName;
-  opponentScoreEl.textContent = opponentScore;
-  finalScoreEl.textContent = score;
-  resultOverlay.style.display = "flex";
-  winSound.play();
-
-  // Reward 10,000 coins if player wins
-  if (score > opponentScore) {
-    await userRef.update({
-      coins: firebase.firestore.FieldValue.increment(10000)
+// Update coins in Firestore after game or coin deduction
+function updateCoinsInFirestore() {
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+  if (uid) {
+    db.collection("users").doc(uid).update({
+      coins: userCoins
+    }).then(() => {
+      coinsDisplay.innerText = "Coins: " + userCoins;
+    }).catch(error => {
+      console.error("Error updating coins:", error);
     });
   }
 }
 
-startBtn.addEventListener("click", () => {
-  startGame();
+// Handle ball click event
+function handleBallClick(ball) {
+  ball.classList.add("clicked");
+  score += 2; // Add points
+  updateScore();
+}
+
+// Ball falling logic
+function spawnBall() {
+  const ball = document.createElement("div");
+  ball.classList.add("ball");
+  ball.style.top = "-50px"; // Start just above the game board
+  ball.style.left = `${Math.random() * (gameBoard.offsetWidth - 50)}px`; // Random horizontal position
+
+  ball.addEventListener("click", () => handleBallClick(ball));
+
+  gameBoard.appendChild(ball);
+
+  // Animate ball falling
+  let ballFallInterval = setInterval(() => {
+    let currentTop = parseFloat(ball.style.top);
+    if (currentTop < gameBoard.offsetHeight - 50) {
+      ball.style.top = `${currentTop + 2}px`; // Fall speed
+    } else {
+      clearInterval(ballFallInterval);
+      gameBoard.removeChild(ball); // Remove ball after it falls off screen
+    }
+  }, 20);
+}
+
+// Game loop
+function gameLoop() {
+  gameTimer = setInterval(() => {
+    if (remainingTime > 0) {
+      remainingTime--;
+      updateTimer();
+      if (Math.random() < 0.2) {
+        spawnBall(); // 20% chance to spawn a ball every frame
+      }
+    } else {
+      endGame();
+    }
+  }, 1000);
+}
+
+// End game logic
+function endGame() {
+  clearInterval(gameTimer);
+  gameStarted = false;
+  startButton.disabled = false; // Enable the start button again
+
+  const winChance = Math.random();
+  if (winChance < 0.7) {
+    messageDisplay.innerText = "You win! 10,000 coins added!";
+    userCoins += 10000;
+    updateCoinsInFirestore();
+  } else {
+    messageDisplay.innerText = "You lose! Better luck next time.";
+  }
+}
+
+// Check if user is authenticated and fetch data
+auth.onAuthStateChanged(user => {
+  if (user) {
+    const uid = user.uid;
+    fetchUserData(uid);
+  } else {
+    messageDisplay.innerText = "Please log in first.";
+  }
 });
 
-// Setup on load
-setupUser();
+// Start button click handler
+startButton.addEventListener("click", startGame);
