@@ -23,7 +23,7 @@
 
     if (!uid || uid.length !== 10) {
       alert("Unauthorized access. Please login first.");
-      window.location.href = "login.html";
+      window.location.href = "index.html";
       return;
     }
 
@@ -34,12 +34,12 @@
       if (!userSnap.exists()) {
         alert("Invalid user. Please login again.");
         localStorage.clear();
-        window.location.href = "login.html";
+        window.location.href = "index.html";
       }
     } catch (error) {
       console.error("Error verifying user:", error);
       alert("Error verifying session.");
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     }
   };
 
