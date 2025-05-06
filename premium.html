@@ -96,23 +96,19 @@
       </div>
     </div>
   </div>
+ from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-
-  <!-- Firebase + Button Script -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDVUzBgRChD8FhdgMoKosCLpLX3zGgWB_0",
+  authDomain: "money-master-official-site-new.firebaseapp.com",
+  projectId: "money-master-official-site-new",
+  storageBucket: "money-master-official-site-new.appspot.com",
+  messagingSenderId: "580013071708",
+  appId: "1:580013071708:web:76363a43638401cda07599",
+  measurementId: "G-26CBLGCKC1"
+};
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
