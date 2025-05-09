@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login – MONEY BATTLE</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #0d6efd;
+      color: white;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #0b5ed7;
+    }
+    .google-btn {
+      background: #db4437;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>MONEY BATTLE Login</h2>
+
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+  <button onclick="emailLogin()">Login with Email</button>
+
+  <p style="text-align: center; margin: 10px 0;">OR</p>
+
+  <button class="google-btn" onclick="signInWithGoogle()">Login with Google</button>
+</div>
+
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyBnioJIpecVz8wy8cvMfmMq3R04gUNuCv8",
+  authDomain: "money-d5a6e.firebaseapp.com",
+  projectId: "money-d5a6e",
+  storageBucket: "money-d5a6e.firebasestorage.app",
+  messagingSenderId: "1018038143768",
+  appId: "1:1018038143768:web:450b8c15f47326d066ec6d",
+  measurementId: "G-N5TEQWEXQW"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  function emailLogin() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    auth.signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        alert("Logged in as " + userCredential.user.email);
+        // Redirect to dashboard
+        // window.location.href = "dashboard.html";
+      })
+      .catch((error) => {
+        alert("Login Failed: " + error.message);
+      });
+  }
+
+  function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then((result) => {
+        alert("Welcome, " + result.user.displayName);
+        // Redirect to dashboard
+        // window.location.href = "dashboard.html";
+      })
+      .catch((error) => {
+        alert("Google login failed: " + error.message);
+      });
+  }
+</script>
+
+</body>
+</html>
