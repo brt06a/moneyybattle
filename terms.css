@@ -67,8 +67,13 @@ body {
 /* Icon & Heading */
 .terms-icon {
   width: 60px;
-  display: block;
-  margin: 0 auto 15px;
+margin: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
 }
 
 h2 {
