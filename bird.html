@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Bird</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #87CEEB; /* Sky Blue */
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 600px; /* Adjust as needed */
+            box-sizing: border-box;
+        }
+
+        #gameCanvas {
+            background: linear-gradient(to bottom, #87CEEB, #228B22); /* Sky to Forest */
+            border: 4px solid #333;
+            border-radius: 16px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+            width: 100%; /* Responsive width */
+            height: auto;
+            max-height: 80vh; /* Max height to maintain aspect ratio and prevent overflow*/
+            aspect-ratio: 3/4;
+        }
+
+        #playButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: white;
+            background-color: #FFD700; /* Gold */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #playButton:hover {
+            background-color: #FFC300; /* Darker Gold */
+        }
+
+        #gameTitle {
+            font-size: 2rem;
+            color: #FFFAFA; /* Snow White */
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            z-index: 10;
+        }
+
+        #gameOverScreen h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        #gameOverScreen p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="gameTitle">Energy Bird</h1>
+        <canvas id="gameCanvas"></canvas>
+        <button id="playButton">Play Now</button>
+        <div id="gameOverScreen">
+            <h2>Game Over</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <button id="restartButton">Restart</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const playButton = document.getElementById('playButton');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const restartButton = document.getElementById('restartButton');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const gameTitle = document.getElementById('gameTitle');
+
+        let birdX;
+        let birdY;
+        let birdSpeed;
+        let birdSize = 30;
+        let gravity;
+        let obstacleWidth = 50;
+        let obstacleHeightMin = 100;
+        let obstacleHeightMax = 300;
+        let obstacleGap = 150;
+        let obstacleSpeed;
+        let obstacles = [];
+        let score;
+        let gameRunning;
+        let animationId;
+        let energyTrail = []; // Array to store energy trail points
+        let trailLength = 10; // Number of points to show in the trail
+        let birdColor = "rgba(255, 223, 0, 1)"; // Initial bird color (Gold)
+
+        function resizeCanvas() {
+            canvas.width = document.querySelector('.container').clientWidth;
+            canvas.height = canvas.width * (4 / 3); // Maintain aspect ratio
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+
+        function initializeGame() {
+            birdX = canvas.width / 4;
+            birdY = canvas.height / 2;
+            birdSpeed = 0;
+            gravity = 0.8;
+            obstacleSpeed = 3;
+            obstacles = [];
+            score = 0;
+            gameRunning = false;
+            gameOverScreen.style.display = 'none';
+            birdColor = "rgba(255, 223, 0, 1)"; // Reset bird color
+            energyTrail = []; // Reset energy trail
+            gameTitle.style.display = 'block'; // Show the game title
+            if (animationId) cancelAnimationFrame(animationId); // Cancel any existing animation frame
+        }
+
+        function createObstacle() {
+            let obstacleHeight = Math.random() * (obstacleHeightMax - obstacleHeightMin) + obstacleHeightMin;
+            let obstacleX = canvas.width;
+            obstacles.push({
+                x: obstacleX,
+                height: obstacleHeight,
+                passed: false
+            });
+        }
+
+        function drawBird() {
+            ctx.beginPath();
+            ctx.arc(birdX, birdY, birdSize, 0, Math.PI * 2);
+            // Use the current birdColor
+            ctx.fillStyle = birdColor;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                // Top obstacle
+                ctx.fillStyle = 'green';
+                ctx.fillRect(obstacle.x, 0, obstacleWidth, obstacle.height);
+
+                // Bottom obstacle
+                ctx.fillRect(obstacle.x, obstacle.height + obstacleGap, obstacleWidth, canvas.height - obstacle.height - obstacleGap);
+            });
+        }
+
+        function drawScore() {
+            ctx.fillStyle = 'white';
+            ctx.font = '2rem "Press Start 2P"';
+            ctx.shadowColor = 'black';
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            ctx.fillText(`Score: ${score}`, 20, 40);
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }
+
+        function updateBird() {
+            birdSpeed += gravity;
+            birdY += birdSpeed;
+
+            // Keep bird within bounds
+            if (birdY < 0) {
+                birdY = 0;
+                birdSpeed = 0;
+            }
+            if (birdY > canvas.height) {
+                birdY = canvas.height;
+                birdSpeed = 0;
+            }
+             // Add current bird position to energy trail
+            energyTrail.push({ x: birdX, y: birdY, time: Date.now() });
+            // Keep the trail at the desired length
+            if (energyTrail.length > trailLength) {
+                energyTrail.shift();
+            }
+        }
+
+        function updateObstacles() {
+            obstacles.forEach(obstacle => {
+                obstacle.x -= obstacleSpeed;
+            });
+
+            // Remove passed obstacles
+            obstacles = obstacles.filter(obstacle => obstacle.x > -obstacleWidth);
+
+            // Add new obstacles
+            if (obstacles.length === 0 || obstacles[obstacles.length - 1].x < canvas.width - 200) {
+                createObstacle();
+            }
+        }
+
+        function checkCollision() {
+            for (let obstacle of obstacles) {
+                if (
+                    birdX + birdSize > obstacle.x &&
+                    birdX - birdSize < obstacle.x + obstacleWidth &&
+                    (birdY - birdSize < obstacle.height || birdY + birdSize > obstacle.height + obstacleGap)
+                ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function updateScore() {
+            for (let obstacle of obstacles) {
+                if (birdX > obstacle.x + obstacleWidth && !obstacle.passed) {
+                    obstacle.passed = true;
+                    score++;
+                    // Change bird color based on score
+                    if (score > 5) {
+                        birdColor = "rgba(255, 165, 0, 1)"; // Orange
+                    }
+                    if (score > 10) {
+                         birdColor = "rgba(255, 69, 0, 1)"; // Red
+                    }
+                    if (score > 20){
+                        birdColor = "rgba(173, 216, 230, 1)";
+                    }
+                }
+            }
+        }
+
+        function drawEnergyTrail() {
+            for (let i = 0; i < energyTrail.length; i++) {
+              const point = energyTrail[i];
+              const opacity = 0.8 * (1 - i / energyTrail.length); // Fade out the trail
+              ctx.beginPath();
+              ctx.arc(point.x, point.y, 5 * (0.5 - i / energyTrail.length/3), 0, Math.PI * 2); // Size decreases
+              ctx.fillStyle = `rgba(255, 223, 0, ${opacity})`; // Trail color
+              ctx.fill();
+              ctx.closePath();
+            }
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw and update
+            drawEnergyTrail(); // Draw the energy trail
+            drawBird();
+            drawObstacles();
+            drawScore();
+            updateBird();
+            updateObstacles();
+            updateScore();
+
+            if (checkCollision()) {
+                gameRunning = false;
+                finalScoreDisplay.textContent = score;
+                gameOverScreen.style.display = 'flex';
+                gameTitle.style.display = 'none'; // Hide the game title
+                return;
+            }
+
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        function startGame() {
+            if (!gameRunning) {
+                initializeGame();
+                gameRunning = true;
+                gameOverScreen.style.display = 'none'; // Hide game over screen when starting a new game
+                gameTitle.style.display = 'none'; // Hide the game title
+                gameLoop();
+            }
+        }
+
+        // Event Listeners
+        playButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+
+        canvas.addEventListener('click', () => {
+            if (gameRunning) {
+                birdSpeed = -10;
+            }
+        });
+
+        // Prevent "stuck" bird
+        setInterval(() => {
+            if (gameRunning && birdSpeed > 5) {
+                birdSpeed = 5; // Reset speed if it gets too high
+            }
+        }, 500);
+
+        initializeGame(); // Call initializeGame to set up initial state
+    </script>
+</body>
+</html>
